@@ -1,10 +1,10 @@
 CREATE DATABASE IF NOT EXISTS library CHARACTER SET utf8mb4 COLLATE utf8mb4_turkish_ci;
 USE library;
 
-CREATE USER 'admin'@'127.0.0.1' IDENTIFIED BY 'Kutuphane@Yonetim#2026!';
+CREATE USER 'yonetici'@'127.0.0.1' IDENTIFIED BY 'Kutuphane@Yonetim#2026!';
 GRANT ALL PRIVILEGES ON library.* TO 'admin'@'127.0.0.1';
 
-CREATE USER 'admin'@'10.156.231.0' IDENTIFIED BY 'Kutuphane@Yonetim#2026!';
+CREATE USER 'yonetici'@'10.156.231.0' IDENTIFIED BY 'Kutuphane@Yonetim#2026!';
 GRANT ALL PRIVILEGES ON library.* TO 'admin'@'10.156.231.0';
 
 FLUSH PRIVILEGES;
