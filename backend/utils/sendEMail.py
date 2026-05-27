@@ -20,7 +20,7 @@ def sendEMail(subject,message):
         PASSWORD = base64.b64decode(data["SMTP_PASSWORD"]).decode("utf-8")
         GMAIL = config.GMAIL
 
-        server = smtplib.SMTP("smtp.gmail.com",587)
+        server = smtplib.SMTP("your_smtp_address",000)
         server.starttls()
         server.login(GMAIL,PASSWORD)
 
