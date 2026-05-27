@@ -41,7 +41,7 @@ whoAdded VARCHAR(20) NOT NULL);
 CREATE TABLE importantValues(id INT AUTO_INCREMENT PRIMARY KEY,
 situationValue TEXT NOT NULL, valueStatus BOOLEAN NOT NULL);
 
-INSERT INTO users (userName,userPassword,userRole) VALUES ('admin admin','$2b$12$D.260DNaUl0ncyp3X7sQM.ifoaJMAthMNuDfwndyHo1srWtLjh.Jm','admin');
+INSERT INTO users (userName,userPassword,userRole) VALUES ('admin admin','your_password','admin');
 INSERT INTO importantValues (situationValue,valueStatus) VALUES ('App Is Locked',FALSE);
 
 
