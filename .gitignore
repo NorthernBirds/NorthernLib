@@ -1,0 +1,15 @@
+backend/__pycache__/
+backend/*.pyc
+backend/venv/
+backend/db/config.json  
+backend/logs/           
+
+frontend/.dart_tool/
+frontend/.idea/
+frontend/build/
+frontend/.packages
+frontend/build/
+frontend/*.iml
+
+.DS_Store
+Thumbs.db
