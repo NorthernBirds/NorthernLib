@@ -11,7 +11,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 
 session = {}
-APP_KEY = "6e42022fafe7b0e4f993591cb58448a0e65ef9afb75e54e654fc0437076cce85"
+APP_KEY = "your_app_token"
 
 cursor,conn = db.connection.getDB()
 
