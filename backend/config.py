@@ -13,6 +13,6 @@ RESET_LOG_PATH = os.path.join(BASE_DIR,"logs", "reset.log")
 SENDEMAIL_LOG_PATH = os.path.join(BASE_DIR,"logs", "sendEMail.log")
 
 BOOK_CATEGORIES = ["Roman","Hikaye","Şiir","Biyografi","Otobiyografi","Tarih","Bilim","Kişisel Gelişim","Ders Kitabı","Ansiklopedi","Çizgi Roman"]
-GMAIL = "your_gmail"
+GMAIL = "yusufenes.kus15@gmail.com"
 
 CONFIG_JSON_PATH_FOR_SENDEMAIL = os.path.join(BASE_DIR,"db", "config.json")
