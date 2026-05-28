@@ -11,7 +11,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 
 session = {}
-APP_KEY = "your_app_token"
+APP_KEY = "6e42022fafe7b0e4f993591cb58448a0e65ef9afb75e54e654fc0437076cce85"
 
 cursor,conn = db.connection.getDB()
 
@@ -451,3 +451,11 @@ def closeDB():
             "success":False,
             "message":"Bir hata oluştu!"
         })
+
+if __name__ == "__main__":
+    if os.path.exists(config.CERTIFICATE) and os.path.exists(config.KEY):
+        context = ssl.SSLContext(protocol=ssl.PROTOCOL_TLS_SERVER)
+        context.load_cert_chain(certfile=config.CERTIFICATE,keyfile=config.KEY)
+        app.run(host="0.0.0.0",port=5000,ssl_context=context,debug=False)
+    else:
+        app.run(host="127.0.0.1",port=5000,debug=True)
