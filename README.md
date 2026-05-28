@@ -4,6 +4,7 @@ Modern Library Automation System. Developed by Yusuf Enes Kuş. Licensed under C
 A backend-oriented system for academic library management, focusing on modularity, secure data flow, and centralized control.
 
 System Architecture
+
 The project is structured into functional layers:
 
 1. Components
