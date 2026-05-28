@@ -7,12 +7,14 @@ System Architecture
 The project is structured into functional layers:
 
 1. Components
+   
 modules/: Core business logic. Each module handles specific operational processes, including book tracking, member management, and categorization.
 
 utils/: Utility functions for system-wide requirements, such as logging and email communication.
 
 db/: Data access layer. Encapsulates SQL operations and manages database connections, abstracting interaction from the business logic.
 2. Core Engine (backend.py)
+   
 The system employs a Single Entry Point design, functioning as the centralized gateway for all operations.
 
 Request Routing: Primary interface for the frontend; all incoming requests are mediated here.
@@ -24,6 +26,7 @@ Access Control: User roles and permissions are evaluated before request routing.
 Security: Direct interaction between the frontend and the database layer is restricted to mitigate security risks.
 
 Configuration & Deployment
+
 To ensure system stability, ensure the following requirements are met:
 
 License Compliance: Usage must strictly adhere to the defined license terms.
