@@ -75,8 +75,6 @@ class Auth:
 
             self.cursor.execute("UPDATE importantvalues SET valueStatus = %s WHERE id = 1",(True,))
             self.conn.commit()
-            self.cursor.execute("UPDATE importantvalues SET valueStatus = %s WHERE id = 1",(True,))
-            self.conn.commit()
             sendEMail(subject="403 Forbidden at library system.",message="A user attempted to breach the system using a tool similar to Postman.")
             writeCriticalWarning(config.AUTH_LOG_PATH,"403 Forbidden","A user attempted to breach the system using a tool similar to Postman.")
 
@@ -85,31 +83,58 @@ class Auth:
             writeLog(config.AUTH_LOG_PATH,type(e).__name__,str(e))
             return {"success":False,"message":"Bir hata oluştu!"}
 
-    def verifyToken(self,token,appToken):
+    def verifyUserToken(self,token):
 
-        try:
-            
-            self.cursor.execute("SELECT * FROM importantvalues WHERE id = 1")
-            result = self.cursor.fetchone()
-            if bool(result[2]) == True:
-                return {"success":False,"message":"The app is locked!"}
+        try: 
+
+            if token not in session:
+                return {"success":False,"message":"401 Unauthorized!"}
             else:
-                
-                if appToken != APP_KEY:
-                    self.lockTheApp()
-                    return {"success":False,"message":"403 Forbidden!"}
-                else:
 
-                    if token not in session:
-                        return {"success":False,"message":"401 Unauthorized!"}
-                    else:
-
-                        return {"success":True}
+                return {"success":True}
 
         except Exception as e:
 
             writeLog(config.AUTH_LOG_PATH,type(e).__name__,str(e))
             return {"success":False,"message":"Bir hata oluştu!"}
+
+    def verifyAppToken(self,appToken):
+
+        try:
+
+            if appToken != APP_KEY:
+                self.lockTheApp()
+                return {"success":False,"message":"403 Forbidden!"}
+            else:
+                return {"success":True}
+        
+        except Exception as e:
+
+            writeLog(config.AUTH_LOG_PATH,type(e).__name__,str(e))
+            return {"success":False,"message":"Bir hata oluştu!"}
+    
+    def verifyLock(self):
+
+        try:
+
+            self.cursor.execute("SELECT * FROM importantvalues WHERE id = 1")
+            result = self.cursor.fetchone()
+            if bool(result[2]) == True:
+                return {"success":False,"message":"The app is locked!"}
+            else:
+
+                return {"success":True}
+        
+        except Exception as e:
+
+            writeLog(config.AUTH_LOG_PATH,type(e).__name__,str(e))
+            return {"success":False,"message":"Bir hata oluştu!"}
+
+
+
+
+            
+                
     
             
 

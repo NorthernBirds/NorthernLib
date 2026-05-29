@@ -26,20 +26,35 @@ CORS(app)
 
 def checkRoleAndToken(token,appToken,allowedRoles):
 
-    result = auth.verifyToken(token=token,appToken=appToken)
-
+    result = auth.verifyLock()
+    
     if result["success"] != True:
         return result
+    else:
 
-    if session[token]["role"] not in allowedRoles:
-        return {
-            "success":False,
-            "message":"Yetkiniz yok!"
-        }
+        result = auth.verifyAppToken(appToken=appToken)
 
-    return {
-        "success":True
-    }
+        if result["success"] != True:
+            return result
+        else:
+
+            result = auth.verifyUserToken(token=token)
+
+            if result["success"] != True:
+                return result
+            else:
+
+                if session[token]["role"] not in allowedRoles:
+                    return {
+                        "success":False,
+                        "message":"Yetkiniz yok!"
+                    }
+                
+                else:
+
+                    return {
+                        "success":True
+                    }
 
 
 @app.route('/backend/signIn', methods=['POST'])
@@ -49,15 +64,27 @@ def signIn():
 
         data = request.get_json()
 
-        result = auth.signIn(userName=data.get("userName",""),password=data.get("password",""))
+        result = auth.verifyLock()
 
-        if result["success"] == True:
+        if result["sucsess"] != True:
+            return result
+        else:
 
-            session[result["token"]] = {
-                "role":result["role"],"userName":result["userName"]
-            }
+            result = auth.verifyAppToken(appToken=data.get("appToken",""))
 
-        return jsonify(result)
+            if result["success"] != True:
+                return result
+            else:
+
+                result = auth.signIn(userName=data.get("userName",""),password=data.get("password",""))
+
+                if result["success"] == True:
+
+                    session[result["token"]] = {
+                        "role":result["role"],"userName":result["userName"]
+                    }
+
+                return jsonify(result)
 
     except Exception as e:
 
@@ -456,4 +483,10 @@ if __name__ == "__main__":
     if developingMode == True:
         app.run(host="127.0.0.1",port=5000,debug=True)
     else:
-        app.run(host="127.0.0.1",port=5000,debug=True)
+            
+        if os.path.exists(config.CERTIFICATE) and os.path.exists(config.KEY):
+            context = ssl.SSLContext(protocol=ssl.PROTOCOL_TLS_SERVER)
+            context.load_cert_chain(certfile=config.CERTIFICATE,keyfile=config.KEY)
+            app.run(host="0.0.0.0",port=5000,ssl_context=context,debug=False)
+        else:
+            auth.lockTheApp()
