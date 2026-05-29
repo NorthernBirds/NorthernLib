@@ -68,7 +68,22 @@ class Auth:
 
             writeLog(config.AUTH_LOG_PATH,type(e).__name__,str(e))
             return {"success":False,"message":"Bir hata oluştu!"}
+    
+    def lockTheApp(self):
 
+        try:
+
+            self.cursor.execute("UPDATE importantvalues SET valueStatus = %s WHERE id = 1",(True,))
+            self.conn.commit()
+            self.cursor.execute("UPDATE importantvalues SET valueStatus = %s WHERE id = 1",(True,))
+            self.conn.commit()
+            sendEMail(subject="403 Forbidden at library system.",message="A user attempted to breach the system using a tool similar to Postman.")
+            writeCriticalWarning(config.AUTH_LOG_PATH,"403 Forbidden","A user attempted to breach the system using a tool similar to Postman.")
+
+        except Exception as e:
+
+            writeLog(config.AUTH_LOG_PATH,type(e).__name__,str(e))
+            return {"success":False,"message":"Bir hata oluştu!"}
 
     def verifyToken(self,token,appToken):
 
@@ -81,10 +96,7 @@ class Auth:
             else:
                 
                 if appToken != APP_KEY:
-                    self.cursor.execute("UPDATE importantvalues SET valueStatus = %s WHERE id = 1",(True,))
-                    self.conn.commit()
-                    sendEMail(subject="403 Forbidden at library system.",message="A user attempted to breach the system using a tool similar to Postman.")
-                    writeCriticalWarning(config.AUTH_LOG_PATH,"403 Forbidden","A user attempted to breach the system using a tool similar to Postman.")
+                    self.lockTheApp()
                     return {"success":False,"message":"403 Forbidden!"}
                 else:
 
