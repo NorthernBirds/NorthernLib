@@ -29,32 +29,32 @@ def checkRoleAndToken(token,appToken,allowedRoles):
     result = auth.verifyLock()
     
     if result["success"] != True:
-        return result
+        return jsonify(result)
     else:
 
         result = auth.verifyAppToken(appToken=appToken)
 
         if result["success"] != True:
-            return result
+            return jsonify(result)
         else:
 
             result = auth.verifyUserToken(token=token)
 
             if result["success"] != True:
-                return result
+                return jsonify(result)
             else:
 
                 if session[token]["role"] not in allowedRoles:
-                    return {
+                    return jsonify({
                         "success":False,
                         "message":"Yetkiniz yok!"
-                    }
+                    })
                 
                 else:
 
-                    return {
+                    return jsonify({
                         "success":True
-                    }
+                    })
 
 
 @app.route('/backend/signIn', methods=['POST'])
@@ -67,13 +67,13 @@ def signIn():
         result = auth.verifyLock()
 
         if result["sucsess"] != True:
-            return result
+            return jsonify(result)
         else:
 
             result = auth.verifyAppToken(appToken=data.get("appToken",""))
 
             if result["success"] != True:
-                return result
+                return jsonify(result)
             else:
 
                 result = auth.signIn(userName=data.get("userName",""),password=data.get("password",""))
@@ -461,9 +461,15 @@ def closeDB():
 
     try:
 
-        db.connection.closeConnection(conn=conn)
+        data = request.get_json()
 
-        session.clear()
+        result = auth.verifyAppToken(appToken=data.get("appToken",""))
+
+        if result["success"] != True:
+            return jsonify(result)
+        else:
+            db.connection.closeConnection(conn=conn)
+            session.clear()
 
         return jsonify({
             "success":True,
