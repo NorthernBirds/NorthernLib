@@ -1,37 +1,43 @@
 import config
 from utils.writeLog import writeLog
 
-def reset(conn,cursor,books,categories,loans,users):
+class Reset:
+
+    def __init__(self,conn,cursor):
+        self.conn = conn
+        self.cursor = cursor
+
+def reset(self,books,categories,loans,users):
 
     try:
 
         if books == True:
-            cursor.execute("TRUNCATE TABLE books")
-            conn.commit()
+            self.cursor.execute("TRUNCATE TABLE books")
+            self.conn.commit()
         elif books == False:
             pass
         else:
             return {"success":False,"message":"Lütfen boş bırakmayın!"}
         
         if categories == True:
-            cursor.execute("TRUNCATE TABLE categories")
-            conn.commit()
+            self.cursor.execute("TRUNCATE TABLE categories")
+            self.conn.commit()
         elif categories == False:
             pass
         else:
             return {"success":False,"message":"Lütfen boş bırakmayın!"}
         
         if loans == True:
-            cursor.execute("TRUNCATE TABLE loans")
-            conn.commit()
+            self.cursor.execute("TRUNCATE TABLE loans")
+            self.conn.commit()
         elif loans == False:
             pass
         else:
             return {"success":False,"message":"Lütfen boş bırakmayın!"}
         
         if users == True:
-            cursor.execute("DELETE FROM users WHERE userRole = 'student_staff' OR userRole = 'teacher'")
-            conn.commit()
+            self.cursor.execute("DELETE FROM users WHERE userRole = 'student_staff' OR userRole = 'teacher'")
+            self.conn.commit()
         elif users == False:
             pass
         else:

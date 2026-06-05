@@ -13,20 +13,16 @@ from flask_cors import CORS
 session = {}
 APP_KEY = "your_app_key"
 
-cursor,conn = db.connection.getDB()
+cursor,conn = db.connection.getDB(dbName="library",password="Kutuphane@Yonetim#2026!")
 
 auth = modules.auth.Auth(conn=conn,cursor=cursor)
-book = modules.books.Book(conn=conn,cursor=cursor)
-category = modules.categories.Category(conn=conn,cursor=cursor)
-loan = modules.loans.Loan(conn=conn,cursor=cursor)
-user = modules.users.User(conn=conn,cursor=cursor)
 
 app = Flask(__name__)
 CORS(app)
 
 def checkRoleAndToken(token,appToken,allowedRoles):
 
-    result = auth.verifyLock()
+    result = session[token]["classes"]["auth"].verifyLock()
     
     if result["success"] != True:
         return jsonify(result)
@@ -62,13 +58,7 @@ def signIn():
 
     try:
 
-        data = request.get_json()
-
-        result = auth.verifyLock()
-
-        if result["sucsess"] != True:
-            return jsonify(result)
-        else:
+            data = request.get_json()
 
             result = auth.verifyAppToken(appToken=data.get("appToken",""))
 
@@ -76,16 +66,34 @@ def signIn():
                 return jsonify(result)
             else:
 
-                result = auth.signIn(userName=data.get("userName",""),password=data.get("password",""))
+                result2 = auth.signInDB(dbName=data.get("dbName",""),dbPassword=data.get("dbPassword",""))
 
-                if result["success"] == True:
+                if result2["success"] != True:
+                    return jsonify(result2)
+                else:
 
-                    session[result["token"]] = {
-                        "role":result["role"],"userName":result["userName"]
-                    }
+                    resultDB = db.connection.getDB(dbName=data.get("dbName",""),password=data.get("dbPassword",""))
 
-                return jsonify(result)
+                    if resultDB["success"] != True:
+                        return jsonify(resultDB)
+                    else:
 
+                        authUser = modules.auth.Auth(conn=resultDB["data"]["conn"],cursor=resultDB["data"]["cursor"])
+                        book = modules.books.Book(conn=resultDB["data"]["conn"],cursor=resultDB["data"]["cursor"])
+                        category = modules.categories.Category(conn=resultDB["data"]["conn"],cursor=resultDB["data"]["cursor"])
+                        loan = modules.loans.Loan(conn=resultDB["data"]["conn"],cursor=resultDB["data"]["cursor"])
+                        user = modules.users.User(conn=resultDB["data"]["conn"],cursor=resultDB["data"]["cursor"])
+                        reset = modules.reset.Reset(conn=resultDB["data"]["conn"],cursor=resultDB["data"]["cursor"])
+
+                        result3 = authUser.signIn(userName=data.get("userName",""),password=data.get("password",""))
+
+                        if result3["success"] != True:
+                            return jsonify(result3)
+                        else:
+
+                            session[result3["token"]] = {"userName":result3["userName"],"role":result3["role"],"classes":{"auth":authUser,"book":book,"category":category,"loan":loan,"user":user,"reset":reset},"dbValues":{"conn":resultDB["data"]["conn"],"cursor":resultDB["data"]["cursor"]}}
+                            return {"success":True,"message":"Giriş yapıldı."}
+   
     except Exception as e:
 
         writeLog(config.BACKEND_LOG_PATH,type(e).__name__,str(e))
@@ -108,7 +116,7 @@ def addBook():
         if result["success"] != True:
             return jsonify(result)
         else:
-            return jsonify(book.addBook(bookName=data.get("bookName",""), writer=data.get("writer",""), category=data.get("category",""), publisher=data.get("publisher",""), pageCount=data.get("pageCount",0),activeUserName=session[token]["userName"]))
+            return jsonify(session[token]["classes"]["book"].addBook(bookName=data.get("bookName",""), writer=data.get("writer",""), category=data.get("category",""), publisher=data.get("publisher",""), pageCount=data.get("pageCount",0),activeUserName=session[token]["userName"]))
 
     except Exception as e:
 
@@ -132,7 +140,7 @@ def deleteBook():
         if result["success"] != True:
             return jsonify(result)
         else:
-            return jsonify(book.deleteBook(id=data.get("id",0)))
+            return jsonify(session[data.get("token")]["classes"]["book"].deleteBook(id=data.get("id",0)))
 
     except Exception as e:
 
@@ -156,7 +164,7 @@ def listBooks():
         if result["success"] != True:
             return jsonify(result)
         else:
-            return jsonify(book.listBooks(filterType=data.get("filterType",""), filterValue=data.get("filterValue",""), isWithFilter=data.get("isWithFilter","")))
+            return jsonify(session[data.get("token")]["classes"]["book"].listBooks(filterType=data.get("filterType",""), filterValue=data.get("filterValue",""), isWithFilter=data.get("isWithFilter","")))
 
     except Exception as e:
 
@@ -181,7 +189,7 @@ def addCategory():
         if result["success"] != True:
             return jsonify(result)
         else:
-            return jsonify(category.addCategory(categoryName=data.get("categoryName",""),activeUserName=session[token]["userName"]))
+            return jsonify(session[token]["classes"]["category"].addCategory(categoryName=data.get("categoryName",""),activeUserName=session[token]["userName"]))
 
     except Exception as e:
 
@@ -205,7 +213,7 @@ def deleteCategory():
         if result["success"] != True:
             return jsonify(result)
         else:
-            return jsonify(category.deleteCategory(id=data.get("id",0)))
+            return jsonify(session[data.get("token")]["classes"]["category"].deleteCategory(id=data.get("id",0)))
 
     except Exception as e:
 
@@ -229,7 +237,7 @@ def listCategories():
         if result["success"] != True:
             return jsonify(result)
         else:
-            return jsonify(category.listCategories(filterType=data.get("filterType",""), filterValue=data.get("filterValue",""), isWithFilter=data.get("isWithFilter","")))
+            return jsonify(session[data.get("token")]["classes"]["category"].listCategories(filterType=data.get("filterType",""), filterValue=data.get("filterValue",""), isWithFilter=data.get("isWithFilter","")))
 
     except Exception as e:
 
@@ -253,7 +261,7 @@ def borrowBook():
         if result["success"] != True:
             return jsonify(result)
         else:
-            return jsonify(loan.borrowBook(bookID=data.get("bookID",0), studentID=data.get("studentID",0), returnDate=data.get("returnDate",""),activeUserName=session[token]["userName"]))
+            return jsonify(session[token]["classes"]["loan"].borrowBook(bookID=data.get("bookID",0), studentID=data.get("studentID",0), returnDate=data.get("returnDate",""),activeUserName=session[token]["userName"]))
 
     except Exception as e:
 
@@ -277,7 +285,7 @@ def returnBook():
         if result["success"] != True:
             return jsonify(result)
         else:
-            return jsonify(loan.returnBook(bookID=data.get("bookID",0)))
+            return jsonify(session[data.get("token")]["classes"]["loan"].returnBook(bookID=data.get("bookID",0)))
 
     except Exception as e:
 
@@ -301,7 +309,7 @@ def listLoans():
         if result["success"] != True:
             return jsonify(result)
         else:
-            return jsonify(loan.listLoans(filterType=data.get("filterType",""), filterValue=data.get("filterValue",""), isWithFilter=data.get("isWithFilter","")))
+            return jsonify(session[data.get("token")]["classes"]["loan"].listLoans(filterType=data.get("filterType",""), filterValue=data.get("filterValue",""), isWithFilter=data.get("isWithFilter","")))
 
     except Exception as e:
 
@@ -325,7 +333,7 @@ def addUser():
         if result["success"] != True:
             return jsonify(result)
         else:
-            return jsonify(user.addUser(userName=data.get("userName",""), password=data.get("password",""), role=data.get("role","")))
+            return jsonify(session[data.get("token")]["classes"]["user"].addUser(userName=data.get("userName",""), password=data.get("password",""), role=data.get("role","")))
 
     except Exception as e:
 
@@ -349,7 +357,7 @@ def deleteUser():
         if result["success"] != True:
             return jsonify(result)
         else:
-            return jsonify(user.deleteUser(userName=data.get("userName","")))
+            return jsonify(session[data.get("token")]["classes"]["user"].deleteUser(userName=data.get("userName","")))
 
     except Exception as e:
 
@@ -373,7 +381,7 @@ def changeRole():
         if result["success"] != True:
             return jsonify(result)
         else:
-            return jsonify(user.changeRole(userName=data.get("userName",""), newRole=data.get("newRole","")))
+            return jsonify(session[data.get("token")]["classes"]["user"].changeRole(userName=data.get("userName",""), newRole=data.get("newRole","")))
 
     except Exception as e:
 
@@ -396,7 +404,7 @@ def listUsers():
         if result["success"] != True:
             return jsonify(result)
         else:
-            return jsonify(user.listUsers(filterType=data.get("filterType",""), filterValue=data.get("filterValue",""), isWithFilter=data.get("isWithFilter","")))
+            return jsonify(session[data.get("token")]["classes"]["user"].listUsers(filterType=data.get("filterType",""), filterValue=data.get("filterValue",""), isWithFilter=data.get("isWithFilter","")))
 
     except Exception as e:
 
@@ -420,7 +428,7 @@ def reset():
         if result["success"] != True:
             return jsonify(result)
         else:
-            return jsonify(modules.reset.reset(conn=conn, cursor=cursor, books=data.get("books",""), categories=data.get("categories",""), loans=data.get("loans",""), users=data.get("users","")))
+            return jsonify(session[data.get("token")]["classes"]["reset"].reset(books=data.get("books",""), categories=data.get("categories",""), loans=data.get("loans",""), users=data.get("users","")))
 
     except Exception as e:
 
@@ -463,7 +471,7 @@ def closeDB():
 
         data = request.get_json()
 
-        result = auth.verifyAppToken(appToken=data.get("appToken",""))
+        result = session[data.get("token")]["classes"]["auth"].verifyAppToken(appToken=data.get("appToken",""))
 
         if result["success"] != True:
             return jsonify(result)
@@ -494,5 +502,4 @@ if __name__ == "__main__":
             context = ssl.SSLContext(protocol=ssl.PROTOCOL_TLS_SERVER)
             context.load_cert_chain(certfile=config.CERTIFICATE,keyfile=config.KEY)
             app.run(host="0.0.0.0",port=5000,ssl_context=context,debug=False)
-        else:
-            auth.lockTheApp()
+

@@ -12,7 +12,38 @@ class Auth:
         self.conn = conn
         self.cursor = cursor
 
-    
+    def signInDB(self,dbName,dbPassword):
+        
+        try:
+
+            if dbName == "" or dbPassword == "":
+                return {"success":False,"message":"Lütfen boş bırakmayın!"}
+            else:
+                self.cursor.execute("SELECT * FROM libraries WHERE libName = %s",(dbName,))
+
+                result = self.cursor.fetchone()
+
+                if result is None:
+                    return {"success":False,"message":"Hatalı kullanıcı adı!"}
+                else:
+
+                    passwordCorrect = bcrypt.checkpw(
+                        dbPassword.encode(),
+                        result[2].encode()
+                    )
+
+                    if passwordCorrect != True:
+                        return {"success":False,"message":"Hatalı şifre!"}
+                    else:
+
+                        return {"success":True,"message":"Giriş yapıldı.","data":{"dbName":dbName,"dbPassword":dbPassword}}
+        
+        except Exception as e:
+
+            writeLog(config.AUTH_LOG_PATH,type(e).__name__,str(e))
+            return {"success":False,"message":"Bir hata oluştu!"}
+
+
     def signIn(self,userName,password):
 
         try:
@@ -29,7 +60,7 @@ class Auth:
             result = self.cursor.fetchone()
 
             if result is None:
-                return {"success":False,"message":"Hatalı kullanıcı adı veya şifre!"}
+                return {"success":False,"message":"Hatalı kullanıcı adı!"}
             else:
 
                 passwordCorrect = bcrypt.checkpw(
@@ -38,7 +69,7 @@ class Auth:
                 )
 
                 if passwordCorrect != True:
-                    return {"success":False,"message":"Hatalı kullanıcı adı veya şifre!"}
+                    return {"success":False,"message":"Hatalı şifre!"}
                 else:
 
                     token = secrets.token_hex(32)
@@ -61,8 +92,12 @@ class Auth:
         
         try:
 
-            del session[token]
-            return {"success":True,"message":"Çıkış yapıldı."}
+            if token in session.keys():
+                del session[token]
+                return {"success":True,"message":"Çıkış yapıldı."}
+            else:
+
+                return {"success":False,"message":"Lütfen boş bırakmayın!"}
         
         except Exception as e:
 

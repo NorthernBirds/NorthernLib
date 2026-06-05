@@ -11,6 +11,7 @@ LOANS_LOG_PATH = os.path.join(BASE_DIR,"logs", "loans.log")
 BACKEND_LOG_PATH = os.path.join(BASE_DIR, "logs", "backend.log")
 RESET_LOG_PATH = os.path.join(BASE_DIR,"logs", "reset.log")
 SENDEMAIL_LOG_PATH = os.path.join(BASE_DIR,"logs", "sendEMail.log")
+SETUPSQL_LOG_PATH = os.path.join(BASE_DIR,"logs", "setupSQL.log")
 
 BOOK_CATEGORIES = ["Roman","Hikaye","Şiir","Biyografi","Otobiyografi","Tarih","Bilim","Kişisel Gelişim","Ders Kitabı","Ansiklopedi","Çizgi Roman"]
 GMAIL = "yusufenes.kus15@gmail.com"
