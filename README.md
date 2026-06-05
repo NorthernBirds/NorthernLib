@@ -1,5 +1,9 @@
-# Library
-Modern Library Automation System. Developed by Yusuf Enes Kuş. Licensed under Custom Academic/Open-Source Terms.
+<<<<<<< HEAD
+Library Management System Copyright (c) 2026 Yusuf Enes Corp. All rights reserved.
+=======
+Library Management System
+Copyright (c) 2026 Yusuf Enes Corp. All rights reserved.
+>>>>>>> c2b82e6bb16eb920edcc19fd2cec7202ed2554ea
 
 A backend-oriented system for academic library management, focusing on modularity, secure data flow, and centralized control.
 
@@ -14,6 +18,10 @@ modules/: Core business logic. Each module handles specific operational processe
 utils/: Utility functions for system-wide requirements, such as logging and email communication.
 
 db/: Data access layer. Encapsulates SQL operations and manages database connections, abstracting interaction from the business logic.
+
+<<<<<<< HEAD
+Core Engine (backend.py)
+=======
 2. Core Engine (backend.py)
    
 The system employs a Single Entry Point design, functioning as the centralized gateway for all operations.
@@ -34,11 +42,9 @@ License Compliance: Usage must strictly adhere to the defined license terms.
 
 Environment Configuration: Modify the following files according to your infrastructure requirements:
 
-backend.py (Line 16)
+backend.py (Line 16,19)
 
 config.py (Line 16)
-
-setupSQL.sql (Lines 4, 5, 41)
 
 sendEMail.py (Line 23)
 

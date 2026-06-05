@@ -13,7 +13,9 @@ from flask_cors import CORS
 session = {}
 APP_KEY = "your_app_key"
 
-cursor,conn = db.connection.getDB(dbName="library",password="Kutuphane@Yonetim#2026!")
+resultDB1 = db.connection.getDB(dbName="library",password="Kutuphane@Yonetim#2026!")
+conn = resultDB1["data"]["conn"]
+cursor = resultDB1["data"]["cursor"]
 
 auth = modules.auth.Auth(conn=conn,cursor=cursor)
 
@@ -52,6 +54,29 @@ def checkRoleAndToken(token,appToken,allowedRoles):
                         "success":True
                     })
 
+@app.route('/backend/signUp',methods=['POST'])
+def signUp():
+
+    try:
+
+        data = request.get_json()
+
+        result = auth.verifyAppToken(appToken=data.get("appToken",""))
+
+        if result["success"] != True:
+            return jsonify(result)
+        else:
+
+            return jsonify(auth.signUp(dbName=data.get("dbName","")))
+    
+    except Exception as e:
+
+        writeLog(config.BACKEND_LOG_PATH,type(e).__name__,str(e))
+
+        return jsonify({
+            "success":False,
+            "message":"Bir hata oluştu!"
+        })
 
 @app.route('/backend/signIn', methods=['POST'])
 def signIn():

@@ -1,9 +1,11 @@
 import config
 from utils.writeLog import writeLog,writeCriticalWarning
 from utils.sendEMail import sendEMail
+from utils.setupSQL import setup
 import bcrypt
 import secrets
 from backend import session,APP_KEY
+import random
 
 class Auth:
 
@@ -11,6 +13,49 @@ class Auth:
         
         self.conn = conn
         self.cursor = cursor
+    
+    def signUp(self,dbName):
+
+        try:
+
+            letters = [
+            "a", "A", "b", "B", "c", "C", "d", "D", "e", "E", 
+            "f", "F", "g", "G", "h", "H", "i", "I", "j", "J", 
+            "k", "K", "l", "L", "m", "M", "n", "N", "o", "O", 
+            "p", "P", "q", "Q", "r", "R", "s", "S", "t", "T", 
+            "u", "U", "v", "V", "w", "W", "x", "X", "y", "Y", 
+            "z", "Z"
+            ]
+
+
+            if dbName == "":
+                return {"success":False,"message":"Lütfen boş bırakmayın!"}
+            else:
+
+                self.cursor.execute("SELECT * FROM libraries WHERE libName = %s",(dbName,))
+
+                result = self.cursor.fetchone()
+
+                if result is not None:
+                    return {"success":False,"message":"Hatalı bu kütüphane adı zaten var!"}
+                else:
+
+                    dbPassword = ""
+                    adminPassword = ""
+
+                    for i in range(4):
+                        dbPassword = dbPassword + str(random.randint(0,9)) + str(random.choice(letters))
+                        adminPassword = adminPassword + str(random.randint(0,9)) + str(random.choice(letters))
+                    
+                    setup(name=dbName,password=bcrypt.hashpw(dbPassword.encode(),bcrypt.gensalt()).decode("utf-8"),conn=self.conn,cursor=self.cursor,adminPassword=bcrypt.hashpw(adminPassword.encode(),bcrypt.gensalt()).decode("utf-8"))
+                    return {"success":True,"message":"Kayıt olundu.","data":{"dbPassword":dbPassword,"adminPassword":adminPassword}}
+        
+        
+        except Exception as e:
+
+            writeLog(config.AUTH_LOG_PATH,type(e).__name__,str(e))
+            return {"success":False,"message":"Bir hata oluştu!"}
+            
 
     def signInDB(self,dbName,dbPassword):
         
@@ -24,7 +69,7 @@ class Auth:
                 result = self.cursor.fetchone()
 
                 if result is None:
-                    return {"success":False,"message":"Hatalı kullanıcı adı!"}
+                    return {"success":False,"message":"Hatalı kütüphane adı!"}
                 else:
 
                     passwordCorrect = bcrypt.checkpw(

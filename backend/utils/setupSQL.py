@@ -1,11 +1,15 @@
 from writeLog import writeLog
 import config
 
-def setup(name,password,conn,cursor):
+def setup(name,password,conn,cursor,adminPassword):
 
     try:
 
+        cursor.execute("INSERT INTO libraries (libName,libPassword) VALUES (%s,%s)",(name,password))
+        conn.commit()
         cursor.execute("CREATE DATABASE IF NOT EXISTS "+name)
+        conn.commit()
+        cursor.execute("USE "+name)
         conn.commit()
         cursor.execute("CREATE USER 'admin'@'127.0.0.1' IDENTIFIED BY '"+password+"'")
         conn.commit()
@@ -25,7 +29,7 @@ def setup(name,password,conn,cursor):
         conn.commit()
         cursor.execute("CREATE TABLE importantValues(id INT AUTO_INCREMENT PRIMARY KEY,situationValue TEXT NOT NULL, valueStatus BOOLEAN NOT NULL)")
         conn.commit()
-        cursor.execute("INSERT INTO users (userName,userPassword,userRole) VALUES ('admin admin','$2b$12$Eol3G1ux.SoqOse7DYwEt.aiPCqExmsaYddIuLn8HZmJlMlQS1QTi','admin')")
+        cursor.execute("INSERT INTO users (userName,userPassword,userRole) VALUES ('admin admin','"+adminPassword+"','admin')")
         conn.commit()
         cursor.execute("INSERT INTO importantValues (situationValue,valueStatus) VALUES ('App Is Locked',FALSE)")
         conn.commit()
