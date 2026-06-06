@@ -13,7 +13,12 @@ from flask_cors import CORS
 session = {}
 APP_KEY = "your_app_key"
 
-resultDB1 = db.connection.getDB(dbName="library",password="Kutuphane@Yonetim#2026!")
+if developingMode == False:
+    resultDB1 = db.connection.getDB(dbName="library",password="Kutuphane@Yonetim#2026!")
+else:
+
+    resultDB1 = db.connection.getDB(dbName="library",password="1234")
+    
 conn = resultDB1["data"]["conn"]
 cursor = resultDB1["data"]["cursor"]
 
@@ -27,32 +32,32 @@ def checkRoleAndToken(token,appToken,allowedRoles):
     result = session[token]["classes"]["auth"].verifyLock()
     
     if result["success"] != True:
-        return jsonify(result)
+        return result
     else:
 
         result = auth.verifyAppToken(appToken=appToken)
 
         if result["success"] != True:
-            return jsonify(result)
+            return result
         else:
 
             result = auth.verifyUserToken(token=token)
 
             if result["success"] != True:
-                return jsonify(result)
+                return result
             else:
 
                 if session[token]["role"] not in allowedRoles:
-                    return jsonify({
+                    return {
                         "success":False,
                         "message":"Yetkiniz yok!"
-                    })
+                    }
                 
                 else:
 
-                    return jsonify({
+                    return {
                         "success":True
-                    })
+                    }
 
 @app.route('/backend/signUp',methods=['POST'])
 def signUp():
@@ -109,15 +114,20 @@ def signIn():
                         loan = modules.loans.Loan(conn=resultDB["data"]["conn"],cursor=resultDB["data"]["cursor"])
                         user = modules.users.User(conn=resultDB["data"]["conn"],cursor=resultDB["data"]["cursor"])
                         reset = modules.reset.Reset(conn=resultDB["data"]["conn"],cursor=resultDB["data"]["cursor"])
-
-                        result3 = authUser.signIn(userName=data.get("userName",""),password=data.get("password",""))
-
-                        if result3["success"] != True:
-                            return jsonify(result3)
+                        
+                        resultLock = authUser.verifyLock()
+                        if resultLock["success"] != True:
+                            return jsonify(resultLock)
                         else:
 
-                            session[result3["token"]] = {"userName":result3["userName"],"role":result3["role"],"classes":{"auth":authUser,"book":book,"category":category,"loan":loan,"user":user,"reset":reset},"dbValues":{"conn":resultDB["data"]["conn"],"cursor":resultDB["data"]["cursor"]}}
-                            return {"success":True,"message":"Giriş yapıldı."}
+                            result3 = authUser.signIn(userName=data.get("userName",""),password=data.get("password",""))
+
+                            if result3["success"] != True:
+                                return jsonify(result3)
+                            else:
+
+                                session[result3["token"]] = {"userName":result3["userName"],"role":result3["role"],"classes":{"auth":authUser,"book":book,"category":category,"loan":loan,"user":user,"reset":reset},"dbValues":{"conn":resultDB["data"]["conn"],"cursor":resultDB["data"]["cursor"]}}
+                                return jsonify({"success":True,"message":"Giriş yapıldı."})
    
     except Exception as e:
 
