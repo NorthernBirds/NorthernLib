@@ -44,10 +44,6 @@ Environment Configuration: Modify the following files according to your infrastr
 
 backend.py (Line 16,17,20,23)
 
-config.py (Line 16)
-
-sendEMail.py (Line 23)
-
 Directory Structure: Ensure all directories excluded by .gitignore (e.g., logs/) are manually created in your local environment.
 
 Developer: Yusuf Enes Kuş
