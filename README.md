@@ -15,7 +15,7 @@ The project is structured into functional layers:
    
 modules/: Core business logic. Each module handles specific operational processes, including book tracking, member management, and categorization.
 
-utils/: Utility functions for system-wide requirements, such as logging, email communication and setup for new users
+utils/: Utility functions for system-wide requirements, such as logging, email communication and setup for new users.
 
 db/: Data access layer. Encapsulates SQL operations and manages database connections, abstracting interaction from the business logic.
 
