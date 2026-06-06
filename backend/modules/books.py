@@ -16,8 +16,11 @@ class Book:
             if bookName == "" or writer == "" or publisher ==  "" or pageCount == 0:
                 return {"success":False,"message":"Lütfen boş bırakmayın!"}
             else:
-
-                if category not in config.BOOK_CATEGORIES:
+                
+                self.cursor.execute("SELECT * FROM categories WHERE categoryName = %s",(category,))
+                result = self.cursor.fetchone()
+                
+                if result is None:
                     return {"success":False,"message":"Bu kategori mevcut değil!"}
                 else:
 
