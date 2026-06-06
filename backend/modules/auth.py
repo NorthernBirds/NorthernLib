@@ -1,6 +1,5 @@
 import config
 from utils.writeLog import writeLog,writeCriticalWarning
-from utils.sendEMail import sendEMail
 from utils.setupSQL import setup
 import bcrypt
 import secrets
@@ -155,7 +154,6 @@ class Auth:
 
             self.cursor.execute("UPDATE importantvalues SET valueStatus = %s WHERE id = 1",(True,))
             self.conn.commit()
-            sendEMail(subject="403 Forbidden at library system.",message="A user attempted to breach the system using a tool similar to Postman.")
             writeCriticalWarning(config.AUTH_LOG_PATH,"403 Forbidden","A user attempted to breach the system using a tool similar to Postman.")
 
         except Exception as e:
