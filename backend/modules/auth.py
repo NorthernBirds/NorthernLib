@@ -36,7 +36,7 @@ class Auth:
                 result = self.cursor.fetchone()
 
                 if result is not None:
-                    return {"success":False,"message":"Hatalı bu kütüphane adı zaten var!"}
+                    return {"success":False,"message":"Bu kütüphane adı zaten var!"}
                 else:
 
                     dbPassword = ""
@@ -68,7 +68,7 @@ class Auth:
                 result = self.cursor.fetchone()
 
                 if result is None:
-                    return {"success":False,"message":"Hatalı kütüphane adı!"}
+                    return {"success":False,"message":"Bu kütüphane adı bulunamadı!"}
                 else:
 
                     passwordCorrect = bcrypt.checkpw(
