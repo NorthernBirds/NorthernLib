@@ -2,19 +2,10 @@ import os
 import pymysql
 from utils.writeLog import writeLog
 import config
-import base64
-import json
 
 def getDB(dbUser,dbName,password):
 
     try:
-
-        config_json_path = os.path.join(config.BASE_DIR, "db", "config.json")
-
-        with open(config_json_path,"r") as DB_DATA:
-            data = json.load(DB_DATA)
-
-
 
         conn = pymysql.connect(host="127.0.0.1",database=dbName,user=dbUser,password=password,charset="utf8mb4")
         cursor = conn.cursor()
