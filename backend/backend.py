@@ -8,7 +8,7 @@ session = {}
 APP_KEY = "6e42022fafe7b0e4f993591cb58448a0e65ef9afb75e54e654fc0437076cce85"
 developingMode = True
 
-resultDB1 = db.connection.getDB(dbName="library",password="Kutuphane@Yonetim#2026!")
+resultDB1 = db.connection.getDB(dbName="library",password="Kutuphane@Yonetim#2026!",dbUser="admin")
 
 conn = resultDB1["data"]["conn"]
 cursor = resultDB1["data"]["cursor"]
@@ -101,7 +101,7 @@ def signIn():
                     return jsonify(result2)
                 else:
 
-                    resultDB = db.connection.getDB(dbName=data.get("dbName",""),password=data.get("dbPassword",""))
+                    resultDB = db.connection.getDB(dbName=data.get("dbName",""),password=data.get("dbPassword",""),dbUser="admin"+"_"+data.get("dbName",""))
 
                     if resultDB["success"] != True:
                         return jsonify(resultDB)
@@ -126,7 +126,7 @@ def signIn():
                             else:
 
                                 session[result3["token"]] = {"userName":result3["userName"],"role":result3["role"],"classes":{"auth":authUser,"book":book,"category":category,"loan":loan,"user":user,"reset":reset},"dbValues":{"conn":resultDB["data"]["conn"],"cursor":resultDB["data"]["cursor"]}}
-                                return jsonify({"success":True,"message":"Giriş yapıldı."})
+                                return jsonify(result3)
    
     except Exception as e:
 

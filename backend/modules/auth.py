@@ -45,7 +45,7 @@ class Auth:
                         dbPassword = dbPassword + str(random.randint(0,9)) + str(random.choice(letters))
                         adminPassword = adminPassword + str(random.randint(0,9)) + str(random.choice(letters))
                     
-                    setup(name=dbName,password=bcrypt.hashpw(dbPassword.encode(),bcrypt.gensalt()).decode("utf-8"),conn=self.conn,cursor=self.cursor,adminPassword=bcrypt.hashpw(adminPassword.encode(),bcrypt.gensalt()).decode("utf-8"))
+                    setup(name=dbName,password=dbPassword,conn=self.conn,cursor=self.cursor,adminPassword=adminPassword)
                     return {"success":True,"message":"Kayıt olundu.","data":{"dbPassword":dbPassword,"adminPassword":adminPassword}}
         
         

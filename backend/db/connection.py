@@ -5,7 +5,7 @@ import config
 import base64
 import json
 
-def getDB(dbName,password):
+def getDB(dbUser,dbName,password):
 
     try:
 
@@ -14,10 +14,9 @@ def getDB(dbName,password):
         with open(config_json_path,"r") as DB_DATA:
             data = json.load(DB_DATA)
 
-        db_host = base64.b64decode(data["DB_HOST"]).decode("utf-8")
-        db_user = base64.b64decode(data["DB_USER"]).decode("utf-8")
 
-        conn = pymysql.connect(host=db_host,database=dbName,user=db_user,password=password,charset="utf8mb4")
+
+        conn = pymysql.connect(host="127.0.0.1",database=dbName,user=dbUser,password=password,charset="utf8mb4")
         cursor = conn.cursor()
         cursor.execute("SET SQL_SAFE_UPDATES = 0")
         conn.commit()
