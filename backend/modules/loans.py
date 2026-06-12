@@ -1,5 +1,5 @@
-from backend.utils.writeLog import writeLog
-import backend.config
+from utils.writeLog import writeLog
+import config
 from datetime import datetime
 
 class Loan:
@@ -36,7 +36,7 @@ class Loan:
         
         except Exception as e:
 
-            writeLog(backend.config.LOANS_LOG_PATH,type(e).__name__,str(e))
+            writeLog(config.LOANS_LOG_PATH,type(e).__name__,str(e))
             return {"success":False,"message":"Bir hata oluştu!"}
     
 
@@ -67,7 +67,7 @@ class Loan:
         
         except Exception as e:
 
-            writeLog(backend.config.LOANS_LOG_PATH,type(e).__name__,str(e))
+            writeLog(config.LOANS_LOG_PATH,type(e).__name__,str(e))
             return {"success":False,"message":"Bir hata oluştu!"}
     
     def listLoans(self,filterValue,filterType,isWithFilter):
@@ -159,7 +159,7 @@ class Loan:
 
         except Exception as e:
             
-            writeLog(backend.config.LOANS_LOG_PATH,type(e).__name__,str(e))
+            writeLog(config.LOANS_LOG_PATH,type(e).__name__,str(e))
             return {"success":False,"message":"Bir hata oluştu!"}
 
 

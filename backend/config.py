@@ -18,3 +18,6 @@ CONFIG_JSON_PATH_FOR_SENDEMAIL = os.path.join(BASE_DIR,"db", "config.json")
 
 CERTIFICATE_FILE = os.path.join(BASE_DIR,"cert.pem")
 KEY_FILE = os.path.join(BASE_DIR,"cert.key")
+
+session = {}
+APP_KEY = "6e42022fafe7b0e4f993591cb58448a0e65ef9afb75e54e654fc0437076cce85"

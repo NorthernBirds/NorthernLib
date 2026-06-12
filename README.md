@@ -42,7 +42,8 @@ License Compliance: Usage must strictly adhere to the defined license terms.
 
 Environment Configuration: Modify the following files according to your infrastructure requirements:
 
-backend.py (Line 16,17,20,23)
+backend.py (Line 11)
+config.py (Line 21)
 
 Directory Structure: Ensure all directories excluded by .gitignore (e.g., logs/) are manually created in your local environment.
 

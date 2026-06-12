@@ -1,26 +1,25 @@
 import db.connection
+from flask import Flask, request, jsonify
+from flask_cors import CORS
+import os
+import ssl
+
+session = {}
+APP_KEY = "6e42022fafe7b0e4f993591cb58448a0e65ef9afb75e54e654fc0437076cce85"
+developingMode = True
+
+resultDB1 = db.connection.getDB(dbName="library",password="Kutuphane@Yonetim#2026!")
+
+conn = resultDB1["data"]["conn"]
+cursor = resultDB1["data"]["cursor"]
+
 import modules.auth
 import modules.books
 import modules.categories
 import modules.loans
 import modules.reset
 import modules.users
-import config
 from utils.writeLog import writeLog
-from flask import Flask, request, jsonify
-from flask_cors import CORS
-
-session = {}
-APP_KEY = "your_app_key"
-
-if developingMode == False:
-    resultDB1 = db.connection.getDB(dbName="library",password="Kutuphane@Yonetim#2026!")
-else:
-
-    resultDB1 = db.connection.getDB(dbName="library",password="1234")
-    
-conn = resultDB1["data"]["conn"]
-cursor = resultDB1["data"]["cursor"]
 
 auth = modules.auth.Auth(conn=conn,cursor=cursor)
 

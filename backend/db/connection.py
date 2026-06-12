@@ -1,6 +1,7 @@
+import os
 import pymysql
-from backend.utils.writeLog import writeLog
-import backend.config
+from utils.writeLog import writeLog
+import config
 import base64
 import json
 
@@ -8,7 +9,9 @@ def getDB(dbName,password):
 
     try:
 
-        with open("config.json","r") as DB_DATA:
+        config_json_path = os.path.join(config.BASE_DIR, "db", "config.json")
+
+        with open(config_json_path,"r") as DB_DATA:
             data = json.load(DB_DATA)
 
         db_host = base64.b64decode(data["DB_HOST"]).decode("utf-8")
@@ -22,7 +25,7 @@ def getDB(dbName,password):
     
     except Exception as e:
 
-        writeLog(backend.config.CONNECTION_LOG_PATH,type(e).__name__,str(e))
+        writeLog(config.CONNECTION_LOG_PATH,type(e).__name__,str(e))
         return {"success":False,"message":"Bir hata oluştu!"}
 
 
@@ -35,5 +38,5 @@ def closeConnection(conn):
     
     except Exception as e:
 
-        writeLog(backend.config.CONNECTION_LOG_PATH,type(e).__name__,str(e))
+        writeLog(config.CONNECTION_LOG_PATH,type(e).__name__,str(e))
         return {"success":False,"message":"Bir hata oluştu!"}

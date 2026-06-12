@@ -1,5 +1,5 @@
-import backend.config
-from backend.utils.writeLog import writeLog
+import config
+from utils.writeLog import writeLog
 
 class Reset:
 
@@ -48,7 +48,7 @@ def reset(self,books,categories,loans,users):
     
     except Exception as e:
 
-        writeLog(backend.config.RESET_LOG_PATH,type(e).__name__,str(e))
+        writeLog(config.RESET_LOG_PATH,type(e).__name__,str(e))
         return {"success":False,"message":"Bir hata oluştu!"}
 
         
