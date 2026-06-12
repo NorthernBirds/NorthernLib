@@ -121,7 +121,7 @@ class Loan:
                                     if filterValue.lower() in parsed_name:
                                         add(rV=r)
                                 
-            elif isWithFilter == True:
+            elif isWithFilter == False:
 
                 self.cursor.execute("SELECT * FROM loans")
                 result2 = self.cursor.fetchall()

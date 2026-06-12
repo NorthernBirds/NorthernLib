@@ -175,12 +175,13 @@ class Auth:
             writeLog(config.AUTH_LOG_PATH,type(e).__name__,str(e))
             return {"success":False,"message":"Bir hata oluştu!"}
 
-    def verifyAppToken(self,appToken):
+    def verifyAppToken(self,appToken,withLock):
 
         try:
 
             if appToken != config.APP_KEY:
-                self.lockTheApp()
+                if withLock == True:
+                    self.lockTheApp()
                 return {"success":False,"message":"403 Forbidden!"}
             else:
                 return {"success":True}

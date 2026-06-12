@@ -65,7 +65,7 @@ def signUp():
 
         data = request.get_json()
 
-        result = auth.verifyAppToken(appToken=data.get("appToken",""))
+        result = auth.verifyAppToken(appToken=data.get("appToken",""),withLock=False)
 
         if result["success"] != True:
             return jsonify(result)
@@ -89,7 +89,7 @@ def signIn():
 
             data = request.get_json()
 
-            result = auth.verifyAppToken(appToken=data.get("appToken",""))
+            result = auth.verifyAppToken(appToken=data.get("appToken",""),withLock=False)
 
             if result["success"] != True:
                 return jsonify(result)

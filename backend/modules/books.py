@@ -137,7 +137,7 @@ class Book:
                                     if filterValue.lower() in parsed_name:
                                         add(rV=r)
             
-            elif isWithFilter == True:
+            elif isWithFilter == False:
 
                 self.cursor.execute("SELECT * FROM books")
                 result2 = self.cursor.fetchall()
