@@ -1,5 +1,5 @@
-import config
-from utils.writeLog import writeLog
+import backend.config
+from backend.utils.writeLog import writeLog
 
 class Category:
 
@@ -13,7 +13,7 @@ class Category:
 
         try:
                 
-            if categoryName not in config.BOOK_CATEGORIES:
+            if categoryName not in backend.config.BOOK_CATEGORIES:
                 return {"success":False,"message":"Bu kategori mevcut değil!"}
             else:
 
@@ -39,7 +39,7 @@ class Category:
                 
         except Exception as e:
 
-            writeLog(config.CATEGORIES_LOG_PATH,type(e).__name__,str(e))
+            writeLog(backend.config.CATEGORIES_LOG_PATH,type(e).__name__,str(e))
             return {"success":False,"message":"Bir hata oluştu!"}
     
 
@@ -65,7 +65,7 @@ class Category:
 
         except Exception as e:
 
-            writeLog(config.CATEGORIES_LOG_PATH,type(e).__name__,str(e))
+            writeLog(backend.config.CATEGORIES_LOG_PATH,type(e).__name__,str(e))
             return {"success":False,"message":"Bir hata oluştu!"}
     
 
@@ -142,5 +142,5 @@ class Category:
 
         except Exception as e:
             
-            writeLog(config.CATEGORIES_LOG_PATH,type(e).__name__,str(e))
+            writeLog(backend.config.CATEGORIES_LOG_PATH,type(e).__name__,str(e))
             return {"success":False,"message":"Bir hata oluştu!"}

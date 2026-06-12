@@ -1,9 +1,9 @@
-import config
-from utils.writeLog import writeLog,writeCriticalWarning
-from utils.setupSQL import setup
+import backend.config
+from backend.utils.writeLog import writeLog,writeCriticalWarning
+from backend.utils.setupSQL import setup
 import bcrypt
 import secrets
-from backend import session,APP_KEY
+from backend.backend import session,APP_KEY
 import random
 
 class Auth:
@@ -52,7 +52,7 @@ class Auth:
         
         except Exception as e:
 
-            writeLog(config.AUTH_LOG_PATH,type(e).__name__,str(e))
+            writeLog(backend.config.AUTH_LOG_PATH,type(e).__name__,str(e))
             return {"success":False,"message":"Bir hata oluştu!"}
             
 
@@ -84,7 +84,7 @@ class Auth:
         
         except Exception as e:
 
-            writeLog(config.AUTH_LOG_PATH,type(e).__name__,str(e))
+            writeLog(backend.config.AUTH_LOG_PATH,type(e).__name__,str(e))
             return {"success":False,"message":"Bir hata oluştu!"}
 
 
@@ -128,7 +128,7 @@ class Auth:
 
         except Exception as e:
 
-            writeLog(config.AUTH_LOG_PATH,type(e).__name__,str(e))
+            writeLog(backend.config.AUTH_LOG_PATH,type(e).__name__,str(e))
             return {"success":False,"message":"Bir hata oluştu!"}
         
     
@@ -145,7 +145,7 @@ class Auth:
         
         except Exception as e:
 
-            writeLog(config.AUTH_LOG_PATH,type(e).__name__,str(e))
+            writeLog(backend.config.AUTH_LOG_PATH,type(e).__name__,str(e))
             return {"success":False,"message":"Bir hata oluştu!"}
     
     def lockTheApp(self):
@@ -154,11 +154,11 @@ class Auth:
 
             self.cursor.execute("UPDATE importantvalues SET valueStatus = %s WHERE id = 1",(True,))
             self.conn.commit()
-            writeCriticalWarning(config.AUTH_LOG_PATH,"403 Forbidden","A user attempted to breach the system using a tool similar to Postman.")
+            writeCriticalWarning(backend.config.AUTH_LOG_PATH,"403 Forbidden","A user attempted to breach the system using a tool similar to Postman.")
 
         except Exception as e:
 
-            writeLog(config.AUTH_LOG_PATH,type(e).__name__,str(e))
+            writeLog(backend.config.AUTH_LOG_PATH,type(e).__name__,str(e))
             return {"success":False,"message":"Bir hata oluştu!"}
 
     def verifyUserToken(self,token):
@@ -173,7 +173,7 @@ class Auth:
 
         except Exception as e:
 
-            writeLog(config.AUTH_LOG_PATH,type(e).__name__,str(e))
+            writeLog(backend.config.AUTH_LOG_PATH,type(e).__name__,str(e))
             return {"success":False,"message":"Bir hata oluştu!"}
 
     def verifyAppToken(self,appToken):
@@ -188,7 +188,7 @@ class Auth:
         
         except Exception as e:
 
-            writeLog(config.AUTH_LOG_PATH,type(e).__name__,str(e))
+            writeLog(backend.config.AUTH_LOG_PATH,type(e).__name__,str(e))
             return {"success":False,"message":"Bir hata oluştu!"}
     
     def verifyLock(self):
@@ -205,7 +205,7 @@ class Auth:
         
         except Exception as e:
 
-            writeLog(config.AUTH_LOG_PATH,type(e).__name__,str(e))
+            writeLog(backend.config.AUTH_LOG_PATH,type(e).__name__,str(e))
             return {"success":False,"message":"Bir hata oluştu!"}
 
 

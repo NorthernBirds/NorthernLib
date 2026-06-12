@@ -1,6 +1,6 @@
 import pymysql
-from utils.writeLog import writeLog
-import config
+from backend.utils.writeLog import writeLog
+import backend.config
 import base64
 import json
 
@@ -22,7 +22,7 @@ def getDB(dbName,password):
     
     except Exception as e:
 
-        writeLog(config.CONNECTION_LOG_PATH,type(e).__name__,str(e))
+        writeLog(backend.config.CONNECTION_LOG_PATH,type(e).__name__,str(e))
         return {"success":False,"message":"Bir hata oluştu!"}
 
 
@@ -35,5 +35,5 @@ def closeConnection(conn):
     
     except Exception as e:
 
-        writeLog(config.CONNECTION_LOG_PATH,type(e).__name__,str(e))
+        writeLog(backend.config.CONNECTION_LOG_PATH,type(e).__name__,str(e))
         return {"success":False,"message":"Bir hata oluştu!"}

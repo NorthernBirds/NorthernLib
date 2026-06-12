@@ -1,6 +1,6 @@
 import bcrypt
-from utils.writeLog import writeLog
-import config
+from backend.utils.writeLog import writeLog
+import backend.config
 
 
 class User:
@@ -51,7 +51,7 @@ class User:
             
         except Exception as e:
 
-            writeLog(config.USERS_LOG_PATH,type(e).__name__,str(e))
+            writeLog(backend.config.USERS_LOG_PATH,type(e).__name__,str(e))
             return {"success": False, "message": "Bir hata oluştu!"}
     
 
@@ -78,7 +78,7 @@ class User:
             
         except Exception as e:
 
-            writeLog(config.USERS_LOG_PATH,type(e).__name__,str(e))
+            writeLog(backend.config.USERS_LOG_PATH,type(e).__name__,str(e))
             return {"success": False, "message": "Bir hata oluştu!"}
     
 
@@ -116,7 +116,7 @@ class User:
                             
         except Exception as e:
 
-            writeLog(config.USERS_LOG_PATH,type(e).__name__,str(e))
+            writeLog(backend.config.USERS_LOG_PATH,type(e).__name__,str(e))
             return {"success": False, "message": "Bir hata oluştu!"}
     
 
@@ -194,5 +194,5 @@ class User:
 
         except Exception as e:
             
-            writeLog(config.USERS_LOG_PATH,type(e).__name__,str(e))
+            writeLog(backend.config.USERS_LOG_PATH,type(e).__name__,str(e))
             return {"success":False,"message":"Bir hata oluştu!"}

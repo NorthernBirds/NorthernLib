@@ -1,5 +1,5 @@
 from writeLog import writeLog
-import config
+import backend.config
 
 def setup(name,password,conn,cursor,adminPassword):
 
@@ -37,5 +37,5 @@ def setup(name,password,conn,cursor,adminPassword):
     
     except Exception as e:
 
-        writeLog(config.SETUPSQL_LOG_PATH,type(e).__name__,str(e))
+        writeLog(backend.config.SETUPSQL_LOG_PATH,type(e).__name__,str(e))
         return {"success":False,"message":"Bir hata oluştu!"}
