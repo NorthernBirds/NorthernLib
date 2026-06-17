@@ -138,8 +138,9 @@ class User:
                     return {"success":False,"message":"Lütfen boş bırakmayın!"}
                 else:
 
-                    if len(filterValue.strip()) < 2:
-                        return {"success":False,"message":"Arama en az 2 karakter olmalıdır!"}
+                    if filterType != "id":
+                        if len(filterValue.strip()) < 2:
+                            return {"success":False,"message":"Arama en az 2 karakter olmalıdır!"}
 
                     self.cursor.execute("SELECT * FROM users")
                     result = self.cursor.fetchall()
@@ -159,8 +160,12 @@ class User:
 
                                     parsed_name = str(r[i]).lower()
 
-                                    if filterValue.lower() in parsed_name:
-                                        add(rV=r)
+                                    if filterType == "id":
+                                        if str(filterValue).lower() == parsed_name:
+                                            add(rV=r)
+                                    else:
+                                        if filterValue.lower() in parsed_name:
+                                            add(rV=r)
             
             elif isWithFilter == False:
 

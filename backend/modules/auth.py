@@ -195,6 +195,7 @@ class Auth:
 
         try:
 
+            self.conn.commit()
             self.cursor.execute("SELECT * FROM importantvalues WHERE id = 1")
             result = self.cursor.fetchone()
             if bool(result[2]) == True:

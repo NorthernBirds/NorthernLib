@@ -87,8 +87,9 @@ class Category:
                     return {"success":False,"message":"Lütfen boş bırakmayın!"}
                 else:
 
-                    if len(filterValue.strip()) < 2:
-                        return {"success":False,"message":"Arama en az 2 karakter olmalıdır!"}
+                    if filterType != "id":
+                        if len(filterValue.strip()) < 2:
+                            return {"success":False,"message":"Arama en az 2 karakter olmalıdır!"}
 
                     self.cursor.execute("SELECT * FROM categories")
                     result = self.cursor.fetchall()
@@ -101,15 +102,18 @@ class Category:
 
                                 for i,j in zip(
                                     range(0,3),
-                                    ["id","categoryName","whoAddeds"]
+                                    ["id","categoryName","whoAdded"]
                                 ):
 
                                     if filterType == j:
 
                                         parsed_name = str(r[i]).lower()
-
-                                        if filterValue.lower() in parsed_name:
-                                            add(rV=r)
+                                        if filterType == "id":
+                                            if str(filterValue).lower() == parsed_name:
+                                                add(rV=r)
+                                        else:
+                                            if filterValue.lower() in parsed_name:
+                                                add(rV=r)
             
             elif isWithFilter == False:
 

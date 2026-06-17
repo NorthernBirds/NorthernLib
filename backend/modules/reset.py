@@ -7,49 +7,49 @@ class Reset:
         self.conn = conn
         self.cursor = cursor
 
-def reset(self,books,categories,loans,users):
+    def reset(self,books,categories,loans,users):
 
-    try:
+        try:
 
-        if books == True:
-            self.cursor.execute("TRUNCATE TABLE books")
-            self.conn.commit()
-        elif books == False:
-            pass
-        else:
-            return {"success":False,"message":"Lütfen boş bırakmayın!"}
-        
-        if categories == True:
-            self.cursor.execute("TRUNCATE TABLE categories")
-            self.conn.commit()
-        elif categories == False:
-            pass
-        else:
-            return {"success":False,"message":"Lütfen boş bırakmayın!"}
-        
-        if loans == True:
-            self.cursor.execute("TRUNCATE TABLE loans")
-            self.conn.commit()
-        elif loans == False:
-            pass
-        else:
-            return {"success":False,"message":"Lütfen boş bırakmayın!"}
-        
-        if users == True:
-            self.cursor.execute("DELETE FROM users WHERE userRole = 'student_staff' OR userRole = 'teacher'")
-            self.conn.commit()
-        elif users == False:
-            pass
-        else:
-            return {"success":False,"message":"Lütfen boş bırakmayın!"}
-        
+            if books == True:
+                self.cursor.execute("TRUNCATE TABLE books")
+                self.conn.commit()
+            elif books == False:
+                pass
+            else:
+                return {"success":False,"message":"Lütfen boş bırakmayın!"}
+            
+            if categories == True:
+                self.cursor.execute("TRUNCATE TABLE categories")
+                self.conn.commit()
+            elif categories == False:
+                pass
+            else:
+                return {"success":False,"message":"Lütfen boş bırakmayın!"}
+            
+            if loans == True:
+                self.cursor.execute("TRUNCATE TABLE loans")
+                self.conn.commit()
+            elif loans == False:
+                pass
+            else:
+                return {"success":False,"message":"Lütfen boş bırakmayın!"}
+            
+            if users == True:
+                self.cursor.execute("DELETE FROM users WHERE userRole = 'student_staff' OR userRole = 'teacher'")
+                self.conn.commit()
+            elif users == False:
+                pass
+            else:
+                return {"success":False,"message":"Lütfen boş bırakmayın!"}
+            
 
-        return {"success":True,"message":"Sıfırlandı."}
-    
-    except Exception as e:
+            return {"success":True,"message":"Sıfırlandı."}
+        
+        except Exception as e:
 
-        writeLog(config.RESET_LOG_PATH,type(e).__name__,str(e))
-        return {"success":False,"message":"Bir hata oluştu!"}
+            writeLog(config.RESET_LOG_PATH,type(e).__name__,str(e))
+            return {"success":False,"message":"Bir hata oluştu!"}
 
         
         

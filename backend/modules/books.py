@@ -47,7 +47,7 @@ class Book:
                                     else:
 
                                         self.cursor.execute(
-                                            "INSERT INTO books (bookName,writer,categoryName,publisher,pageCount,whoAdded) VALUES (%s,%s,%s,%s,%s,%s)",
+                                            "INSERT INTO books (bookName,writer,category,publisher,pageCount,whoAdded) VALUES (%s,%s,%s,%s,%s,%s)",
                                             (bookName,writer,category,publisher,pageCount,activeUserName)
                                         )
 
@@ -113,8 +113,9 @@ class Book:
                     return {"success":False,"message":"Lütfen boş bırakmayın!"}
                 else:
 
-                    if len(filterValue.strip()) < 2:
-                        return {"success":False,"message":"Arama en az 2 karakter olmalıdır!"}
+                    if filterType != "pageCount" and filterType != "id":
+                        if len(filterValue.strip()) < 2:
+                            return {"success":False,"message":"Arama en az 2 karakter olmalıdır!"}
 
                     self.cursor.execute("SELECT * FROM books")
                     result = self.cursor.fetchall()
@@ -127,15 +128,18 @@ class Book:
                             
                             for i,j in zip(
                                 range(0,8),
-                                ["id","name","writer","category","publisher","pageCounts","isTakens","whoAddeds"]
+                                ["id","name","writer","category","publisher","pageCount","isTaken","whoAdded"]
                             ):
 
                                 if filterType == j:
 
                                     parsed_name = str(r[i]).lower()
-
-                                    if filterValue.lower() in parsed_name:
-                                        add(rV=r)
+                                    if filterType == "pageCount" and filterType == "id":
+                                        if filterValue.lower() in parsed_name:
+                                            add(rV=r)
+                                    else:
+                                        if str(filterValue).lower() == parsed_name:
+                                            add(rV=r)
             
             elif isWithFilter == False:
 

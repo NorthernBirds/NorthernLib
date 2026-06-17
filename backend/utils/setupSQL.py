@@ -9,7 +9,7 @@ def setup(name, password, conn, cursor, adminPassword):
         cursor.execute("INSERT INTO libraries (libName,libPassword) VALUES (%s,%s)", (name, hashed_db_pass))
         conn.commit()
         
-        cursor.execute("CREATE DATABASE IF NOT EXISTS " + name)
+        cursor.execute("CREATE SCHEMA " + name + " DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_turkish_ci ;")
         conn.commit()
         
         cursor.execute("USE " + name)

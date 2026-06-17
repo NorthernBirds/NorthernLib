@@ -1,4 +1,3 @@
-import os
 import pymysql
 from utils.writeLog import writeLog
 import config
