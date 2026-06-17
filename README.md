@@ -42,7 +42,7 @@ License Compliance: Usage must strictly adhere to the defined license terms.
 
 Environment Configuration: Modify the following files according to your infrastructure requirements:
 
-backend.py (Line 11)
+backend.py (Line 10)
 
 config.py (Line 21)
 
