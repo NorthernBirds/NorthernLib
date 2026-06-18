@@ -18,6 +18,7 @@ import modules.categories
 import modules.loans
 import modules.reset
 import modules.users
+import modules.leaders
 from utils.writeLog import writeLog
 
 auth = modules.auth.Auth(conn=conn,cursor=cursor)
@@ -112,6 +113,7 @@ def signIn():
                         loan = modules.loans.Loan(conn=resultDB["data"]["conn"],cursor=resultDB["data"]["cursor"])
                         user = modules.users.User(conn=resultDB["data"]["conn"],cursor=resultDB["data"]["cursor"])
                         reset = modules.reset.Reset(conn=resultDB["data"]["conn"],cursor=resultDB["data"]["cursor"])
+                        leader = modules.leaders.Leader(conn=resultDB["data"]["conn"],cursor=resultDB["data"]["cursor"])
                         
                         resultLock = authUser.verifyLock()
                         if resultLock["success"] != True:
@@ -124,7 +126,7 @@ def signIn():
                                 return jsonify(result3)
                             else:
 
-                                config.session[result3["token"]] = {"userName":result3["userName"],"role":result3["role"],"classes":{"auth":authUser,"book":book,"category":category,"loan":loan,"user":user,"reset":reset},"dbValues":{"conn":resultDB["data"]["conn"],"cursor":resultDB["data"]["cursor"]}}
+                                config.session[result3["token"]] = {"userName":result3["userName"],"role":result3["role"],"classes":{"auth":authUser,"book":book,"category":category,"loan":loan,"user":user,"reset":reset,"leader":leader},"dbValues":{"conn":resultDB["data"]["conn"],"cursor":resultDB["data"]["cursor"]}}
 
                                 return jsonify(result3)
    
@@ -344,6 +346,30 @@ def listLoans():
             return jsonify(result)
         else:
             return jsonify(config.session[data.get("token")]["classes"]["loan"].listLoans(filterType=data.get("filterType",""), filterValue=data.get("filterValue",""), isWithFilter=data.get("isWithFilter","")))
+
+    except Exception as e:
+
+        writeLog(config.BACKEND_LOG_PATH,type(e).__name__,str(e))
+
+        return jsonify({
+            "success":False,
+            "message":"Bir hata oluştu!"
+        })
+    
+
+@app.route('/backend/listLeaders',methods=['POST'])
+def listLeaders():
+    
+    try:
+
+        data = request.get_json()
+
+        result = checkRoleAndToken(token=data.get("token",""),appToken=data.get("appToken",""), allowedRoles=["admin","teacher"])
+
+        if result["success"] != True:
+            return jsonify(result)
+        else:
+            return jsonify(config.session[data.get("token")]["classes"]["leader"].listLeaders())
 
     except Exception as e:
 
