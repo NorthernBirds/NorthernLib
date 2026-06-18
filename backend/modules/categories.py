@@ -69,7 +69,7 @@ class Category:
             return {"success":False,"message":"Bir hata oluştu!"}
     
 
-    def listCategories(self,filterValue,filterType,isWithFilter):
+    def listCategories(self,filterValue,filterType,isWithFilter,pageNumber):
 
         try:
 
@@ -91,7 +91,7 @@ class Category:
                         if len(filterValue.strip()) < 2:
                             return {"success":False,"message":"Arama en az 2 karakter olmalıdır!"}
 
-                    self.cursor.execute("SELECT * FROM categories")
+                    self.cursor.execute("SELECT * FROM categories LIMIT %s OFFSET %s", (20, (pageNumber - 1) * 20))
                     result = self.cursor.fetchall()
 
                     if not result:
@@ -117,7 +117,7 @@ class Category:
             
             elif isWithFilter == False:
 
-                self.cursor.execute("SELECT * FROM categories")
+                self.cursor.execute("SELECT * FROM categories LIMIT %s OFFSET %s", (20, (pageNumber - 1) * 20))
                 result2 = self.cursor.fetchall()
                 if not result2:
                     pass

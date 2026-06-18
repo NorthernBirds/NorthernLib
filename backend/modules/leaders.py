@@ -7,28 +7,24 @@ class Leader:
         self.conn = conn
         self.cursor = cursor
 
-    def listLeaders(self,limit):
+    def listLeaders(self,pageNumber):
 
         try:
 
-            if limit == 0:
-                return {"success":False,"message":"Lütfen boş bırakmayın!"}
+            self.cursor.execute("SELECT studentID, COUNT(*) AS readBooks FROM loans WHERE status = 'returned' GROUP BY studentID ORDER BY readBooks DESC LIMIT %s OFFSET %s;", (10, (pageNumber - 1) * 10))
+            result = self.cursor.fetchall()
+                
+            if result:
+                studentIDs,readBooks = [],[]
+                for r in result:
+                    studentIDs.append(r[0])
+                    readBooks.append(r[1])
+                
+                return {"success":True,"data":{"studentIDs":studentIDs,"readBooks":readBooks}}
+
             else:
 
-                self.cursor.execute("SELECT studentID, COUNT(*) AS readBooks FROM loans WHERE status = 'returned' GROUP BY studentID ORDER BY readBooks DESC LIMIT %s;", (limit,))
-                result = self.cursor.fetchall()
-                
-                if result:
-                    studentIDs,readBooks = [],[]
-                    for r in result:
-                        studentIDs.append(r[0])
-                        readBooks.append(r[1])
-                
-                    return {"success":True,"data":{"studentIDs":studentIDs,"readBooks":readBooks}}
-
-                else:
-
-                    return {"success":False,"message":"Sonuç bulunamadı!"}
+                return {"success":False,"message":"Sonuç bulunamadı!"}
             
         except Exception as e:
 

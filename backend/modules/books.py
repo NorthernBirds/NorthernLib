@@ -87,7 +87,7 @@ class Book:
             return {"success":False,"message":"Bir hata oluştu!"}
     
 
-    def listBooks(self,filterValue,filterType,isWithFilter):
+    def listBooks(self,filterValue,filterType,isWithFilter,pageNumber):
 
         try:
 
@@ -116,8 +116,8 @@ class Book:
                     if filterType != "pageCount" and filterType != "id":
                         if len(filterValue.strip()) < 2:
                             return {"success":False,"message":"Arama en az 2 karakter olmalıdır!"}
-
-                    self.cursor.execute("SELECT * FROM books")
+                    
+                    self.cursor.execute("SELECT * FROM books LIMIT %s OFFSET %s", (20, (pageNumber - 1) * 20))
                     result = self.cursor.fetchall()
 
                     if not result:
@@ -143,7 +143,7 @@ class Book:
             
             elif isWithFilter == False:
 
-                self.cursor.execute("SELECT * FROM books")
+                self.cursor.execute("SELECT * FROM books LIMIT %s OFFSET %s", (20, (pageNumber - 1) * 20))
                 result2 = self.cursor.fetchall()
 
                 if not result2:

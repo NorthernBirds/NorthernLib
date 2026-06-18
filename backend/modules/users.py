@@ -120,7 +120,7 @@ class User:
             return {"success": False, "message": "Bir hata oluştu!"}
     
 
-    def listUsers(self,filterValue,filterType,isWithFilter):
+    def listUsers(self,filterValue,filterType,isWithFilter,pageNumber):
 
         try:
 
@@ -142,7 +142,7 @@ class User:
                         if len(filterValue.strip()) < 2:
                             return {"success":False,"message":"Arama en az 2 karakter olmalıdır!"}
 
-                    self.cursor.execute("SELECT * FROM users")
+                    self.cursor.execute("SELECT * FROM users LIMIT %s OFFSET %s", (20, (pageNumber - 1) * 20))
                     result = self.cursor.fetchall()
 
                     if not result:
@@ -169,7 +169,7 @@ class User:
             
             elif isWithFilter == False:
 
-                self.cursor.execute("SELECT * FROM users")
+                self.cursor.execute("SELECT * FROM users LIMIT %s OFFSET %s", (20, (pageNumber - 1) * 20))
                 result2 = self.cursor.fetchall()
 
                 if not result2:

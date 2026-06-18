@@ -71,7 +71,7 @@ class Loan:
             return {"success":False,"message":"Bir hata oluştu!"}
     
 
-def listLoans(self,filterValue,filterType,isWithFilter):
+def listLoans(self,filterValue,filterType,isWithFilter,pageNumber):
 
     try:
 
@@ -106,7 +106,7 @@ def listLoans(self,filterValue,filterType,isWithFilter):
                     if len(filterValue.strip()) < 2:
                         return {"success":False,"message":"Arama en az 2 karakter olmalıdır!"}
 
-                self.cursor.execute("SELECT * FROM loans")
+                self.cursor.execute("SELECT * FROM loans LIMIT %s OFFSET %s", (20, (pageNumber - 1) * 20))
                 result = self.cursor.fetchall()
 
                 if not result:
@@ -134,7 +134,7 @@ def listLoans(self,filterValue,filterType,isWithFilter):
                             
         elif isWithFilter == False:
 
-            self.cursor.execute("SELECT * FROM loans")
+            self.cursor.execute("SELECT * FROM loans LIMIT %s OFFSET %s", (20, (pageNumber - 1) * 20))
             result2 = self.cursor.fetchall()
 
             if not result2:
