@@ -71,88 +71,94 @@ class Loan:
             return {"success":False,"message":"Bir hata oluştu!"}
     
 
-def listLoans(self,filterValue,filterType,isWithFilter,pageNumber):
+    def listLoans(self,filterValue,filterType,isWithFilter,pageNumber,limit):
 
-    try:
+        try:
 
-        sendData = True
-        IDs,studentIDs,bookNames,borrowDates,returnDates,returnedAts,statuses,whoAddeds = [],[],[],[],[],[],[],[]
+            IDs,studentIDs,bookNames,borrowDates,returnDates,returnedAts,statuses,whoAddeds = [],[],[],[],[],[],[],[]
+            self.cursor.execute("SELECT COUNT(*) FROM loans")
+            totalLoans = self.cursor.fetchone()[0]
+            if totalLoans is not None:
+                pageCount = totalLoans // limit
+                if totalLoans % limit != 0:
+                    pageCount += 1
+                offset = ((pageNumber - 1) * limit) + 1
 
-        def add(rV):
-            IDs.append(rV[0])
-            studentIDs.append(rV[1])
+            def add(rV):
+                IDs.append(rV[0])
+                studentIDs.append(rV[1])
 
-            self.cursor.execute("SELECT bookName FROM books WHERE id = %s",(rV[2],))
-            result = self.cursor.fetchone()
-            
-            if result:
-                bookNames.append(result[1])
-            else:
-                bookNames.append("Bilinmeyen Kitap")
+                self.cursor.execute("SELECT bookName FROM books WHERE id = %s",(rV[2],))
+                result = self.cursor.fetchone()
+                
+                if result:
+                    bookNames.append(result[1])
+                else:
+                    bookNames.append("Bilinmeyen Kitap")
 
-            borrowDates.append(rV[3])
-            returnDates.append(rV[4])
-            returnedAts.append(rV[5])
-            statuses.append(rV[6])
-            whoAddeds.append(rV[7])
+                borrowDates.append(rV[3])
+                returnDates.append(rV[4])
+                returnedAts.append(rV[5])
+                statuses.append(rV[6])
+                whoAddeds.append(rV[7])
 
-        if isWithFilter == True:
+            if isWithFilter == True:
 
-            if filterValue == "" or filterType == "":
-                return {"success":False,"message":"Lütfen boş bırakmayın!"}
-            else:
+                if filterValue == "" or filterType == "":
+                    return {"success":False,"message":"Lütfen boş bırakmayın!"}
+                else:
 
-                if filterType != "id" and filterType != "studentID" and filterType != "bookID":
-                    if len(filterValue.strip()) < 2:
-                        return {"success":False,"message":"Arama en az 2 karakter olmalıdır!"}
+                    if filterType != "id" and filterType != "studentID" and filterType != "bookID":
+                        if len(filterValue.strip()) < 2:
+                            return {"success":False,"message":"Arama en az 2 karakter olmalıdır!"}
 
-                self.cursor.execute("SELECT * FROM loans LIMIT %s OFFSET %s", (20, (pageNumber - 1) * 20))
-                result = self.cursor.fetchall()
+                    self.cursor.execute("SELECT * FROM loans LIMIT %s OFFSET %s", (limit, offset))
+                    result = self.cursor.fetchall()
 
-                if not result:
+                    if not result:
+                        pass
+                    else:
+                        
+                        for r in result:
+
+                            for i,j in zip(
+                                range(0,8),
+                                ["id","studentID","bookID","borrowDate","returnDate","returnedAt","status","whoAdded"]
+                            ):
+
+                                if filterType == j:
+
+                                    parsed_name = str(r[i]).lower()
+                                    if filterType == "id" or filterType == "studentID" or filterType == "bookID":
+                                        if str(filterValue).lower() == parsed_name:
+                                            add(rV=r)
+                                            break
+                                    else:
+                                        if filterValue.lower() in parsed_name:
+                                            add(rV=r)
+                                            break
+                                
+            elif isWithFilter == False:
+
+                self.cursor.execute("SELECT * FROM loans LIMIT %s OFFSET %s", (limit, offset))
+                result2 = self.cursor.fetchall()
+
+                if not result2:
                     pass
                 else:
-                    
-                    for r in result:
-
-                        for i,j in zip(
-                            range(0,8),
-                            ["id","studentID","bookID","borrowDate","returnDate","returnedAt","status","whoAdded"]
-                        ):
-
-                            if filterType == j:
-
-                                parsed_name = str(r[i]).lower()
-                                if filterType == "id" or filterType == "studentID" or filterType == "bookID":
-                                    if str(filterValue).lower() == parsed_name:
-                                        add(rV=r)
-                                        break
-                                else:
-                                    if filterValue.lower() in parsed_name:
-                                        add(rV=r)
-                                        break
-                            
-        elif isWithFilter == False:
-
-            self.cursor.execute("SELECT * FROM loans LIMIT %s OFFSET %s", (20, (pageNumber - 1) * 20))
-            result2 = self.cursor.fetchall()
-
-            if not result2:
-                pass
+                    for r2 in result2:
+                        add(rV=r2)
+            
             else:
-                for r2 in result2:
-                    add(rV=r2)
-        
-        else:
-            return {"success":False,"message":"Lütfen boş bırakmayın!"}
-        
-        if sendData == True:
+                return {"success":False,"message":"Lütfen boş bırakmayın!"}
+            
             if len(IDs) == 0:
                 return {"success":False,"message":"Sonuç bulunamadı!"}
             else:
 
                 return {
                     "success":True,
+                    "message":f"{totalLoans} ödünç alma kaydından yalnızca {offset} - {(offset + limit) - 1} arası ödünç alma işlemleri listeleniyor.",
                     "data":{
                         "ids":IDs,
                         "studentIDs":studentIDs,
@@ -161,17 +167,17 @@ def listLoans(self,filterValue,filterType,isWithFilter,pageNumber):
                         "returnDates":returnDates,
                         "returnedAts":returnedAts,
                         "statuses":statuses,
-                        "whoAddeds":whoAddeds
+                        "whoAddeds":whoAddeds,
+                        "pageCount":pageCount
                     }
                 }
-        else:
-            pass
-                
 
-    except Exception as e:
-        
-        writeLog(config.LOANS_LOG_PATH,type(e).__name__,str(e))
-        return {"success":False,"message":"Bir hata oluştu!"}
+                    
+
+        except Exception as e:
+            
+            writeLog(config.LOANS_LOG_PATH,type(e).__name__,str(e))
+            return {"success":False,"message":"Bir hata oluştu!"}
 
 
 

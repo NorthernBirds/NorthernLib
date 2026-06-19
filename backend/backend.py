@@ -200,7 +200,7 @@ def listBooks():
         if result["success"] != True:
             return jsonify(result)
         else:
-            return jsonify(config.session[data.get("token")]["classes"]["book"].listBooks(filterType=data.get("filterType",""), filterValue=data.get("filterValue",""), isWithFilter=data.get("isWithFilter",""), pageNumber=data.get("pageNumber",1)))
+            return jsonify(config.session[data.get("token")]["classes"]["book"].listBooks(filterType=data.get("filterType",""), filterValue=data.get("filterValue",""), isWithFilter=data.get("isWithFilter",""), pageNumber=data.get("pageNumber",1), limit=data.get("limit",20)))
 
     except Exception as e:
 
@@ -273,7 +273,7 @@ def listCategories():
         if result["success"] != True:
             return jsonify(result)
         else:
-            return jsonify(config.session[data.get("token")]["classes"]["category"].listCategories(filterType=data.get("filterType",""), filterValue=data.get("filterValue",""), isWithFilter=data.get("isWithFilter",""), pageNumber=data.get("pageNumber",1)))
+            return jsonify(config.session[data.get("token")]["classes"]["category"].listCategories(filterType=data.get("filterType",""), filterValue=data.get("filterValue",""), isWithFilter=data.get("isWithFilter",""), pageNumber=data.get("pageNumber",1), limit=data.get("limit",20)))
 
     except Exception as e:
 
@@ -345,7 +345,7 @@ def listLoans():
         if result["success"] != True:
             return jsonify(result)
         else:
-            return jsonify(config.session[data.get("token")]["classes"]["loan"].listLoans(filterType=data.get("filterType",""), filterValue=data.get("filterValue",""), isWithFilter=data.get("isWithFilter",""), pageNumber=data.get("pageNumber",1)))
+            return jsonify(config.session[data.get("token")]["classes"]["loan"].listLoans(filterType=data.get("filterType",""), filterValue=data.get("filterValue",""), isWithFilter=data.get("isWithFilter",""), pageNumber=data.get("pageNumber",1), limit=data.get("limit",20)))
 
     except Exception as e:
 
@@ -369,7 +369,7 @@ def listLeaders():
         if result["success"] != True:
             return jsonify(result)
         else:
-            return jsonify(config.session[data.get("token")]["classes"]["leader"].listLeaders(pageNumber=data.get("pageNumber",1)))
+            return jsonify(config.session[data.get("token")]["classes"]["leader"].listLeaders(pageNumber=data.get("pageNumber",1), limit=data.get("limit",10)))
 
     except Exception as e:
 
@@ -464,7 +464,7 @@ def listUsers():
         if result["success"] != True:
             return jsonify(result)
         else:
-            return jsonify(config.session[data.get("token")]["classes"]["user"].listUsers(filterType=data.get("filterType",""), filterValue=data.get("filterValue",""), isWithFilter=data.get("isWithFilter",""), pageNumber=data.get("pageNumber",1)))
+            return jsonify(config.session[data.get("token")]["classes"]["user"].listUsers(filterType=data.get("filterType",""), filterValue=data.get("filterValue",""), isWithFilter=data.get("isWithFilter",""), pageNumber=data.get("pageNumber",1), limit=data.get("limit",20)))
 
     except Exception as e:
 

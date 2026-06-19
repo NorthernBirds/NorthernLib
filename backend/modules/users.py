@@ -120,12 +120,18 @@ class User:
             return {"success": False, "message": "Bir hata oluştu!"}
     
 
-    def listUsers(self,filterValue,filterType,isWithFilter,pageNumber):
+    def listUsers(self,filterValue,filterType,isWithFilter,pageNumber,limit):
 
         try:
 
-            sendData = True
             IDs,userNames,roles = [],[],[]
+            self.cursor.execute("SELECT COUNT(*) FROM users")
+            totalUsers = self.cursor.fetchone()[0]
+            if totalUsers is not None:
+                pageCount = totalUsers // limit
+                if totalUsers % limit != 0:
+                    pageCount += 1
+                offset = ((pageNumber - 1) * limit) + 1
 
             def add(rV):
                 IDs.append(rV[0])
@@ -142,7 +148,7 @@ class User:
                         if len(filterValue.strip()) < 2:
                             return {"success":False,"message":"Arama en az 2 karakter olmalıdır!"}
 
-                    self.cursor.execute("SELECT * FROM users LIMIT %s OFFSET %s", (20, (pageNumber - 1) * 20))
+                    self.cursor.execute("SELECT * FROM users LIMIT %s OFFSET %s", (limit, offset))
                     result = self.cursor.fetchall()
 
                     if not result:
@@ -169,7 +175,7 @@ class User:
             
             elif isWithFilter == False:
 
-                self.cursor.execute("SELECT * FROM users LIMIT %s OFFSET %s", (20, (pageNumber - 1) * 20))
+                self.cursor.execute("SELECT * FROM users LIMIT %s OFFSET %s", (limit, offset))
                 result2 = self.cursor.fetchall()
 
                 if not result2:
@@ -181,21 +187,20 @@ class User:
             else:
                 return {"success":False,"message":"Lütfen boş bırakmayın!"}
             
-            if sendData == True:
-                if len(IDs) == 0:
-                    return {"success":False,"message":"Sonuç bulunamadı!"}
-                else:
-
-                    return {
-                        "success":True,
-                        "data":{
-                            "ids":IDs,
-                            "userNames":userNames,
-                            "roles":roles
-                        }
-                    }
+            if len(IDs) == 0:
+                return {"success":False,"message":"Sonuç bulunamadı!"}
             else:
-                pass
+
+                return {
+                    "success":True,
+                    "message":f"{totalUsers} kullanıcı kaydından yalnızca {offset} - {(offset + limit) - 1} arası kullanıcılar listeleniyor.",
+                    "data":{
+                        "ids":IDs,
+                        "userNames":userNames,
+                        "roles":roles,
+                        "pageCount":pageCount
+                    }
+                }
 
         except Exception as e:
             

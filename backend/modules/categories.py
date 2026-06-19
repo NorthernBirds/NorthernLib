@@ -69,13 +69,19 @@ class Category:
             return {"success":False,"message":"Bir hata oluştu!"}
     
 
-    def listCategories(self,filterValue,filterType,isWithFilter,pageNumber):
+    def listCategories(self,filterValue,filterType,isWithFilter,pageNumber,limit):
 
         try:
 
-            sendData = True
             IDs,categoryNames,whoAddeds = [],[],[]
-            
+            self.cursor.execute("SELECT COUNT(*) FROM categories")
+            totalCategories = self.cursor.fetchone()[0]
+            if totalCategories is not None:
+                pageCount = totalCategories // limit
+                if totalCategories % limit != 0:
+                    pageCount += 1
+                offset = ((pageNumber - 1) * limit) + 1
+
             def add(rV):
                 IDs.append(rV[0])
                 categoryNames.append(rV[1])
@@ -91,7 +97,7 @@ class Category:
                         if len(filterValue.strip()) < 2:
                             return {"success":False,"message":"Arama en az 2 karakter olmalıdır!"}
 
-                    self.cursor.execute("SELECT * FROM categories LIMIT %s OFFSET %s", (20, (pageNumber - 1) * 20))
+                    self.cursor.execute("SELECT * FROM categories LIMIT %s OFFSET %s", (limit, offset))
                     result = self.cursor.fetchall()
 
                     if not result:
@@ -117,7 +123,7 @@ class Category:
             
             elif isWithFilter == False:
 
-                self.cursor.execute("SELECT * FROM categories LIMIT %s OFFSET %s", (20, (pageNumber - 1) * 20))
+                self.cursor.execute("SELECT * FROM categories LIMIT %s OFFSET %s", (limit, offset))
                 result2 = self.cursor.fetchall()
                 if not result2:
                     pass
@@ -128,21 +134,22 @@ class Category:
             else:
                 return {"success":False,"message":"Lütfen boş bırakmayın!"}
             
-            if sendData == True:
-                if len(IDs) == 0:
-                    return {"success":False,"message":"Sonuç bulunamadı!"}
-                else:
 
-                    return {
-                        "success":True,
-                        "data":{
-                            "ids":IDs,
-                            "categoryNames":categoryNames,
-                            "whoAddeds":whoAddeds
-                        }
-                    }
+            if len(IDs) == 0:
+                return {"success":False,"message":"Sonuç bulunamadı!"}
             else:
-                pass
+
+                return {
+                    "success":True,
+                    "message":f"{totalCategories} kategori kaydından yalnızca {offset} - {(offset + limit) - 1} arası kategoriler listeleniyor.",
+                    "data":{
+                        "ids":IDs,
+                        "categoryNames":categoryNames,
+                        "whoAddeds":whoAddeds,
+                        "pageCount":pageCount
+                    }
+                }
+
 
         except Exception as e:
             

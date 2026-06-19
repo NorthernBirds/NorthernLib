@@ -87,12 +87,19 @@ class Book:
             return {"success":False,"message":"Bir hata oluştu!"}
     
 
-    def listBooks(self,filterValue,filterType,isWithFilter,pageNumber):
+    def listBooks(self,filterValue,filterType,isWithFilter,pageNumber,limit):
 
         try:
 
-            sendData = True
             IDs,names,writers,categories,publishers,pageCounts,isTakens,whoAddeds = [],[],[],[],[],[],[],[]
+            offset = ((pageNumber - 1) * limit) + 1
+
+            self.cursor.execute("SELECT COUNT(*) FROM books")
+            totalBooks = self.cursor.fetchone()[0]
+            if totalBooks is not None:
+                pageCount = totalBooks // limit
+                if totalBooks % limit != 0:
+                    pageCount += 1
 
             def add(rV):
                 IDs.append(rV[0])
@@ -117,7 +124,7 @@ class Book:
                         if len(filterValue.strip()) < 2:
                             return {"success":False,"message":"Arama en az 2 karakter olmalıdır!"}
                     
-                    self.cursor.execute("SELECT * FROM books LIMIT %s OFFSET %s", (20, (pageNumber - 1) * 20))
+                    self.cursor.execute("SELECT * FROM books LIMIT %s OFFSET %s", (limit, offset))
                     result = self.cursor.fetchall()
 
                     if not result:
@@ -143,7 +150,7 @@ class Book:
             
             elif isWithFilter == False:
 
-                self.cursor.execute("SELECT * FROM books LIMIT %s OFFSET %s", (20, (pageNumber - 1) * 20))
+                self.cursor.execute("SELECT * FROM books LIMIT %s OFFSET %s", (limit, offset))
                 result2 = self.cursor.fetchall()
 
                 if not result2:
@@ -152,30 +159,27 @@ class Book:
                     for r2 in result2:
                         add(rV=r2)
             
-            else:
-                sendData = False
-                return {"success":False,"message":"Lütfen boş bırakmayın!"}
-            
-            if sendData == True:
-                if len(IDs) == 0:
-                    return {"success":False,"message":"Sonuç bulunamadı!"}
-                else:
 
-                    return {
-                        "success":True,
-                        "data":{
-                            "ids":IDs,
-                            "names":names,
-                            "writers":writers,
-                            "categories":categories,
-                            "publishers":publishers,
-                            "pageCounts":pageCounts,
-                            "isTakens":isTakens,
-                            "whoAddeds":whoAddeds
-                        }
-                    }
+            if len(IDs) == 0:
+                return {"success":False,"message":"Sonuç bulunamadı!"}
             else:
-                pass
+
+                return {
+                    "success":True,
+                    "message":f"{totalBooks} kitap kaydından yalnızca {offset} - {(offset + limit) - 1} arası kitaplar listeleniyor.",
+                    "data":{
+                        "ids":IDs,
+                        "names":names,
+                        "writers":writers,
+                        "categories":categories,
+                        "publishers":publishers,
+                        "pageCounts":pageCounts,
+                        "isTakens":isTakens,
+                        "whoAddeds":whoAddeds,
+                        "pageCount":pageCount
+                    }
+                }
+
                             
 
         except Exception as e:
