@@ -8,7 +8,7 @@ class Reset:
         self.conn = conn
         self.cursor = cursor
 
-    def reset(self,books,categories,loans,users,processes,activeUserName):
+    def reset(self,books:bool,categories:bool,loans:bool,users:bool,processes:bool,activeUserName:str):
 
         try:
 

@@ -10,7 +10,7 @@ class Category:
         self.cursor = cursor
 
     
-    def addCategory(self,categoryName,activeUserName):
+    def addCategory(self,categoryName:str,activeUserName:str):
 
         try:
                 
@@ -44,7 +44,7 @@ class Category:
             return {"success":False,"message":"Bir hata oluştu!"}
     
 
-    def deleteCategory(self,id,activeUserName):
+    def deleteCategory(self,id:int,activeUserName:str):
 
         try:
 
@@ -70,7 +70,7 @@ class Category:
             return {"success":False,"message":"Bir hata oluştu!"}
     
 
-    def listCategories(self,filterValue,filterType,isWithFilter,pageNumber,limit,activeUserName):
+    def listCategories(self,filterValue:str,filterType:str,isWithFilter:bool | str,pageNumber:int,limit:int,activeUserName:str):
 
         try:
 

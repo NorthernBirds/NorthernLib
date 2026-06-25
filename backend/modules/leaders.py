@@ -8,7 +8,7 @@ class Leader:
         self.conn = conn
         self.cursor = cursor
 
-    def listLeaders(self, pageNumber, limit,activeUserName):
+    def listLeaders(self, pageNumber:int, limit:int,activeUserName:str):
 
         try:
             

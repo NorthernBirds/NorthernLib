@@ -10,7 +10,7 @@ class Book:
         self.cursor = cursor
 
 
-    def addBook(self,bookName,writer,category,publisher,pageCount,activeUserName):
+    def addBook(self,bookName:str,writer:str,category:str,publisher:str,pageCount:int,activeUserName:str):
 
         try:
 
@@ -62,7 +62,7 @@ class Book:
             return {"success":False,"message":"Bir hata oluştu!"}
 
 
-    def deleteBook(self,id,activeUserName):
+    def deleteBook(self,id:int,activeUserName:str):
 
         try:
 
@@ -89,7 +89,7 @@ class Book:
             return {"success":False,"message":"Bir hata oluştu!"}
     
 
-    def listBooks(self,filterValue,filterType,isWithFilter,pageNumber,limit,activeUserName):
+    def listBooks(self,filterValue:str,filterType:str,isWithFilter:bool | str,pageNumber:int,limit:int,activeUserName:str):
 
         try:
 

@@ -12,7 +12,7 @@ class User:
         self.cursor = cursor
     
 
-    def addUser(self,userName,password,role,activeUserName):
+    def addUser(self,userName:str,password:str,role:str,activeUserName:str):
 
         try:
             if password == "" or userName == "" or role == "":
@@ -57,7 +57,7 @@ class User:
             return {"success": False, "message": "Bir hata oluştu!"}
     
 
-    def deleteUser(self,id,activeUserName):
+    def deleteUser(self,id:int,activeUserName:str):
 
         try:
             if id == 0:
@@ -85,7 +85,7 @@ class User:
             return {"success": False, "message": "Bir hata oluştu!"}
     
 
-    def changeRole(self,userName,newRole,activeUserName):
+    def changeRole(self,userName:str,newRole:str,activeUserName:str):
 
         try:
             if userName == "" or newRole == "":
@@ -124,7 +124,7 @@ class User:
             return {"success": False, "message": "Bir hata oluştu!"}
     
 
-    def listUsers(self,filterValue,filterType,isWithFilter,pageNumber,limit,activeUserName):
+    def listUsers(self,filterValue:str,filterType:str,isWithFilter:bool | str,pageNumber:int,limit:int,activeUserName:str):
 
         try:
 

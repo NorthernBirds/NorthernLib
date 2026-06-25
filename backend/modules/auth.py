@@ -13,7 +13,7 @@ class Auth:
         self.conn = conn
         self.cursor = cursor
     
-    def signUp(self,dbName):
+    def signUp(self,dbName:str):
 
         try:
 
@@ -56,7 +56,7 @@ class Auth:
             return {"success":False,"message":"Bir hata oluştu!"}
             
 
-    def signInDB(self,dbName,dbPassword):
+    def signInDB(self,dbName:str,dbPassword:str):
         
         try:
 
@@ -88,7 +88,7 @@ class Auth:
             return {"success":False,"message":"Bir hata oluştu!"}
 
 
-    def signIn(self,userName,password):
+    def signIn(self,userName:str,password:str):
 
         try:
 
@@ -132,7 +132,7 @@ class Auth:
             return {"success":False,"message":"Bir hata oluştu!"}
         
     
-    def signOut(self,token):
+    def signOut(self,token:str):
         
         try:
 
@@ -163,7 +163,7 @@ class Auth:
             writeLog(config.AUTH_LOG_PATH,type(e).__name__,str(e))
             return {"success":False,"message":"Bir hata oluştu!"}
 
-    def verifyUserToken(self,token):
+    def verifyUserToken(self,token:str):
 
         try: 
 
@@ -178,7 +178,7 @@ class Auth:
             writeLog(config.AUTH_LOG_PATH,type(e).__name__,str(e))
             return {"success":False,"message":"Bir hata oluştu!"}
 
-    def verifyAppToken(self,appToken,withLock):
+    def verifyAppToken(self,appToken:str,withLock:bool):
 
         try:
 

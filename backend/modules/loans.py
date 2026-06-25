@@ -10,7 +10,7 @@ class Loan:
         self.conn = conn
         self.cursor = cursor
     
-    def borrowBook(self,bookID,studentID,returnDate,activeUserName):
+    def borrowBook(self,bookID:int,studentID:int,returnDate:str,activeUserName:str):
 
         try:
 
@@ -42,7 +42,7 @@ class Loan:
             return {"success":False,"message":"Bir hata oluştu!"}
     
 
-    def returnBook(self,bookID,activeUserName):
+    def returnBook(self,bookID:int,activeUserName:str):
 
         try:
 
@@ -75,7 +75,7 @@ class Loan:
             return {"success":False,"message":"Bir hata oluştu!"}
     
 
-    def listLoans(self,filterValue,filterType,isWithFilter,pageNumber,limit,activeUserName):
+    def listLoans(self,filterValue:str,filterType:str,isWithFilter:bool | str,pageNumber:int,limit:int,activeUserName:str):
 
         try:
 

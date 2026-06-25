@@ -2,7 +2,7 @@ import pymysql
 from utils.writeLog import writeLog
 import config
 
-def getDB(dbUser,dbName,password):
+def getDB(dbUser:str,dbName:str,password:str):
 
     try:
 

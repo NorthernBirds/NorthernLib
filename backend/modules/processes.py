@@ -2,7 +2,7 @@ import config
 from utils.writeLog import writeLog
 from datetime import datetime
 
-def addProcess(self,userName,process):
+def addProcess(self,userName:str,process:str):
 
     try:
 
@@ -26,7 +26,7 @@ class Process:
         self.conn = conn
         self.cursor = cursor
 
-    def deleteProcess(self,id,activeUserName):
+    def deleteProcess(self,id:int,activeUserName:str):
 
         try:
 
@@ -51,7 +51,7 @@ class Process:
             writeLog(config.PROCESSES_LOG_PATH,type(e).__name__,str(e))
             return {"success":False,"message":"Bir hata oluştu!"}
     
-    def listProcesses(self,filterValue,filterType,isWithFilter,pageNumber,limit,activeUserName):
+    def listProcesses(self,filterValue:str,filterType:str,isWithFilter:bool | str,pageNumber:int,limit:int,activeUserName:str):
 
         try:
 
