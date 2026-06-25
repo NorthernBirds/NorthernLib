@@ -29,6 +29,9 @@ def setup(name, password, conn, cursor, adminPassword):
         
         cursor.execute("CREATE TABLE loans(id INT AUTO_INCREMENT PRIMARY KEY,studentID INT NOT NULL,bookID INT NOT NULL,borrowDate DATE DEFAULT (CURRENT_DATE),returnDate VARCHAR(20),returnedAt VARCHAR(20),loanStatus ENUM('returned','not returned') DEFAULT 'not returned',whoAdded VARCHAR(20) NOT NULL)")
         conn.commit()
+
+        cursor.execute("CREATE TABLE processes(id INT AUTO_INCREMENT PRIMARY KEY, processDate VARCHAR(10) NOT NULL, processTime VARCHAR(8) NOT NULL, userName VARCHAR(20) NOT NULL, process TEXT NOT NULL)")
+        conn.commit()
         
         cursor.execute("CREATE TABLE importantValues(id INT AUTO_INCREMENT PRIMARY KEY,situationValue TEXT NOT NULL, valueStatus BOOLEAN NOT NULL)")
         conn.commit()

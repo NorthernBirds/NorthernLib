@@ -4,6 +4,7 @@ from utils.setupSQL import setup
 import bcrypt
 import secrets
 import random
+from processes import addProcess
 
 class Auth:
 
@@ -116,7 +117,7 @@ class Auth:
                 else:
 
                     token = secrets.token_hex(32)
-
+                    addProcess(userName=userName, process=f"Kullanıcı kütüphane sistemine giriş yaptı.")
                     return {
                         "success":True,
                         "message":"Giriş yapıldı.",
@@ -136,6 +137,8 @@ class Auth:
         try:
 
             if token in config.session.keys():
+                addProcess(userName=config.session[token]["userName"], process="Kullanıcı çıkış yaptı.")
+                config[token]["dbValues"]["conn"].close()
                 del config.session[token]
                 return {"success":True,"message":"Çıkış yapıldı."}
             else:

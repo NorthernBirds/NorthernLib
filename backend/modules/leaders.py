@@ -1,5 +1,6 @@
 import config
 from utils.writeLog import writeLog
+from processes import addProcess
 
 class Leader:
 
@@ -7,7 +8,7 @@ class Leader:
         self.conn = conn
         self.cursor = cursor
 
-    def listLeaders(self, pageNumber, limit):
+    def listLeaders(self, pageNumber, limit,activeUserName):
 
         try:
             
@@ -18,7 +19,7 @@ class Leader:
                 pageCount = totalLeaders // limit
                 if totalLeaders % limit != 0:
                     pageCount += 1
-                offset = ((pageNumber - 1) * limit) + 1
+                offset = ((pageNumber - 1) * limit)
 
             self.cursor.execute("SELECT studentID, COUNT(*) AS readBooks FROM loans WHERE status = 'returned' GROUP BY studentID ORDER BY readBooks DESC LIMIT %s OFFSET %s;", (limit, offset))
             result = self.cursor.fetchall()
@@ -29,7 +30,8 @@ class Leader:
                     studentIDs.append(r[0])
                     readBooks.append(r[1])
                 
-                return {"success": True, "message": f"{totalLeaders} lider kaydından yalnızca {offset} - {(offset + limit) - 1} arası liderler listeleniyor.", "data": {"studentIDs": studentIDs, "readBooks": readBooks, "pageCount": pageCount}}
+                addProcess(userName=activeUserName, process=f"{offset + 1} - {(offset + limit) + 1} arasında olan liderler listelendi.")
+                return {"success": True, "message": f"{totalLeaders} lider kaydından yalnızca {offset + 1} - {(offset + limit) + 1} arası liderler listeleniyor.", "data": {"studentIDs": studentIDs, "readBooks": readBooks, "pageCount": pageCount}}
 
             else:
 

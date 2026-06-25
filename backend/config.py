@@ -12,6 +12,7 @@ BACKEND_LOG_PATH = os.path.join(BASE_DIR, "logs", "backend.log")
 RESET_LOG_PATH = os.path.join(BASE_DIR,"logs", "reset.log")
 SETUPSQL_LOG_PATH = os.path.join(BASE_DIR,"logs", "setupSQL.log")
 LEADERS_LOG_PATH = os.path.join(BASE_DIR,"logs", "leaders.log")
+PROCESSES_LOG_PATH = os.path.join(BASE_DIR,"logs", "processes.log")
 
 BOOK_CATEGORIES = ["Roman","Hikaye","Şiir","Biyografi","Otobiyografi","Tarih","Bilim","Kişisel Gelişim","Ders Kitabı","Ansiklopedi","Çizgi Roman"]
 

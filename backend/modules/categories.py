@@ -1,5 +1,6 @@
 import config
 from utils.writeLog import writeLog
+from processes import addProcess
 
 class Category:
 
@@ -34,7 +35,7 @@ class Category:
                     )
 
                     self.conn.commit()
-
+                    addProcess(userName=activeUserName,process=f"{categoryName} adlı kategori kategorilere eklendi.")
                     return {"success":True,"message":"Kategori eklendi."}
                 
         except Exception as e:
@@ -43,7 +44,7 @@ class Category:
             return {"success":False,"message":"Bir hata oluştu!"}
     
 
-    def deleteCategory(self,id):
+    def deleteCategory(self,id,activeUserName):
 
         try:
 
@@ -60,7 +61,7 @@ class Category:
 
                     self.cursor.execute("DELETE FROM categories WHERE id = %s",(id,))
                     self.conn.commit()
-
+                    addProcess(userName=activeUserName,process=f"{id} ID'li kategori kategorilerden silindi.")
                     return {"success":True,"message":"Kategori silindi."}
 
         except Exception as e:
@@ -69,86 +70,95 @@ class Category:
             return {"success":False,"message":"Bir hata oluştu!"}
     
 
-    def listCategories(self,filterValue,filterType,isWithFilter,pageNumber,limit):
+    def listCategories(self,filterValue,filterType,isWithFilter,pageNumber,limit,activeUserName):
 
         try:
 
-            IDs,categoryNames,whoAddeds = [],[],[]
-            self.cursor.execute("SELECT COUNT(*) FROM categories")
-            totalCategories = self.cursor.fetchone()[0]
-            if totalCategories is not None:
-                pageCount = totalCategories // limit
-                if totalCategories % limit != 0:
-                    pageCount += 1
-                offset = ((pageNumber - 1) * limit) + 1
+            if limit == 0:
+                return {"success":False,"message":"Lutfen boş bırakmayın!"}
+            else:
 
-            def add(rV):
-                IDs.append(rV[0])
-                categoryNames.append(rV[1])
-                whoAddeds.append(rV[2])
-
-            if isWithFilter == True:
-
-                if filterValue == "" or filterType == "":
-                    return {"success":False,"message":"Lütfen boş bırakmayın!"}
+                if limit > 50:
+                    return {"success":False,"message":"Limit en fazla 50 olabilir!"}
                 else:
 
-                    if filterType != "id":
-                        if len(filterValue.strip()) < 2:
-                            return {"success":False,"message":"Arama en az 2 karakter olmalıdır!"}
+                    IDs,categoryNames,whoAddeds = [],[],[]
+                    self.cursor.execute("SELECT COUNT(*) FROM categories")
+                    totalCategories = self.cursor.fetchone()[0]
+                    if totalCategories is not None:
+                        pageCount = totalCategories // limit
+                        if totalCategories % limit != 0:
+                            pageCount += 1
+                        offset = ((pageNumber - 1) * limit)
 
-                    self.cursor.execute("SELECT * FROM categories LIMIT %s OFFSET %s", (limit, offset))
-                    result = self.cursor.fetchall()
+                    def add(rV):
+                        IDs.append(rV[0])
+                        categoryNames.append(rV[1])
+                        whoAddeds.append(rV[2])
 
-                    if not result:
-                        pass
-                    else:
+                    if isWithFilter == True:
+
+                        if filterValue == "" or filterType == "":
+                            return {"success":False,"message":"Lütfen boş bırakmayın!"}
+                        else:
+
+                            if filterType != "id":
+                                if len(filterValue.strip()) < 2:
+                                    return {"success":False,"message":"Arama en az 2 karakter olmalıdır!"}
+
+                            self.cursor.execute("SELECT * FROM categories LIMIT %s OFFSET %s", (limit, offset))
+                            result = self.cursor.fetchall()
+
+                            if not result:
+                                pass
+                            else:
+                            
+                                    for r in result:
+
+                                        for i,j in zip(
+                                            range(0,3),
+                                            ["id","categoryName","whoAdded"]
+                                        ):
+
+                                            if filterType == j:
+
+                                                parsed_name = str(r[i]).lower()
+                                                if filterType == "id":
+                                                    if str(filterValue).lower() == parsed_name:
+                                                        add(rV=r)
+                                                else:
+                                                    if filterValue.lower() in parsed_name:
+                                                        add(rV=r)
                     
-                            for r in result:
+                    elif isWithFilter == False:
 
-                                for i,j in zip(
-                                    range(0,3),
-                                    ["id","categoryName","whoAdded"]
-                                ):
+                        self.cursor.execute("SELECT * FROM categories LIMIT %s OFFSET %s", (limit, offset))
+                        result2 = self.cursor.fetchall()
+                        if not result2:
+                            pass
+                        else:
+                            for r2 in result2:
+                                add(rV=r2)
+                    
+                    else:
+                        return {"success":False,"message":"Lütfen boş bırakmayın!"}
+                    
 
-                                    if filterType == j:
-
-                                        parsed_name = str(r[i]).lower()
-                                        if filterType == "id":
-                                            if str(filterValue).lower() == parsed_name:
-                                                add(rV=r)
-                                        else:
-                                            if filterValue.lower() in parsed_name:
-                                                add(rV=r)
-            
-            elif isWithFilter == False:
-
-                self.cursor.execute("SELECT * FROM categories LIMIT %s OFFSET %s", (limit, offset))
-                result2 = self.cursor.fetchall()
-                if not result2:
-                    pass
-                else:
-                    for r2 in result2:
-                        add(rV=r2)
-            
-            else:
-                return {"success":False,"message":"Lütfen boş bırakmayın!"}
-            
-
-            if len(IDs) == 0:
-                return {"success":False,"message":"Sonuç bulunamadı!"}
-            else:
-
-                return {
-                    "success":True,
-                    "message":f"{totalCategories} kategori kaydından yalnızca {offset} - {(offset + limit) - 1} arası kategoriler listeleniyor.",
-                    "data":{
-                        "ids":IDs,
-                        "categoryNames":categoryNames,
-                        "whoAddeds":whoAddeds,
-                        "pageCount":pageCount
-                    }
-                }
+                    if len(IDs) == 0:
+                        return {"success":False,"message":"Sonuç bulunamadı!"}
+                    else:
+                        
+                        addProcess(userName=activeUserName,process=f"{f"{filterType} değişkeni {filterValue} olan ve" if isWithFilter == True else ''} {offset + 1} - {(offset + limit) + 1} arasında olan kategoriler listelendi.")
+                        return {
+                            "success":True,
+                            "message":f"{totalCategories} kategori kaydından yalnızca {offset + 1} - {(offset + limit) + 1} arası kategoriler listeleniyor.",
+                            "data":{
+                                "ids":IDs,
+                                "categoryNames":categoryNames,
+                                "whoAddeds":whoAddeds,
+                                "pageCount":pageCount
+                            }
+                        }
 
 
         except Exception as e:

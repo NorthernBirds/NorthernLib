@@ -16,16 +16,3 @@ def getDB(dbUser,dbName,password):
 
         writeLog(config.CONNECTION_LOG_PATH,type(e).__name__,str(e))
         return {"success":False,"message":"Bir hata oluştu!"}
-
-
-def closeConnection(conn):
-
-    try:
-        
-        conn.close()
-        return {"success":True,"message":"Bağlantı kapatıldı."}
-    
-    except Exception as e:
-
-        writeLog(config.CONNECTION_LOG_PATH,type(e).__name__,str(e))
-        return {"success":False,"message":"Bir hata oluştu!"}

@@ -1,5 +1,6 @@
 import config
 from utils.writeLog import writeLog
+from processes import addProcess
 
 class Reset:
 
@@ -7,7 +8,7 @@ class Reset:
         self.conn = conn
         self.cursor = cursor
 
-    def reset(self,books,categories,loans,users):
+    def reset(self,books,categories,loans,users,processes,activeUserName):
 
         try:
 
@@ -42,8 +43,16 @@ class Reset:
                 pass
             else:
                 return {"success":False,"message":"Lütfen boş bırakmayın!"}
-            
 
+            if processes == True:
+                self.cursor.execute("TRUNCATE TABLE processes")
+                self.conn.commit()
+            elif processes == False:
+                pass
+            else:
+                return {"success":False,"message":"Lütfen boş bırakmayın!"}
+            
+            addProcess(userName=activeUserName,process=f"Kütüphane sistemi sıfırlandı. (books:{books}, categories:{categories}, loans:{loans}, users:{users}, processes:{processes})")
             return {"success":True,"message":"Sıfırlandı."}
         
         except Exception as e:
