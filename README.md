@@ -44,7 +44,7 @@ Environment Configuration: Modify the following files according to your infrastr
 
 backend.py (Line 10)
 
-config.py (Line 21)
+config.py (Line 23)
 
 setupSQL.sql (Line 4)
 
