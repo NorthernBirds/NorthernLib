@@ -551,7 +551,7 @@ def reset():
         if result["success"] != True:
             return jsonify(result)
         else:
-            return jsonify(config.session[token]["classes"]["reset"].reset(books=data.get("books",""), categories=data.get("categories",""), loans=data.get("loans",""), users=data.get("users",""), activeUserName=config.session[token]["userName"]))
+            return jsonify(config.session[token]["classes"]["reset"].reset(books=data.get("books",""), categories=data.get("categories",""), loans=data.get("loans",""), users=data.get("users",""), processes=data.get("processes",""), activeUserName=config.session[token]["userName"]))
 
     except Exception as e:
 

@@ -48,6 +48,8 @@ config.py (Line 23)
 
 setupSQL.sql (Line 4)
 
+config.dart (Line 5-6)
+
 Directory Structure: Ensure all directories excluded by .gitignore (e.g., logs/) are manually created in your local environment.
 
 Developer: Yusuf Enes Kuş
