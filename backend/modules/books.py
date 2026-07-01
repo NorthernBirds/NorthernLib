@@ -1,6 +1,6 @@
 import config
 from utils.writeLog import writeLog
-from modules.processes import addProcess
+
 
 class Book:
 
@@ -53,7 +53,7 @@ class Book:
                                         )
 
                                         self.conn.commit()
-                                        addProcess(userName=activeUserName,process=f"{bookName} adlı kitap kitaplara eklendi.")
+                                        
                                         return {"success":True,"message":"Kitap eklendi."}
 
         except Exception as e:
@@ -62,7 +62,7 @@ class Book:
             return {"success":False,"message":"Bir hata oluştu!"}
 
 
-    def deleteBook(self,id:int,activeUserName:str):
+    def deleteBook(self,id:int):
 
         try:
 
@@ -85,11 +85,11 @@ class Book:
         except Exception as e:
 
             writeLog(config.BOOKS_LOG_PATH,type(e).__name__,str(e))
-            addProcess(userName=activeUserName,process=f"{id} ID'li kitap silindi.")
+            
             return {"success":False,"message":"Bir hata oluştu!"}
     
 
-    def listBooks(self,filterValue:str,filterType:str,isWithFilter:bool | str,pageNumber:int,limit:int,activeUserName:str):
+    def listBooks(self,filterValue:str,filterType:str,isWithFilter:bool | str,pageNumber:int,limit:int):
 
         try:
 
@@ -174,7 +174,7 @@ class Book:
                         return {"success":False,"message":"Sonuç bulunamadı!"}
                     else:
 
-                        addProcess(userName=activeUserName,process=f"{f"{filterType} değişkeni {filterValue} olan ve" if isWithFilter == True else ''} {offset + 1} - {(offset + limit) + 1} arasında olan kitaplar listelendi.")
+                        
                         return {
                             "success":True,
                             "message":f"{totalBooks} kitap kaydından yalnızca {offset + 1} - {(offset + limit) + 1} arası kitaplar listeleniyor.",

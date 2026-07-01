@@ -1,6 +1,6 @@
 import config
 from utils.writeLog import writeLog
-from modules.processes import addProcess
+
 
 class Leader:
 
@@ -8,7 +8,7 @@ class Leader:
         self.conn = conn
         self.cursor = cursor
 
-    def listLeaders(self, pageNumber:int, limit:int,activeUserName:str):
+    def listLeaders(self, pageNumber:int, limit:int):
 
         try:
             
@@ -30,7 +30,7 @@ class Leader:
                     studentIDs.append(r[0])
                     readBooks.append(r[1])
                 
-                addProcess(userName=activeUserName, process=f"{offset + 1} - {(offset + limit) + 1} arasında olan liderler listelendi.")
+                
                 return {"success": True, "message": f"{totalLeaders} lider kaydından yalnızca {offset + 1} - {(offset + limit) + 1} arası liderler listeleniyor.", "data": {"studentIDs": studentIDs, "readBooks": readBooks, "pageCount": pageCount}}
 
             else:

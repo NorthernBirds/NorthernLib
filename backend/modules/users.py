@@ -1,7 +1,6 @@
 import bcrypt
 from utils.writeLog import writeLog
 import config
-from modules.processes import addProcess
 
 
 class User:
@@ -12,7 +11,7 @@ class User:
         self.cursor = cursor
     
 
-    def addUser(self,userName:str,password:str,role:str,activeUserName:str):
+    def addUser(self,userName:str,password:str,role:str):
 
         try:
             if password == "" or userName == "" or role == "":
@@ -48,7 +47,7 @@ class User:
                                         (userName,hashed.decode(),role)
                                     )
                                     self.conn.commit()
-                                    addProcess(userName=activeUserName,process=f"{userName} adlı kullanıcı oluşturuldu.")
+                                    
                                     return {"success": True, "message": "Kullanıcı oluşturuldu"}
             
         except Exception as e:
@@ -57,7 +56,7 @@ class User:
             return {"success": False, "message": "Bir hata oluştu!"}
     
 
-    def deleteUser(self,id:int,activeUserName:str):
+    def deleteUser(self,id:int):
 
         try:
             if id == 0:
@@ -76,7 +75,7 @@ class User:
                         
                         self.cursor.execute("DELETE FROM users WHERE id = %s",(id,))
                         self.conn.commit()
-                        addProcess(userName=activeUserName,process=f"{id} ID'li kullanıcı silindi.")
+                        
                         return {"success": True, "message": "Kullanıcı silindi"}
             
         except Exception as e:
@@ -85,7 +84,7 @@ class User:
             return {"success": False, "message": "Bir hata oluştu!"}
     
 
-    def changeRole(self,userName:str,newRole:str,activeUserName:str):
+    def changeRole(self,userName:str,newRole:str):
 
         try:
             if userName == "" or newRole == "":
@@ -115,7 +114,7 @@ class User:
                                     (newRole,userName)
                                 )
                                 self.conn.commit()
-                                addProcess(userName=activeUserName,process=f"{userName} adlı kullanıcının rolü {newRole} olarak değiştirildi.")
+                                
                                 return {"success": True, "message": "Rol güncellendi."}
                             
         except Exception as e:
@@ -124,7 +123,7 @@ class User:
             return {"success": False, "message": "Bir hata oluştu!"}
     
 
-    def listUsers(self,filterValue:str,filterType:str,isWithFilter:bool | str,pageNumber:int,limit:int,activeUserName:str):
+    def listUsers(self,filterValue:str,filterType:str,isWithFilter:bool | str,pageNumber:int,limit:int):
 
         try:
 
@@ -203,7 +202,7 @@ class User:
                         return {"success":False,"message":"Sonuç bulunamadı!"}
                     else:
                         
-                        addProcess(userName=activeUserName,process=f"{f"{filterType} değişkeni {filterValue} olan ve" if isWithFilter == True else ''} {offset + 1} - {(offset + limit) + 1} arasında olan kullanıcılar listelendi.")
+                        
                         return {
                             "success":True,
                             "message":f"{totalUsers} kullanıcı kaydından yalnızca {offset + 1} - {(offset + limit) + 1} arası kullanıcılar listeleniyor.",

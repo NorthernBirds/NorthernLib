@@ -1,6 +1,6 @@
 import config
 from utils.writeLog import writeLog
-from modules.processes import addProcess
+
 
 class Category:
 
@@ -35,7 +35,7 @@ class Category:
                     )
 
                     self.conn.commit()
-                    addProcess(userName=activeUserName,process=f"{categoryName} adlı kategori kategorilere eklendi.")
+                    
                     return {"success":True,"message":"Kategori eklendi."}
                 
         except Exception as e:
@@ -44,7 +44,7 @@ class Category:
             return {"success":False,"message":"Bir hata oluştu!"}
     
 
-    def deleteCategory(self,id:int,activeUserName:str):
+    def deleteCategory(self,id:int):
 
         try:
 
@@ -61,7 +61,7 @@ class Category:
 
                     self.cursor.execute("DELETE FROM categories WHERE id = %s",(id,))
                     self.conn.commit()
-                    addProcess(userName=activeUserName,process=f"{id} ID'li kategori kategorilerden silindi.")
+                    
                     return {"success":True,"message":"Kategori silindi."}
 
         except Exception as e:
@@ -70,7 +70,7 @@ class Category:
             return {"success":False,"message":"Bir hata oluştu!"}
     
 
-    def listCategories(self,filterValue:str,filterType:str,isWithFilter:bool | str,pageNumber:int,limit:int,activeUserName:str):
+    def listCategories(self,filterValue:str,filterType:str,isWithFilter:bool | str,pageNumber:int,limit:int):
 
         try:
 
@@ -148,7 +148,7 @@ class Category:
                         return {"success":False,"message":"Sonuç bulunamadı!"}
                     else:
                         
-                        addProcess(userName=activeUserName,process=f"{f"{filterType} değişkeni {filterValue} olan ve" if isWithFilter == True else ''} {offset + 1} - {(offset + limit) + 1} arasında olan kategoriler listelendi.")
+                        
                         return {
                             "success":True,
                             "message":f"{totalCategories} kategori kaydından yalnızca {offset + 1} - {(offset + limit) + 1} arası kategoriler listeleniyor.",

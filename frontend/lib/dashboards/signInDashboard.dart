@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/api_requests.dart';
 import 'package:frontend/main.dart';
+import 'adminDashboard.dart';
 
 class LoginDashboard extends StatefulWidget {
   const LoginDashboard({super.key});
@@ -146,7 +147,44 @@ class _LoginDashboardState extends State<LoginDashboard> {
                         userName: userName,
                         password: password,
                       );
-                      print(response!["message"]);
+                      if (response!["success"] == true) {
+                        if (response["role"] == "admin") {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => adminDashboard(),
+                            ),
+                          );
+                        } else if (response["role"] == "teacher") {
+                          //Navigator.push(
+                          //MaterialPageRoute(
+                          //builder: (context) => teacherDashboard(),
+                          //);
+                        } else {
+                          //Navigator.push(
+                          //MaterialPageRoute(
+                          //builder: (context) => student_staffDashboard(),
+                          //);
+                        }
+                      } else {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: const Text("Hata"),
+                              content: Text(response["message"]),
+                              actions: <Widget>[
+                                ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: const Text("Tamam"),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      }
                     },
                     style: ElevatedButton.styleFrom(
                       side: const BorderSide(

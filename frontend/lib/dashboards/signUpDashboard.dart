@@ -64,7 +64,48 @@ class _signUpStateDash extends State<signUpDash> {
                   ElevatedButton(
                     onPressed: () async {
                       var response = await signUp(dbName: dbName);
-                      print(response!["message"]);
+                      if (response!["success"] != true) {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: const Text("Hata"),
+                              content: Text(response["message"]),
+                              actions: <Widget>[
+                                ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: const Text("Tamam"),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      } else {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: const Text("Kayıt Başarılı!"),
+                              content: Text(
+                                "Admin kullanıcı adı: admin admin\n" // admin admin yerine sadece admin (veya backend'deki gibi)
+                                "Admin şifresi: ${response?["data"]?["adminPassword"] ?? "Bilinmiyor"}\n"
+                                "Kütüphane adı: $dbName\n"
+                                "Kütüphane şifresi: ${response?["data"]?["dbPassword"] ?? "Bilinmiyor"}",
+                              ),
+                              actions: <Widget>[
+                                ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: const Text("Tamam"),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      }
                     },
                     style: ElevatedButton.styleFrom(
                       side: BorderSide(

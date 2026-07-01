@@ -1,7 +1,7 @@
 from utils.writeLog import writeLog
 import config
 from datetime import datetime
-from modules.processes import addProcess
+
 
 class Loan:
 
@@ -33,7 +33,7 @@ class Loan:
                         self.conn.commit()
                         self.cursor.execute("UPDATE books SET isTaken = %s WHERE id = %s",(True,bookID))
                         self.conn.commit()
-                        addProcess(userName=activeUserName,process=f"{bookID} ID'li kitap {studentID} ID'li öğrenciye {returnDate} tarihine kadar ödünç verildi.")
+                        
                         return {"success":True,"message":"Kitap ödünç alındı."}
         
         except Exception as e:
@@ -42,7 +42,7 @@ class Loan:
             return {"success":False,"message":"Bir hata oluştu!"}
     
 
-    def returnBook(self,bookID:int,activeUserName:str):
+    def returnBook(self,bookID:int):
 
         try:
 
@@ -66,7 +66,7 @@ class Loan:
                         self.conn.commit()
                         self.cursor.execute("UPDATE books SET isTaken = %s WHERE id = %s",(False,bookID))
                         self.conn.commit()
-                        addProcess(userName=activeUserName,process=f"{bookID} ID'li kitap {now} tarihinde geri verildi.")
+                        
                         return {"success":True,"message":"Kitap geri verildi."}
         
         except Exception as e:
@@ -75,7 +75,7 @@ class Loan:
             return {"success":False,"message":"Bir hata oluştu!"}
     
 
-    def listLoans(self,filterValue:str,filterType:str,isWithFilter:bool | str,pageNumber:int,limit:int,activeUserName:str):
+    def listLoans(self,filterValue:str,filterType:str,isWithFilter:bool | str,pageNumber:int,limit:int):
 
         try:
 
@@ -168,7 +168,7 @@ class Loan:
                             return {"success":False,"message":"Sonuç bulunamadı!"}
                         else:
 
-                            addProcess(userName=activeUserName,process=f"{f"{filterType} değişkeni {filterValue} olan ve" if isWithFilter == True else ''} {offset + 1} - {(offset + limit) + 1} arasında olan ödünç alma işlemleri listelendi.")
+                            
                             return {
                                 "success":True,
                                 "message":f"{totalLoans} ödünç alma kaydından yalnızca {offset + 1} - {(offset + limit) + 1} arası ödünç alma işlemleri listeleniyor.",
