@@ -1,7 +1,7 @@
 import bcrypt
 from utils.writeLog import writeLog
 import config
-from processes import addProcess
+from modules.processes import addProcess
 
 
 class User:

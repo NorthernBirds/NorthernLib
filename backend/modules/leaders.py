@@ -1,6 +1,6 @@
 import config
 from utils.writeLog import writeLog
-from processes import addProcess
+from modules.processes import addProcess
 
 class Leader:
 

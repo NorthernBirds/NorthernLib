@@ -19,6 +19,7 @@ import modules.loans
 import modules.reset
 import modules.users
 import modules.leaders
+import modules.processes
 from utils.writeLog import writeLog
 
 auth = modules.auth.Auth(conn=conn,cursor=cursor)

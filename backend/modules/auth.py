@@ -4,7 +4,7 @@ from utils.setupSQL import setup
 import bcrypt
 import secrets
 import random
-from processes import addProcess
+from modules.processes import addProcess
 
 class Auth:
 

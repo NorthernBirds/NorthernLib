@@ -1,7 +1,7 @@
 from utils.writeLog import writeLog
 import config
 from datetime import datetime
-from processes import addProcess
+from modules.processes import addProcess
 
 class Loan:
 
