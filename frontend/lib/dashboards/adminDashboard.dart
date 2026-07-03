@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/api_requests.dart';
+import 'package:frontend/dashboards/signInDashboard.dart';
 
 class adminDashboard extends StatefulWidget {
   const adminDashboard({super.key});
@@ -9,333 +10,225 @@ class adminDashboard extends StatefulWidget {
 }
 
 class _adminDashboardState extends State<adminDashboard> {
+  final ButtonStyle _menuButtonStyle = ElevatedButton.styleFrom(
+    side: const BorderSide(color: Colors.black),
+    padding: const EdgeInsets.all(20.0),
+    backgroundColor: const Color.fromARGB(255, 77, 44, 44),
+  );
+
+  final TextStyle _labelTextStyle = const TextStyle(
+    fontFamily: "Inter",
+    fontWeight: FontWeight.normal,
+    fontSize: 14.0,
+    color: Colors.black,
+  );
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: DecoratedBox(
-        decoration: BoxDecoration(
-          border: Border.all(color: Colors.black, width: 2),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            Image.asset("assets/images/image.png", width: 200.0, height: 200.0),
-            Text(
-              "Kitap İşlemleri",
-              style: TextStyle(
-                color: const Color.fromARGB(255, 0, 0, 0),
-                fontSize: 16.0,
-                fontFamily: "Inter",
-                fontWeight: FontWeight.bold,
-              ),
+      backgroundColor: Colors.white,
+      body: Row(
+        children: [
+          Container(
+            width: 300.0,
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            decoration: const BoxDecoration(
+              border: Border(right: BorderSide(color: Colors.black, width: 2)),
+              color: const Color.fromARGB(255, 77, 44, 44),
             ),
-            ElevatedButton(
-              onPressed: () {
-                print(0);
-              },
-              style: ElevatedButton.styleFrom(
-                side: BorderSide(color: const Color.fromARGB(255, 0, 0, 0)),
-                padding: const EdgeInsets.all(20.0),
-              ),
-              child: Text(
-                "Kitap Ekle",
-                style: TextStyle(
-                  fontFamily: "Inter",
-                  fontWeight: FontWeight.normal,
-                  fontSize: 14.0,
-                ),
-              ),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                print(1);
-              },
-              style: ElevatedButton.styleFrom(
-                side: BorderSide(color: const Color.fromARGB(255, 0, 0, 0)),
-                padding: const EdgeInsets.all(20.0),
-              ),
-              child: Text(
-                "Kitap Sil",
-                style: TextStyle(
-                  fontFamily: "Inter",
-                  fontWeight: FontWeight.normal,
-                  fontSize: 14.0,
-                ),
-              ),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                print(2);
-              },
-              style: ElevatedButton.styleFrom(
-                side: BorderSide(color: const Color.fromARGB(255, 0, 0, 0)),
-                padding: const EdgeInsets.all(20.0),
-              ),
-              child: Text(
-                "Kitap Listele",
-                style: TextStyle(
-                  fontFamily: "Inter",
-                  fontWeight: FontWeight.normal,
-                  fontSize: 14.0,
-                ),
-              ),
-            ),
+            child: SingleChildScrollView(
+              primary: true,
+              child: Container(
+                color: const Color.fromARGB(255, 77, 44, 44),
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(vertical: 20.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    Image.asset(
+                      "assets/images/image.png",
+                      width: 200.0,
+                      height: 200.0,
+                    ),
+                    const SizedBox(height: 24.0),
 
-            Text(
-              "Kategori İşlemleri",
-              style: TextStyle(
-                color: const Color.fromARGB(255, 0, 0, 0),
-                fontSize: 16.0,
-                fontFamily: "Inter",
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                print(3);
-              },
-              style: ElevatedButton.styleFrom(
-                side: BorderSide(color: const Color.fromARGB(255, 0, 0, 0)),
-                padding: const EdgeInsets.all(20.0),
-              ),
-              child: Text(
-                "Kategori Ekle",
-                style: TextStyle(
-                  fontFamily: "Inter",
-                  fontWeight: FontWeight.normal,
-                  fontSize: 14.0,
-                ),
-              ),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                print(4);
-              },
-              style: ElevatedButton.styleFrom(
-                side: BorderSide(color: const Color.fromARGB(255, 0, 0, 0)),
-                padding: const EdgeInsets.all(20.0),
-              ),
-              child: Text(
-                "Kategori Sil",
-                style: TextStyle(
-                  fontFamily: "Inter",
-                  fontWeight: FontWeight.normal,
-                  fontSize: 14.0,
-                ),
-              ),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                print(5);
-              },
-              style: ElevatedButton.styleFrom(
-                side: BorderSide(color: const Color.fromARGB(255, 0, 0, 0)),
-                padding: const EdgeInsets.all(20.0),
-              ),
-              child: Text(
-                "Kategori Listele",
-                style: TextStyle(
-                  fontFamily: "Inter",
-                  fontWeight: FontWeight.normal,
-                  fontSize: 14.0,
-                ),
-              ),
-            ),
+                    const Text(
+                      "Kitap İşlemleri",
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 16.0,
+                        fontFamily: "Inter",
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 12.0),
+                    ElevatedButton(
+                      onPressed: () => print(0),
+                      style: _menuButtonStyle,
+                      child: Text("Kitap Ekle", style: _labelTextStyle),
+                    ),
+                    const SizedBox(height: 8.0),
+                    ElevatedButton(
+                      onPressed: () => print(1),
+                      style: _menuButtonStyle,
+                      child: Text("Kitap Sil", style: _labelTextStyle),
+                    ),
+                    const SizedBox(height: 8.0),
+                    ElevatedButton(
+                      onPressed: () => print(2),
+                      style: _menuButtonStyle,
+                      child: Text("Kitap Listele", style: _labelTextStyle),
+                    ),
+                    const SizedBox(height: 24.0),
 
-            Text(
-              "Ödünç Alma İşlemleri",
-              style: TextStyle(
-                color: const Color.fromARGB(255, 0, 0, 0),
-                fontSize: 16.0,
-                fontFamily: "Inter",
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                print(6);
-              },
-              style: ElevatedButton.styleFrom(
-                side: BorderSide(color: const Color.fromARGB(255, 0, 0, 0)),
-                padding: const EdgeInsets.all(20.0),
-              ),
-              child: Text(
-                "Ödünç Kitap Ver",
-                style: TextStyle(
-                  fontFamily: "Inter",
-                  fontWeight: FontWeight.normal,
-                  fontSize: 14.0,
-                ),
-              ),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                print(7);
-              },
-              style: ElevatedButton.styleFrom(
-                side: BorderSide(color: const Color.fromARGB(255, 0, 0, 0)),
-                padding: const EdgeInsets.all(20.0),
-              ),
-              child: Text(
-                "Kitap Geri Al",
-                style: TextStyle(
-                  fontFamily: "Inter",
-                  fontWeight: FontWeight.normal,
-                  fontSize: 14.0,
-                ),
-              ),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                print(8);
-              },
-              style: ElevatedButton.styleFrom(
-                side: BorderSide(color: const Color.fromARGB(255, 0, 0, 0)),
-                padding: const EdgeInsets.all(20.0),
-              ),
-              child: Text(
-                "Ödünç Kitapları Listele",
-                style: TextStyle(
-                  fontFamily: "Inter",
-                  fontWeight: FontWeight.normal,
-                  fontSize: 14.0,
-                ),
-              ),
-            ),
+                    const Text(
+                      "Kategori İşlemleri",
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 16.0,
+                        fontFamily: "Inter",
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 12.0),
+                    ElevatedButton(
+                      onPressed: () => print(3),
+                      style: _menuButtonStyle,
+                      child: Text("Kategori Ekle", style: _labelTextStyle),
+                    ),
+                    const SizedBox(height: 8.0),
+                    ElevatedButton(
+                      onPressed: () => print(4),
+                      style: _menuButtonStyle,
+                      child: Text("Kategori Sil", style: _labelTextStyle),
+                    ),
+                    const SizedBox(height: 8.0),
+                    ElevatedButton(
+                      onPressed: () => print(5),
+                      style: _menuButtonStyle,
+                      child: Text("Kategori Listele", style: _labelTextStyle),
+                    ),
+                    const SizedBox(height: 24.0),
 
-            Text(
-              "Kullanıcı İşlemleri",
-              style: TextStyle(
-                color: const Color.fromARGB(255, 0, 0, 0),
-                fontSize: 16.0,
-                fontFamily: "Inter",
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                print(9);
-              },
-              style: ElevatedButton.styleFrom(
-                side: BorderSide(color: const Color.fromARGB(255, 0, 0, 0)),
-                padding: const EdgeInsets.all(20.0),
-              ),
-              child: Text(
-                "Kullanıcı Ekle",
-                style: TextStyle(
-                  fontFamily: "Inter",
-                  fontWeight: FontWeight.normal,
-                  fontSize: 14.0,
-                ),
-              ),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                print(10);
-              },
-              style: ElevatedButton.styleFrom(
-                side: BorderSide(color: const Color.fromARGB(255, 0, 0, 0)),
-                padding: const EdgeInsets.all(20.0),
-              ),
-              child: Text(
-                "Kullanıcı Sil",
-                style: TextStyle(
-                  fontFamily: "Inter",
-                  fontWeight: FontWeight.normal,
-                  fontSize: 14.0,
-                ),
-              ),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                print(11);
-              },
-              style: ElevatedButton.styleFrom(
-                side: BorderSide(color: const Color.fromARGB(255, 0, 0, 0)),
-                padding: const EdgeInsets.all(20.0),
-              ),
-              child: Text(
-                "Kullanıcı Listele",
-                style: TextStyle(
-                  fontFamily: "Inter",
-                  fontWeight: FontWeight.normal,
-                  fontSize: 14.0,
-                ),
-              ),
-            ),
+                    const Text(
+                      "Ödünç Alma İşlemleri",
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 16.0,
+                        fontFamily: "Inter",
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 12.0),
+                    ElevatedButton(
+                      onPressed: () => print(6),
+                      style: _menuButtonStyle,
+                      child: Text("Ödünç Kitap Ver", style: _labelTextStyle),
+                    ),
+                    const SizedBox(height: 8.0),
+                    ElevatedButton(
+                      onPressed: () => print(7),
+                      style: _menuButtonStyle,
+                      child: Text("Kitap Geri Al", style: _labelTextStyle),
+                    ),
+                    const SizedBox(height: 8.0),
+                    ElevatedButton(
+                      onPressed: () => print(8),
+                      style: _menuButtonStyle,
+                      child: Text(
+                        "Ödünç Kitapları Listele",
+                        style: _labelTextStyle,
+                      ),
+                    ),
+                    const SizedBox(height: 24.0),
 
-            Text(
-              "Süreç İşlemleri",
-              style: TextStyle(
-                color: const Color.fromARGB(255, 0, 0, 0),
-                fontSize: 16.0,
-                fontFamily: "Inter",
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                print(12);
-              },
-              style: ElevatedButton.styleFrom(
-                side: BorderSide(color: const Color.fromARGB(255, 0, 0, 0)),
-                padding: const EdgeInsets.all(20.0),
-              ),
-              child: Text(
-                "Süreç Sil",
-                style: TextStyle(
-                  fontFamily: "Inter",
-                  fontWeight: FontWeight.normal,
-                  fontSize: 14.0,
+                    const Text(
+                      "Kullanıcı İşlemleri",
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 16.0,
+                        fontFamily: "Inter",
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 12.0),
+                    ElevatedButton(
+                      onPressed: () => print(9),
+                      style: _menuButtonStyle,
+                      child: Text("Kullanıcı Ekle", style: _labelTextStyle),
+                    ),
+                    const SizedBox(height: 8.0),
+                    ElevatedButton(
+                      onPressed: () => print(10),
+                      style: _menuButtonStyle,
+                      child: Text("Kullanıcı Sil", style: _labelTextStyle),
+                    ),
+                    const SizedBox(height: 8.0),
+                    ElevatedButton(
+                      onPressed: () => print(11),
+                      style: _menuButtonStyle,
+                      child: Text("Kullanıcı Listele", style: _labelTextStyle),
+                    ),
+                    const SizedBox(height: 24.0),
+
+                    const Text(
+                      "Sıfırlama İşlemleri",
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 16.0,
+                        fontFamily: "Inter",
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 12.0),
+                    ElevatedButton(
+                      onPressed: () => print(14),
+                      style: _menuButtonStyle,
+                      child: Text("Sistemi Sıfırla", style: _labelTextStyle),
+                    ),
+                    const SizedBox(height: 24.0),
+
+                    const Text(
+                      "Çıkış İşlemleri",
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 16.0,
+                        fontFamily: "Inter",
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 12.0),
+                    ElevatedButton(
+                      onPressed: () async {
+                        await signOut();
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => LoginDashboard(),
+                          ),
+                        );
+                      },
+                      style: _menuButtonStyle,
+                      child: Text("Çıkış Yap", style: _labelTextStyle),
+                    ),
+                    const SizedBox(height: 12.0),
+                  ],
                 ),
               ),
             ),
-            ElevatedButton(
-              onPressed: () {
-                print(13);
-              },
-              style: ElevatedButton.styleFrom(
-                side: BorderSide(color: const Color.fromARGB(255, 0, 0, 0)),
-                padding: const EdgeInsets.all(20.0),
-              ),
-              child: Text(
-                "Süreç Listele",
-                style: TextStyle(
-                  fontFamily: "Inter",
-                  fontWeight: FontWeight.normal,
-                  fontSize: 14.0,
+          ),
+          Expanded(
+            child: Container(
+              decoration: const BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage("assets/images/libImage.png"),
+                  fit: BoxFit.cover,
                 ),
               ),
             ),
-            Text(
-              "Sıfırlama İşlemleri",
-              style: TextStyle(
-                color: const Color.fromARGB(255, 0, 0, 0),
-                fontSize: 16.0,
-                fontFamily: "Inter",
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                print(14);
-              },
-              style: ElevatedButton.styleFrom(
-                side: BorderSide(color: const Color.fromARGB(255, 0, 0, 0)),
-                padding: const EdgeInsets.all(20.0),
-              ),
-              child: Text(
-                "Sistemi Sıfırla",
-                style: TextStyle(
-                  fontFamily: "Inter",
-                  fontWeight: FontWeight.normal,
-                  fontSize: 14.0,
-                ),
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:frontend/api_requests.dart';
 import 'package:frontend/main.dart';
 import 'adminDashboard.dart';
+import 'student_staffDashboard.dart';
+import 'teacherDashboard.dart';
 
 class LoginDashboard extends StatefulWidget {
   const LoginDashboard({super.key});
@@ -138,7 +140,6 @@ class _LoginDashboardState extends State<LoginDashboard> {
                     ),
                   ),
 
-                  // ŞANLI SIGN IN BUTONU
                   ElevatedButton(
                     onPressed: () async {
                       var response = await signIn(
@@ -156,15 +157,19 @@ class _LoginDashboardState extends State<LoginDashboard> {
                             ),
                           );
                         } else if (response["role"] == "teacher") {
-                          //Navigator.push(
-                          //MaterialPageRoute(
-                          //builder: (context) => teacherDashboard(),
-                          //);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => teacherDashboard(),
+                            ),
+                          );
                         } else {
-                          //Navigator.push(
-                          //MaterialPageRoute(
-                          //builder: (context) => student_staffDashboard(),
-                          //);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => student_staffDashboard(),
+                            ),
+                          );
                         }
                       } else {
                         showDialog(
@@ -190,6 +195,7 @@ class _LoginDashboardState extends State<LoginDashboard> {
                       side: const BorderSide(
                         color: Color.fromARGB(255, 0, 0, 0),
                       ),
+                      backgroundColor: Colors.white,
                     ),
                     child: const Text(
                       "Sign In",
@@ -210,6 +216,7 @@ class _LoginDashboardState extends State<LoginDashboard> {
                       side: const BorderSide(
                         color: Color.fromARGB(255, 0, 0, 0),
                       ),
+                      backgroundColor: Colors.white,
                     ),
                     child: const Text(
                       "İptal",
