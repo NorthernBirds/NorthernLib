@@ -4,7 +4,40 @@ from utils.setupSQL import setup
 import bcrypt
 import secrets
 import random
+import time
 
+def durationHeartbeat():
+
+    while True:
+        
+        try:
+
+            tokens = list(config.session.keys())
+            
+            for t in tokens:
+
+                config.session[t]["duration"] += 1
+
+                if config.session[t]["duration"] >= 3600:
+
+                    config.session[t]["dbValues"]["conn"].close()
+                    del config.session[t]
+                
+                else:
+                    pass
+
+            time.sleep(1)
+        
+        except Exception as e:
+
+            pass
+
+def resetDuration(token:str):
+
+    if token in config.session.keys():
+        config.session[token]["duration"] = 0
+    else:
+        pass
 
 class Auth:
 
@@ -35,7 +68,7 @@ class Auth:
 
                 result = self.cursor.fetchone()
 
-                if result is not None:
+                if result is not None or dbName == "adminlibrary":
                     return {"success":False,"message":"Bu kütüphane adı zaten var!"}
                 else:
 
@@ -67,7 +100,7 @@ class Auth:
 
                 result = self.cursor.fetchone()
 
-                if result is None:
+                if result is None or dbName == "adminlibrary":
                     return {"success":False,"message":"Bu kütüphane adı bulunamadı!"}
                 else:
 

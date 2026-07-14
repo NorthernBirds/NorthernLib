@@ -93,6 +93,8 @@ class Book:
 
         try:
 
+            filterList = ["id","bookName","writer","category","publisher","pageCount","isTaken","whoAdded"]
+
             if limit == 0:
                 return {"success":False,"message":"Lutfen boş bırakmayın!"}
             else:
@@ -102,7 +104,7 @@ class Book:
                 else:
 
                     IDs,names,writers,categories,publishers,pageCounts,isTakens,whoAddeds = [],[],[],[],[],[],[],[]
-                    offset = ((pageNumber - 1) * limit) + 1
+                    offset = ((pageNumber - 1) * limit)
 
                     self.cursor.execute("SELECT COUNT(*) FROM books")
                     totalBooks = self.cursor.fetchone()[0]
@@ -118,10 +120,7 @@ class Book:
                         categories.append(rV[3])
                         publishers.append(rV[4])
                         pageCounts.append(rV[5])
-                        if bool(rV[6]) == True:
-                            isTakens.append("Alındı")
-                        else:
-                            isTakens.append("Alınmadı")
+                        isTakens.append(rV[6])
                         whoAddeds.append(rV[7])
 
                     if isWithFilter == True:
@@ -133,30 +132,39 @@ class Book:
                             if filterType != "pageCount" and filterType != "id":
                                 if len(filterValue.strip()) < 2:
                                     return {"success":False,"message":"Arama en az 2 karakter olmalıdır!"}
-                            
-                            self.cursor.execute("SELECT * FROM books LIMIT %s OFFSET %s", (limit, offset))
-                            result = self.cursor.fetchall()
-
-                            if not result:
-                                pass
+                                
+                            if filterType not in filterList:
+                                return {"success":False,"message":"Lütfen geçerli parametre giriniz!"}
                             else:
+                                
+                                if filterType != "pageCount" and filterType != "id":
+                                    newFilterValue = f"%{filterValue}%"
+                                    self.cursor.execute(f"SELECT COUNT(*) FROM books WHERE {filterType} LIKE %s", (newFilterValue,))
+                                    totalBooks = self.cursor.fetchone()[0]
+                                    pageCount = totalBooks // limit
+                                    if totalBooks % limit != 0:
+                                        pageCount += 1
 
-                                for r in result:
-                                    
-                                    for i,j in zip(
-                                        range(0,8),
-                                        ["id","name","writer","category","publisher","pageCount","isTaken","whoAdded"]
-                                    ):
+                                    self.cursor.execute(f"SELECT * FROM books WHERE {filterType} LIKE %s LIMIT %s OFFSET %s", (newFilterValue,limit, offset))
+                                    result = self.cursor.fetchall()
+                                else:
+                                
+                                    self.cursor.execute(f"SELECT COUNT(*) FROM books WHERE {filterType} = %s", (int(filterValue),))
+                                    totalBooks = self.cursor.fetchone()[0]
+                                    pageCount = totalBooks // limit
+                                    if totalBooks % limit != 0:
+                                        pageCount += 1
 
-                                        if filterType == j:
+                                    self.cursor.execute(f"SELECT * FROM books WHERE {filterType} = %s LIMIT %s OFFSET %s", (int(filterValue),limit, offset))
+                                    result = self.cursor.fetchall()
 
-                                            parsed_name = str(r[i]).lower()
-                                            if filterType == "pageCount" and filterType == "id":
-                                                if str(filterValue).lower() == parsed_name:
-                                                    add(rV=r)
-                                            else:
-                                                if str(filterValue).lower() in parsed_name:
-                                                    add(rV=r)
+                                if not result:
+                                    pass
+                                else:
+
+                                    for r in result:
+                                        
+                                        add(rV=r)
                     
                     elif isWithFilter == False:
 

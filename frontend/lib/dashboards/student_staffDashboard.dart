@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/api_requests.dart';
 import 'package:frontend/dashboards/signInDashboard.dart';
+import 'package:frontend/models/books.dart';
 
-class student_staffDashboard extends StatefulWidget {
-  const student_staffDashboard({super.key});
+class StudentStaffDashboard extends StatefulWidget {
+  const StudentStaffDashboard({super.key});
 
   @override
-  State<student_staffDashboard> createState() => _student_staffDashboardState();
+  State<StudentStaffDashboard> createState() => _StudentStaffDashboardState();
 }
 
-class _student_staffDashboardState extends State<student_staffDashboard> {
+class _StudentStaffDashboardState extends State<StudentStaffDashboard> {
   final ButtonStyle _menuButtonStyle = ElevatedButton.styleFrom(
     side: const BorderSide(color: Colors.black),
     padding: const EdgeInsets.all(20.0),
@@ -22,6 +23,8 @@ class _student_staffDashboardState extends State<student_staffDashboard> {
     fontSize: 14.0,
     color: Colors.black,
   );
+
+  bool isAddBookWidgetVisible = false;
 
   @override
   Widget build(BuildContext context) {
@@ -64,7 +67,11 @@ class _student_staffDashboardState extends State<student_staffDashboard> {
                     ),
                     const SizedBox(height: 12.0),
                     ElevatedButton(
-                      onPressed: () => print(0),
+                      onPressed: () {
+                        setState(() {
+                          isAddBookWidgetVisible = true;
+                        });
+                      },
                       style: _menuButtonStyle,
                       child: Text("Kitap Ekle", style: _labelTextStyle),
                     ),
@@ -151,6 +158,16 @@ class _student_staffDashboardState extends State<student_staffDashboard> {
                   fit: BoxFit.cover,
                 ),
               ),
+
+              child: isAddBookWidgetVisible
+                  ? AddBookWidget(
+                      onCancel: () {
+                        setState(() {
+                          isAddBookWidgetVisible = false;
+                        });
+                      },
+                    )
+                  : null,
             ),
           ),
         ],

@@ -111,10 +111,11 @@ class _signUpStateDash extends State<signUpDash> {
                       side: BorderSide(
                         color: const Color.fromARGB(255, 0, 0, 0),
                       ),
+                      backgroundColor: Colors.white,
                     ),
                     child: const Text(
                       "Kayıt Ol",
-                      style: TextStyle(fontSize: 14),
+                      style: TextStyle(fontSize: 14, color: Colors.black),
                     ),
                   ),
                   ElevatedButton(
@@ -131,6 +132,7 @@ class _signUpStateDash extends State<signUpDash> {
                       side: const BorderSide(
                         color: Color.fromARGB(255, 0, 0, 0),
                       ),
+                      backgroundColor: Colors.white,
                     ),
                     child: const Text(
                       "İptal",

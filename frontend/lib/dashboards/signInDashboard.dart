@@ -153,21 +153,21 @@ class _LoginDashboardState extends State<LoginDashboard> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => adminDashboard(),
+                              builder: (context) => AdminDashboard(),
                             ),
                           );
                         } else if (response["role"] == "teacher") {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => teacherDashboard(),
+                              builder: (context) => TeacherDashboard(),
                             ),
                           );
                         } else {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => student_staffDashboard(),
+                              builder: (context) => StudentStaffDashboard(),
                             ),
                           );
                         }

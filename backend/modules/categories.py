@@ -74,6 +74,8 @@ class Category:
 
         try:
 
+            filterList = ["id","categoryName","whoAdded"]
+
             if limit == 0:
                 return {"success":False,"message":"Lutfen boş bırakmayın!"}
             else:
@@ -105,30 +107,39 @@ class Category:
                             if filterType != "id":
                                 if len(filterValue.strip()) < 2:
                                     return {"success":False,"message":"Arama en az 2 karakter olmalıdır!"}
-
-                            self.cursor.execute("SELECT * FROM categories LIMIT %s OFFSET %s", (limit, offset))
-                            result = self.cursor.fetchall()
-
-                            if not result:
-                                pass
-                            else:
                             
+                            if filterType not in filterList:
+                                return {"success":False,"message":"Lütfen geçerli parametre giriniz!"}
+                            else:
+                                
+                                if filterType != "id":
+                                    newFilterValue = f"%{filterValue}%"
+                                    self.cursor.execute(f"SELECT COUNT(*) FROM categories WHERE {filterType} LIKE %s", (newFilterValue,))
+                                    totalCategories = self.cursor.fetchone()[0]
+                                    pageCount = totalCategories // limit
+                                    if totalCategories % limit != 0:
+                                        pageCount += 1
+
+                                    self.cursor.execute(f"SELECT * FROM categories WHERE {filterType} LIKE %s LIMIT %s OFFSET %s", (newFilterValue,limit, offset))
+                                    result = self.cursor.fetchall()
+                                else:
+                                
+                                    self.cursor.execute(f"SELECT COUNT(*) FROM categories WHERE {filterType} = %s", (int(filterValue),))
+                                    totalCategories = self.cursor.fetchone()[0]
+                                    pageCount = totalCategories // limit
+                                    if totalCategories % limit != 0:
+                                        pageCount += 1
+
+                                    self.cursor.execute(f"SELECT * FROM categories WHERE {filterType} = %s LIMIT %s OFFSET %s", (int(filterValue),limit, offset))
+                                    result = self.cursor.fetchall()
+
+                                if not result:
+                                    pass
+                                else:
+                                
                                     for r in result:
 
-                                        for i,j in zip(
-                                            range(0,3),
-                                            ["id","categoryName","whoAdded"]
-                                        ):
-
-                                            if filterType == j:
-
-                                                parsed_name = str(r[i]).lower()
-                                                if filterType == "id":
-                                                    if str(filterValue).lower() == parsed_name:
-                                                        add(rV=r)
-                                                else:
-                                                    if filterValue.lower() in parsed_name:
-                                                        add(rV=r)
+                                        add(rV=r)
                     
                     elif isWithFilter == False:
 

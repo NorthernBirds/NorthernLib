@@ -42,13 +42,8 @@ License Compliance: Usage must strictly adhere to the defined license terms.
 
 Environment Configuration: Modify the following files according to your infrastructure requirements:
 
-backend.py (Line 10)
-
-config.py (Line 23)
-
-setupSQL.sql (Line 4)
-
-config.dart (Line 5-6)
+(Rename) configExample.dart -> config.dart (Line 5)
+(Rename) .env.example -> .env (Line 1,2,3,4)
 
 Directory Structure: Ensure all directories excluded by .gitignore (e.g., logs/) are manually created in your local environment.
 

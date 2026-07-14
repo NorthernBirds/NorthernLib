@@ -1,5 +1,10 @@
 import "config.dart";
 import "package:dio/dio.dart";
+import "package:flutter/material.dart";
+import "package:frontend/dashboards/signInDashboard.dart";
+
+// Dashboard'ları kirletmeden context'i burada tutacağız
+BuildContext? globalContext;
 
 final BaseOptions options = BaseOptions(
   baseUrl: baseUrl,
@@ -9,7 +14,27 @@ final BaseOptions options = BaseOptions(
   responseType: ResponseType.json,
 );
 
-final Dio dio = Dio(options);
+final Dio dio = Dio(options)
+  ..interceptors.add(
+    InterceptorsWrapper(
+      onResponse: (response, handler) {
+        if (response.data != null &&
+            response.data["message"]?.toString().contains("401 Unauthorized") ==
+                true) {
+          session.clear();
+          if (globalContext != null && globalContext!.mounted) {
+            Navigator.pushAndRemoveUntil(
+              globalContext!,
+              MaterialPageRoute(builder: (context) => const LoginDashboard()),
+              (route) => false,
+            );
+          }
+        }
+        return handler.next(response);
+      },
+      onError: (DioException e, handler) => handler.next(e),
+    ),
+  );
 
 Future<Map<String, dynamic>?> signUp({required String dbName}) async {
   var response = await dio.post(
@@ -40,7 +65,6 @@ Future<Map<String, dynamic>?> signIn({
     session["userName"] = response.data["userName"];
     session["role"] = response.data["role"];
   }
-
   return response.data;
 }
 
@@ -76,7 +100,7 @@ Future<Map<String, dynamic>?> deleteBook({required int id}) async {
 
 Future<Map<String, dynamic>?> listBooks({
   required bool isWithFilter,
-  required String filterFormat,
+  required String filterType,
   required String filterValue,
   required int limit,
   required int pageNumber,
@@ -85,7 +109,7 @@ Future<Map<String, dynamic>?> listBooks({
     "/listBooks",
     data: {
       "isWithFilter": isWithFilter,
-      "filterFormat": filterFormat,
+      "filterType": filterType,
       "filterValue": filterValue,
       "limit": limit,
       "pageNumber": pageNumber,
@@ -120,7 +144,7 @@ Future<Map<String, dynamic>?> deleteCategory({required int id}) async {
 
 Future<Map<String, dynamic>?> listCategories({
   required bool isWithFilter,
-  required String filterFormat,
+  required String filterType,
   required String filterValue,
   required int limit,
   required int pageNumber,
@@ -129,7 +153,7 @@ Future<Map<String, dynamic>?> listCategories({
     "/listCategories",
     data: {
       "isWithFilter": isWithFilter,
-      "filterFormat": filterFormat,
+      "filterType": filterType,
       "filterValue": filterValue,
       "limit": limit,
       "pageNumber": pageNumber,
@@ -168,7 +192,7 @@ Future<Map<String, dynamic>?> returnBook({required int bookID}) async {
 
 Future<Map<String, dynamic>?> listLoans({
   required bool isWithFilter,
-  required String filterFormat,
+  required String filterType,
   required String filterValue,
   required int limit,
   required int pageNumber,
@@ -177,7 +201,7 @@ Future<Map<String, dynamic>?> listLoans({
     "/listLoans",
     data: {
       "isWithFilter": isWithFilter,
-      "filterFormat": filterFormat,
+      "filterType": filterType,
       "filterValue": filterValue,
       "limit": limit,
       "pageNumber": pageNumber,
@@ -248,7 +272,7 @@ Future<Map<String, dynamic>?> changeRole({
 
 Future<Map<String, dynamic>?> listUsers({
   required bool isWithFilter,
-  required String filterFormat,
+  required String filterType,
   required String filterValue,
   required int limit,
   required int pageNumber,
@@ -257,7 +281,7 @@ Future<Map<String, dynamic>?> listUsers({
     "/listUsers",
     data: {
       "isWithFilter": isWithFilter,
-      "filterFormat": filterFormat,
+      "filterType": filterType,
       "filterValue": filterValue,
       "limit": limit,
       "pageNumber": pageNumber,
@@ -278,7 +302,7 @@ Future<Map<String, dynamic>?> deleteProcess({required int id}) async {
 
 Future<Map<String, dynamic>?> listProcesses({
   required bool isWithFilter,
-  required String filterFormat,
+  required String filterType,
   required String filterValue,
   required int limit,
   required int pageNumber,
@@ -287,7 +311,7 @@ Future<Map<String, dynamic>?> listProcesses({
     "/listProcesses",
     data: {
       "isWithFilter": isWithFilter,
-      "filterFormat": filterFormat,
+      "filterType": filterType,
       "filterValue": filterValue,
       "limit": limit,
       "pageNumber": pageNumber,

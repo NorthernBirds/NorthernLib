@@ -25,13 +25,13 @@ class Loan:
                     return {"success":False,"message":"Kitap bulunamadı!"}
                 else:
 
-                    if result[6] == True:
+                    if result[6] == "Alındı":
                         return {"success":False,"message":"Bu kitap zaten alınmış!"}
                     else:
 
                         self.cursor.execute("INSERT INTO loans (studentID,bookID,returnDate,whoAdded) VALUES (%s,%s,%s,%s)",(studentID,bookID,returnDate,activeUserName))
                         self.conn.commit()
-                        self.cursor.execute("UPDATE books SET isTaken = %s WHERE id = %s",(True,bookID))
+                        self.cursor.execute("UPDATE books SET isTaken = %s WHERE id = %s",("Alındı",bookID))
                         self.conn.commit()
                         
                         return {"success":True,"message":"Kitap ödünç alındı."}
@@ -57,18 +57,17 @@ class Loan:
                     return {"success":False,"message":"Kitap bulunamadı!"}
                 else:
 
-                    if result[6] == False:
+                    if result[6] == "Alınmadı":
                         return {"success":False,"message":"Bu kitap zaten ödünç alınmamış!"}
                     else:
 
                         now = datetime.now().strftime("%d/%m/%Y")
                         self.cursor.execute("UPDATE loans SET loanStatus = %s,returnedAt = %s WHERE bookID = %s",("returned",now,bookID))
                         self.conn.commit()
-                        self.cursor.execute("UPDATE books SET isTaken = %s WHERE id = %s",(False,bookID))
+                        self.cursor.execute("UPDATE books SET isTaken = %s WHERE id = %s",("Alınmadı",bookID))
                         self.conn.commit()
                         
                         return {"success":True,"message":"Kitap geri verildi."}
-        
         except Exception as e:
 
             writeLog(config.LOANS_LOG_PATH,type(e).__name__,str(e))
@@ -78,6 +77,8 @@ class Loan:
     def listLoans(self,filterValue:str,filterType:str,isWithFilter:bool | str,pageNumber:int,limit:int):
 
         try:
+
+            filterList = ["id","bookID","studentID","borrowDate","returnDate","returnedAt","loanStatus","whoAdded"]
 
             if limit == 0:
                 return {"success":False,"message":"Lutfen boş bırakmayın!"}
@@ -104,7 +105,7 @@ class Loan:
                             result = self.cursor.fetchone()
                             
                             if result:
-                                bookNames.append(result[1])
+                                bookNames.append(result[0])
                             else:
                                 bookNames.append("Bilinmeyen Kitap")
 
@@ -124,8 +125,30 @@ class Loan:
                                     if len(filterValue.strip()) < 2:
                                         return {"success":False,"message":"Arama en az 2 karakter olmalıdır!"}
 
-                                self.cursor.execute("SELECT * FROM loans LIMIT %s OFFSET %s", (limit, offset))
-                                result = self.cursor.fetchall()
+                                if filterType not in filterList:
+                                    return {"success":False,"message":"Lütfen geçerli parametre giriniz!"}
+                                else:
+                                    
+                                    if filterType != "id" and filterType != "studentID" and filterType != "bookID":
+                                        newFilterValue = f"%{filterValue}%"
+                                        self.cursor.execute(f"SELECT COUNT(*) FROM loans WHERE {filterType} LIKE %s", (newFilterValue,))
+                                        totalLoans = self.cursor.fetchone()[0]
+                                        pageCount = totalLoans // limit
+                                        if totalLoans % limit != 0:
+                                            pageCount += 1
+
+                                        self.cursor.execute(f"SELECT * FROM loans WHERE {filterType} LIKE %s LIMIT %s OFFSET %s", (newFilterValue,limit, offset))
+                                        result = self.cursor.fetchall()
+                                    else:
+                                    
+                                        self.cursor.execute(f"SELECT COUNT(*) FROM loans WHERE {filterType} = %s", (int(filterValue),))
+                                        totalLoans = self.cursor.fetchone()[0]
+                                        pageCount = totalLoans // limit
+                                        if totalLoans % limit != 0:
+                                            pageCount += 1
+
+                                        self.cursor.execute(f"SELECT * FROM loans WHERE {filterType} = %s LIMIT %s OFFSET %s", (int(filterValue),limit, offset))
+                                        result = self.cursor.fetchall()
 
                                 if not result:
                                     pass
@@ -133,22 +156,8 @@ class Loan:
                                     
                                     for r in result:
 
-                                        for i,j in zip(
-                                            range(0,8),
-                                            ["id","studentID","bookID","borrowDate","returnDate","returnedAt","status","whoAdded"]
-                                        ):
-
-                                            if filterType == j:
-
-                                                parsed_name = str(r[i]).lower()
-                                                if filterType == "id" or filterType == "studentID" or filterType == "bookID":
-                                                    if str(filterValue).lower() == parsed_name:
-                                                        add(rV=r)
-                                                        break
-                                                else:
-                                                    if filterValue.lower() in parsed_name:
-                                                        add(rV=r)
-                                                        break
+                                        add(rV=r)
+                                                        
                                             
                         elif isWithFilter == False:
 
@@ -191,9 +200,3 @@ class Loan:
             
             writeLog(config.LOANS_LOG_PATH,type(e).__name__,str(e))
             return {"success":False,"message":"Bir hata oluştu!"}
-
-
-
-        
-    
-

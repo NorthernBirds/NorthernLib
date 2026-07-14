@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/dashboards/signInDashboard.dart';
 import 'package:frontend/dashboards/signUpDashboard.dart';
+import 'api_requests.dart' as api;
 
 void main() {
   runApp(const MyApp());
@@ -20,6 +21,10 @@ class MyApp extends StatelessWidget {
         ),
       ),
       home: const MyHomePage(title: 'NorthernLib'),
+      builder: (context, child) {
+        api.globalContext = context;
+        return child!;
+      },
     );
   }
 }

@@ -127,6 +127,8 @@ class User:
 
         try:
 
+            filterList = ["id","userName","userRole"]
+
             if limit == 0:
                 return {"success":False,"message":"Lutfen boş bırakmayın!"}
             else:
@@ -159,8 +161,30 @@ class User:
                                 if len(filterValue.strip()) < 2:
                                     return {"success":False,"message":"Arama en az 2 karakter olmalıdır!"}
 
-                            self.cursor.execute("SELECT * FROM users LIMIT %s OFFSET %s", (limit, offset))
-                            result = self.cursor.fetchall()
+                            if filterType not in filterList:
+                                return {"success":False,"message":"Lütfen geçerli parametre giriniz!"}
+                            else:
+                                    
+                                if filterType != "id":
+                                    newFilterValue = f"%{filterValue}%"
+                                    self.cursor.execute(f"SELECT COUNT(*) FROM users WHERE {filterType} LIKE %s", (newFilterValue,))
+                                    totalUsers = self.cursor.fetchone()[0]
+                                    pageCount = totalUsers // limit
+                                    if totalUsers % limit != 0:
+                                        pageCount += 1
+
+                                    self.cursor.execute(f"SELECT * FROM users WHERE {filterType} LIKE %s LIMIT %s OFFSET %s", (newFilterValue,limit, offset))
+                                    result = self.cursor.fetchall()
+                                else:
+                                    
+                                    self.cursor.execute(f"SELECT COUNT(*) FROM users WHERE {filterType} = %s", (int(filterValue),))
+                                    totalUsers = self.cursor.fetchone()[0]
+                                    pageCount = totalUsers // limit
+                                    if totalUsers % limit != 0:
+                                        pageCount += 1
+
+                                    self.cursor.execute(f"SELECT * FROM users WHERE {filterType} = %s LIMIT %s OFFSET %s", (int(filterValue),limit, offset))
+                                    result = self.cursor.fetchall()
 
                             if not result:
                                 pass
@@ -168,21 +192,7 @@ class User:
                                 
                                 for r in result:
 
-                                    for i,j in zip(
-                                        range(0,3),
-                                        ["id","userName","role"]
-                                    ):
-
-                                        if filterType == j:
-
-                                            parsed_name = str(r[i]).lower()
-
-                                            if filterType == "id":
-                                                if str(filterValue).lower() == parsed_name:
-                                                    add(rV=r)
-                                            else:
-                                                if filterValue.lower() in parsed_name:
-                                                    add(rV=r)
+                                    add(rV=r)
                     
                     elif isWithFilter == False:
 

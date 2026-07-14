@@ -2,10 +2,9 @@ const String baseUrl = "http://127.0.0.1:5000/backend";
 
 Map<String, String> session = {};
 
-const String appKey =
-    "9a33c1dfa93ee135be1054e4a1198cc81038603c84fb38a97f31e76712a15752";
+const String appKey = "your_app_token";
 
-List<dynamic> categoriesList = [
+List<dynamic> categories = [
   "Roman",
   "Hikaye",
   "Şiir",

@@ -1,4 +1,7 @@
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -12,7 +15,6 @@ BACKEND_LOG_PATH = os.path.join(BASE_DIR, "logs", "backend.log")
 RESET_LOG_PATH = os.path.join(BASE_DIR,"logs", "reset.log")
 SETUPSQL_LOG_PATH = os.path.join(BASE_DIR,"logs", "setupSQL.log")
 LEADERS_LOG_PATH = os.path.join(BASE_DIR,"logs", "leaders.log")
-PROCESSES_LOG_PATH = os.path.join(BASE_DIR,"logs", "processes.log")
 
 BOOK_CATEGORIES = ["Roman","Hikaye","Şiir","Biyografi","Otobiyografi","Tarih","Bilim","Kişisel Gelişim","Ders Kitabı","Ansiklopedi","Çizgi Roman"]
 
@@ -22,4 +24,8 @@ CERTIFICATE_FILE = os.path.join(BASE_DIR,"cert.pem")
 KEY_FILE = os.path.join(BASE_DIR,"cert.key")
 
 session = {}
-APP_KEY = "6e42022fafe7b0e4f993591cb58448a0e65ef9afb75e54e654fc0437076cce85"
+db_name = os.getenv("DB_NAME")
+db_password = os.getenv("DB_PASSWORD")
+db_user = os.getenv("DB_USER")
+
+APP_KEY = os.getenv("APP_KEY")

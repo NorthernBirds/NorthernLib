@@ -1,19 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/api_requests.dart';
 import 'package:frontend/dashboards/signInDashboard.dart';
+import 'package:frontend/models/books.dart';
+import 'package:frontend/models/categories.dart';
 
-class adminDashboard extends StatefulWidget {
-  const adminDashboard({super.key});
+class AdminDashboard extends StatefulWidget {
+  const AdminDashboard({super.key});
 
   @override
-  State<adminDashboard> createState() => _adminDashboardState();
+  State<AdminDashboard> createState() => _AdminDashboardState();
 }
 
-class _adminDashboardState extends State<adminDashboard> {
+class _AdminDashboardState extends State<AdminDashboard> {
   final ButtonStyle _menuButtonStyle = ElevatedButton.styleFrom(
     side: const BorderSide(color: Colors.black),
     padding: const EdgeInsets.all(20.0),
-    backgroundColor: const Color.fromARGB(255, 77, 44, 44),
+    backgroundColor: const Color(0xFF3A8772),
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
   );
 
   final TextStyle _labelTextStyle = const TextStyle(
@@ -22,6 +25,14 @@ class _adminDashboardState extends State<adminDashboard> {
     fontSize: 14.0,
     color: Colors.black,
   );
+
+  bool isAddBookWidgetVisible = false;
+  bool isDeleteBookWidgetVisible = false;
+  bool isListBooksWidgetVisible = false;
+
+  bool isAddCategoryWidgetVisible = false;
+  bool isDeleteCategoryWidgetVisible = false;
+  bool isListCategoriesWidgetVisible = false;
 
   @override
   Widget build(BuildContext context) {
@@ -34,12 +45,12 @@ class _adminDashboardState extends State<adminDashboard> {
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             decoration: const BoxDecoration(
               border: Border(right: BorderSide(color: Colors.black, width: 2)),
-              color: const Color.fromARGB(255, 77, 44, 44),
+              color: const Color(0xFF3A8772),
             ),
             child: SingleChildScrollView(
               primary: true,
               child: Container(
-                color: const Color.fromARGB(255, 77, 44, 44),
+                color: const Color(0xFF3A8772),
                 width: double.infinity,
                 padding: const EdgeInsets.symmetric(vertical: 20.0),
                 child: Column(
@@ -51,88 +62,112 @@ class _adminDashboardState extends State<adminDashboard> {
                       width: 200.0,
                       height: 200.0,
                     ),
-                    const SizedBox(height: 24.0),
+                    const SizedBox(height: 17.0),
 
                     const Text(
                       "Kitap İşlemleri",
                       style: TextStyle(
                         color: Colors.black,
-                        fontSize: 16.0,
+                        fontSize: 15.7,
                         fontFamily: "Inter",
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(height: 12.0),
+                    const SizedBox(height: 17.0),
                     ElevatedButton(
-                      onPressed: () => print(0),
+                      onPressed: () {
+                        setState(() {
+                          isAddBookWidgetVisible = true;
+                        });
+                      },
                       style: _menuButtonStyle,
                       child: Text("Kitap Ekle", style: _labelTextStyle),
                     ),
-                    const SizedBox(height: 8.0),
+                    const SizedBox(height: 9.0),
                     ElevatedButton(
-                      onPressed: () => print(1),
+                      onPressed: () {
+                        setState(() {
+                          isDeleteBookWidgetVisible = true;
+                        });
+                      },
                       style: _menuButtonStyle,
                       child: Text("Kitap Sil", style: _labelTextStyle),
                     ),
-                    const SizedBox(height: 8.0),
+                    const SizedBox(height: 9.0),
                     ElevatedButton(
-                      onPressed: () => print(2),
+                      onPressed: () {
+                        setState(() {
+                          isListBooksWidgetVisible = true;
+                        });
+                      },
                       style: _menuButtonStyle,
                       child: Text("Kitap Listele", style: _labelTextStyle),
                     ),
-                    const SizedBox(height: 24.0),
+                    const SizedBox(height: 17.0),
 
                     const Text(
                       "Kategori İşlemleri",
                       style: TextStyle(
                         color: Colors.black,
-                        fontSize: 16.0,
+                        fontSize: 15.7,
                         fontFamily: "Inter",
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(height: 12.0),
+                    const SizedBox(height: 17.0),
                     ElevatedButton(
-                      onPressed: () => print(3),
+                      onPressed: () {
+                        setState(() {
+                          isAddCategoryWidgetVisible = true;
+                        });
+                      },
                       style: _menuButtonStyle,
                       child: Text("Kategori Ekle", style: _labelTextStyle),
                     ),
-                    const SizedBox(height: 8.0),
+                    const SizedBox(height: 9.0),
                     ElevatedButton(
-                      onPressed: () => print(4),
+                      onPressed: () {
+                        setState(() {
+                          isDeleteCategoryWidgetVisible = true;
+                        });
+                      },
                       style: _menuButtonStyle,
                       child: Text("Kategori Sil", style: _labelTextStyle),
                     ),
-                    const SizedBox(height: 8.0),
+                    const SizedBox(height: 9.0),
                     ElevatedButton(
-                      onPressed: () => print(5),
+                      onPressed: () {
+                        setState(() {
+                          isListCategoriesWidgetVisible = true;
+                        });
+                      },
                       style: _menuButtonStyle,
                       child: Text("Kategori Listele", style: _labelTextStyle),
                     ),
-                    const SizedBox(height: 24.0),
+                    const SizedBox(height: 17.0),
 
                     const Text(
                       "Ödünç Alma İşlemleri",
                       style: TextStyle(
                         color: Colors.black,
-                        fontSize: 16.0,
+                        fontSize: 15.7,
                         fontFamily: "Inter",
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(height: 12.0),
+                    const SizedBox(height: 17.0),
                     ElevatedButton(
                       onPressed: () => print(6),
                       style: _menuButtonStyle,
                       child: Text("Ödünç Kitap Ver", style: _labelTextStyle),
                     ),
-                    const SizedBox(height: 8.0),
+                    const SizedBox(height: 9.0),
                     ElevatedButton(
                       onPressed: () => print(7),
                       style: _menuButtonStyle,
                       child: Text("Kitap Geri Al", style: _labelTextStyle),
                     ),
-                    const SizedBox(height: 8.0),
+                    const SizedBox(height: 9.0),
                     ElevatedButton(
                       onPressed: () => print(8),
                       style: _menuButtonStyle,
@@ -141,64 +176,64 @@ class _adminDashboardState extends State<adminDashboard> {
                         style: _labelTextStyle,
                       ),
                     ),
-                    const SizedBox(height: 24.0),
+                    const SizedBox(height: 17.0),
 
                     const Text(
                       "Kullanıcı İşlemleri",
                       style: TextStyle(
                         color: Colors.black,
-                        fontSize: 16.0,
+                        fontSize: 15.7,
                         fontFamily: "Inter",
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(height: 12.0),
+                    const SizedBox(height: 17.0),
                     ElevatedButton(
                       onPressed: () => print(9),
                       style: _menuButtonStyle,
                       child: Text("Kullanıcı Ekle", style: _labelTextStyle),
                     ),
-                    const SizedBox(height: 8.0),
+                    const SizedBox(height: 9.0),
                     ElevatedButton(
                       onPressed: () => print(10),
                       style: _menuButtonStyle,
                       child: Text("Kullanıcı Sil", style: _labelTextStyle),
                     ),
-                    const SizedBox(height: 8.0),
+                    const SizedBox(height: 9.0),
                     ElevatedButton(
                       onPressed: () => print(11),
                       style: _menuButtonStyle,
                       child: Text("Kullanıcı Listele", style: _labelTextStyle),
                     ),
-                    const SizedBox(height: 24.0),
+                    const SizedBox(height: 17.0),
 
                     const Text(
                       "Sıfırlama İşlemleri",
                       style: TextStyle(
                         color: Colors.black,
-                        fontSize: 16.0,
+                        fontSize: 15.7,
                         fontFamily: "Inter",
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(height: 12.0),
+                    const SizedBox(height: 17.0),
                     ElevatedButton(
                       onPressed: () => print(14),
                       style: _menuButtonStyle,
                       child: Text("Sistemi Sıfırla", style: _labelTextStyle),
                     ),
-                    const SizedBox(height: 24.0),
+                    const SizedBox(height: 17.0),
 
                     const Text(
                       "Çıkış İşlemleri",
                       style: TextStyle(
                         color: Colors.black,
-                        fontSize: 16.0,
+                        fontSize: 15.7,
                         fontFamily: "Inter",
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(height: 12.0),
+                    const SizedBox(height: 17.0),
                     ElevatedButton(
                       onPressed: () async {
                         await signOut();
@@ -212,7 +247,7 @@ class _adminDashboardState extends State<adminDashboard> {
                       style: _menuButtonStyle,
                       child: Text("Çıkış Yap", style: _labelTextStyle),
                     ),
-                    const SizedBox(height: 12.0),
+                    const SizedBox(height: 20.0),
                   ],
                 ),
               ),
@@ -226,6 +261,56 @@ class _adminDashboardState extends State<adminDashboard> {
                   fit: BoxFit.cover,
                 ),
               ),
+
+              child: isAddBookWidgetVisible
+                  ? AddBookWidget(
+                      onCancel: () {
+                        setState(() {
+                          isAddBookWidgetVisible = false;
+                        });
+                      },
+                    )
+                  : isDeleteBookWidgetVisible
+                  ? DeleteBookWidget(
+                      onCancel: () {
+                        setState(() {
+                          isDeleteBookWidgetVisible = false;
+                        });
+                      },
+                    )
+                  : isListBooksWidgetVisible
+                  ? ListBooksWidget(
+                      onCancel: () {
+                        setState(() {
+                          isListBooksWidgetVisible = false;
+                        });
+                      },
+                    )
+                  : isAddCategoryWidgetVisible
+                  ? AddCategoryWidget(
+                      onCancel: () {
+                        setState(() {
+                          isAddCategoryWidgetVisible = false;
+                        });
+                      },
+                    )
+                  : isDeleteCategoryWidgetVisible
+                  ? DeleteCategoryWidget(
+                      onCancel: () {
+                        setState(() {
+                          isDeleteCategoryWidgetVisible = false;
+                        });
+                      },
+                    )
+                  : isListCategoriesWidgetVisible
+                  ? ListCategoriesWidget(
+                      onCancel: () {
+                        setState(() {
+                          isListCategoriesWidgetVisible = false;
+                        });
+                      },
+                    )
+                  : null,
             ),
           ),
         ],

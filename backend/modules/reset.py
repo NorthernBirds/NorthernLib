@@ -8,7 +8,7 @@ class Reset:
         self.conn = conn
         self.cursor = cursor
 
-    def reset(self,books:bool,categories:bool,loans:bool,users:bool,processes:bool):
+    def reset(self,books:bool,categories:bool,loans:bool,users:bool):
 
         try:
 
@@ -40,14 +40,6 @@ class Reset:
                 self.cursor.execute("DELETE FROM users WHERE userRole = 'student_staff' OR userRole = 'teacher'")
                 self.conn.commit()
             elif users == False:
-                pass
-            else:
-                return {"success":False,"message":"Lütfen boş bırakmayın!"}
-
-            if processes == True:
-                self.cursor.execute("TRUNCATE TABLE processes")
-                self.conn.commit()
-            elif processes == False:
                 pass
             else:
                 return {"success":False,"message":"Lütfen boş bırakmayın!"}

@@ -3,11 +3,12 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import os
 import ssl
+import config
 
 session = config.session
 developingMode = True
 
-resultDB1 = db.connection.getDB(dbName="library",password="Kutuphane@Yonetim#2026!",dbUser="admin")
+resultDB1 = db.connection.getDB(dbName=config.db_name,password=config.db_password,dbUser=config.db_user)
 
 conn = resultDB1["data"]["conn"]
 cursor = resultDB1["data"]["cursor"]
@@ -20,8 +21,16 @@ import modules.reset
 import modules.users
 import modules.leaders
 from utils.writeLog import writeLog
+from flask import Flask, request, jsonify
+from flask_cors import CORS
+import os
+import ssl
+import threading
+
 
 auth = modules.auth.Auth(conn=conn,cursor=cursor)
+thread = threading.Thread(target=modules.auth.durationHeartbeat,daemon=True)
+thread.start()
 
 app = Flask(__name__)
 CORS(app)
@@ -54,9 +63,18 @@ def checkRoleAndToken(token,appToken,allowedRoles):
                 
                 else:
 
+                    modules.auth.resetDuration(token=token)
+                    
                     return {
                         "success":True
                     }
+
+@app.route('/backend/getSession',methods=['POST'])
+def getSession():
+    if developingMode == True:
+        return jsonify(config.session)
+    else:
+        pass
 
 @app.route('/backend/signUp',methods=['POST'])
 def signUp():
@@ -129,7 +147,7 @@ def signIn():
                                 return jsonify(result3)
                             else:
 
-                                config.session[result3["token"]] = {"userName":result3["userName"],"role":result3["role"],"classes":{"auth":authUser,"book":book,"category":category,"loan":loan,"user":user,"reset":reset,"leader":leader},"dbValues":{"conn":conn,"cursor":cursor}}
+                                config.session[result3["token"]] = {"userName":result3["userName"],"role":result3["role"],"duration":0,"classes":{"auth":authUser,"book":book,"category":category,"loan":loan,"user":user,"reset":reset,"leader":leader},"dbValues":{"conn":conn,"cursor":cursor}}
                                 return jsonify(result3)
    
     except Exception as e:
