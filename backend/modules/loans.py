@@ -29,12 +29,16 @@ class Loan:
                         return {"success":False,"message":"Bu kitap zaten alınmış!"}
                     else:
 
-                        self.cursor.execute("INSERT INTO loans (studentID,bookID,returnDate,whoAdded) VALUES (%s,%s,%s,%s)",(studentID,bookID,returnDate,activeUserName))
-                        self.conn.commit()
-                        self.cursor.execute("UPDATE books SET isTaken = %s WHERE id = %s",("Alındı",bookID))
-                        self.conn.commit()
-                        
-                        return {"success":True,"message":"Kitap ödünç alındı."}
+                        if datetime.strptime(returnDate, "%d/%m/%Y").date() < datetime.now().date():
+                            return {"success":False,"message":"Teslim tarihi geçmişe dönük olamaz, cihazın saatini ayarlayın!"}
+                        else:
+
+                            self.cursor.execute("INSERT INTO loans (studentID,bookID,returnDate,whoAdded) VALUES (%s,%s,%s,%s)",(studentID,bookID,returnDate,activeUserName))
+                            self.conn.commit()
+                            self.cursor.execute("UPDATE books SET isTaken = %s WHERE id = %s",("Alındı",bookID))
+                            self.conn.commit()
+                            
+                            return {"success":True,"message":"Kitap ödünç alındı."}
         
         except Exception as e:
 

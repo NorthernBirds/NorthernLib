@@ -1,5 +1,6 @@
 import os
 from dotenv import load_dotenv
+import sys
 
 load_dotenv()
 
@@ -24,8 +25,11 @@ CERTIFICATE_FILE = os.path.join(BASE_DIR,"cert.pem")
 KEY_FILE = os.path.join(BASE_DIR,"cert.key")
 
 session = {}
-db_name = os.getenv("DB_NAME")
-db_password = os.getenv("DB_PASSWORD")
-db_user = os.getenv("DB_USER")
+db_name = os.getenv("DB_NAME","")
+db_password = os.getenv("DB_PASSWORD","")
+db_user = os.getenv("DB_USER","")
 
-APP_KEY = os.getenv("APP_KEY")
+APP_KEY = os.getenv("APP_KEY","")
+
+if db_name == "" or db_password == "" or db_user == "" or APP_KEY == "":
+    sys.exit(1)

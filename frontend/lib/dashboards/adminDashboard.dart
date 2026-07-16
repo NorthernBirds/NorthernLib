@@ -3,6 +3,7 @@ import 'package:frontend/api_requests.dart';
 import 'package:frontend/dashboards/signInDashboard.dart';
 import 'package:frontend/models/books.dart';
 import 'package:frontend/models/categories.dart';
+import 'package:frontend/models/loans.dart';
 
 class AdminDashboard extends StatefulWidget {
   const AdminDashboard({super.key});
@@ -33,6 +34,10 @@ class _AdminDashboardState extends State<AdminDashboard> {
   bool isAddCategoryWidgetVisible = false;
   bool isDeleteCategoryWidgetVisible = false;
   bool isListCategoriesWidgetVisible = false;
+
+  bool isBorrowBookWidgetVisible = false;
+  bool isReturnBookWidgetVisible = false;
+  bool isListLoansWidgetVisible = false;
 
   @override
   Widget build(BuildContext context) {
@@ -157,19 +162,31 @@ class _AdminDashboardState extends State<AdminDashboard> {
                     ),
                     const SizedBox(height: 17.0),
                     ElevatedButton(
-                      onPressed: () => print(6),
+                      onPressed: () {
+                        setState(() {
+                          isBorrowBookWidgetVisible = true;
+                        });
+                      },
                       style: _menuButtonStyle,
                       child: Text("Ödünç Kitap Ver", style: _labelTextStyle),
                     ),
                     const SizedBox(height: 9.0),
                     ElevatedButton(
-                      onPressed: () => print(7),
+                      onPressed: () {
+                        setState(() {
+                          isReturnBookWidgetVisible = true;
+                        });
+                      },
                       style: _menuButtonStyle,
                       child: Text("Kitap Geri Al", style: _labelTextStyle),
                     ),
                     const SizedBox(height: 9.0),
                     ElevatedButton(
-                      onPressed: () => print(8),
+                      onPressed: () {
+                        setState(() {
+                          isListLoansWidgetVisible = true;
+                        });
+                      },
                       style: _menuButtonStyle,
                       child: Text(
                         "Ödünç Kitapları Listele",
@@ -307,6 +324,30 @@ class _AdminDashboardState extends State<AdminDashboard> {
                       onCancel: () {
                         setState(() {
                           isListCategoriesWidgetVisible = false;
+                        });
+                      },
+                    )
+                  : isBorrowBookWidgetVisible
+                  ? BorrowBookWidget(
+                      onCancel: () {
+                        setState(() {
+                          isBorrowBookWidgetVisible = false;
+                        });
+                      },
+                    )
+                  : isReturnBookWidgetVisible
+                  ? ReturnBookWidget(
+                      onCancel: () {
+                        setState(() {
+                          isReturnBookWidgetVisible = false;
+                        });
+                      },
+                    )
+                  : isListLoansWidgetVisible
+                  ? ListLoansWidget(
+                      onCancel: () {
+                        setState(() {
+                          isListLoansWidgetVisible = false;
                         });
                       },
                     )
