@@ -13,7 +13,7 @@ frontend/build/
 frontend/.packages
 frontend/build/
 frontend/*.iml
-frontend/config.dart
+frontend/lib/config.dart
 
 .DS_Store
 Thumbs.db
