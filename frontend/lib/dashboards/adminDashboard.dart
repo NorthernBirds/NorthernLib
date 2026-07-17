@@ -4,6 +4,7 @@ import 'package:frontend/dashboards/signInDashboard.dart';
 import 'package:frontend/models/books.dart';
 import 'package:frontend/models/categories.dart';
 import 'package:frontend/models/loans.dart';
+import 'package:frontend/models/leaders.dart';
 
 class AdminDashboard extends StatefulWidget {
   const AdminDashboard({super.key});
@@ -38,6 +39,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
   bool isBorrowBookWidgetVisible = false;
   bool isReturnBookWidgetVisible = false;
   bool isListLoansWidgetVisible = false;
+  bool isListLeadersWidgetVisible = false;
 
   @override
   Widget build(BuildContext context) {
@@ -192,6 +194,16 @@ class _AdminDashboardState extends State<AdminDashboard> {
                         "Ödünç Kitapları Listele",
                         style: _labelTextStyle,
                       ),
+                    ),
+                    const SizedBox(height: 9.0),
+                    ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          isListLeadersWidgetVisible = true;
+                        });
+                      },
+                      style: _menuButtonStyle,
+                      child: Text("Liderleri Listele", style: _labelTextStyle),
                     ),
                     const SizedBox(height: 17.0),
 
@@ -348,6 +360,14 @@ class _AdminDashboardState extends State<AdminDashboard> {
                       onCancel: () {
                         setState(() {
                           isListLoansWidgetVisible = false;
+                        });
+                      },
+                    )
+                  : isListLeadersWidgetVisible
+                  ? ListLeadersWidget(
+                      onCancel: () {
+                        setState(() {
+                          isListLeadersWidgetVisible = false;
                         });
                       },
                     )

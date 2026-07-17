@@ -337,6 +337,52 @@ class _ListBooksWidgetState extends State<ListBooksWidget> {
   List<String> isTakens = [];
   List<String> whoAddeds = [];
 
+  Future<void> _fetchData() async {
+    int parsedLimit = int.tryParse(limit) ?? 20;
+    var response = await listBooks(
+      isWithFilter: isWithFilter,
+      filterType: BfilterType,
+      filterValue: filterValue,
+      limit: parsedLimit,
+      pageNumber: currentPageNumber,
+    );
+
+    if (response?["success"] == false) {
+      if (context.mounted) {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text("Hata"),
+              content: Text(
+                response?["message"] ?? "Bilinmeyen bir hata oluştu.",
+              ),
+              actions: <Widget>[
+                ElevatedButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text("Tamam"),
+                ),
+              ],
+            );
+          },
+        );
+      }
+    } else {
+      var data = response?["data"];
+      setState(() {
+        IDs = List<int>.from(data?["ids"] ?? []);
+        bookNames = List<String>.from(data?["names"] ?? []);
+        writers = List<String>.from(data?["writers"] ?? []);
+        publishers = List<String>.from(data?["publishers"] ?? []);
+        categories = List<String>.from(data?["categories"] ?? []);
+        pageCounts = List<int>.from(data?["pageCounts"] ?? []);
+        isTakens = List<String>.from(data?["isTakens"] ?? []);
+        whoAddeds = List<String>.from(data?["whoAddeds"] ?? []);
+        itemsPerPage = parsedLimit;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -440,51 +486,11 @@ class _ListBooksWidgetState extends State<ListBooksWidget> {
                 ),
               ),
               ElevatedButton(
-                onPressed: () async {
-                  var response = await listBooks(
-                    isWithFilter: isWithFilter,
-                    filterType: BfilterType,
-                    filterValue: filterValue,
-                    limit: int.tryParse(limit) ?? 20,
-                    pageNumber: currentPageNumber,
-                  );
-
-                  if (response?["success"] == false) {
-                    if (context.mounted) {
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                            title: const Text("Hata"),
-                            content: Text(
-                              response?["message"] ??
-                                  "Bilinmeyen bir hata oluştu.",
-                            ),
-                            actions: <Widget>[
-                              ElevatedButton(
-                                onPressed: () => Navigator.of(context).pop(),
-                                child: const Text("Tamam"),
-                              ),
-                            ],
-                          );
-                        },
-                      );
-                    }
-                  } else {
-                    var data = response?["data"];
-                    setState(() {
-                      IDs = List<int>.from(data?["ids"] ?? []);
-                      bookNames = List<String>.from(data?["names"] ?? []);
-                      writers = List<String>.from(data?["writers"] ?? []);
-                      publishers = List<String>.from(data?["publishers"] ?? []);
-                      categories = List<String>.from(data?["categories"] ?? []);
-                      pageCounts = List<int>.from(data?["pageCounts"] ?? []);
-                      isTakens = List<String>.from(data?["isTakens"] ?? []);
-                      whoAddeds = List<String>.from(data?["whoAddeds"] ?? []);
-
-                      itemsPerPage = IDs.length == 0 ? 10 : IDs.length;
-                    });
-                  }
+                onPressed: () {
+                  setState(() {
+                    currentPageNumber = 1;
+                  });
+                  _fetchData();
                 },
                 style: ElevatedButton.styleFrom(
                   side: const BorderSide(color: Colors.black),
@@ -509,12 +515,19 @@ class _ListBooksWidgetState extends State<ListBooksWidget> {
                 ),
               ),
               const SizedBox(height: 20),
-
               IDs.isEmpty
                   ? const Text("Gösterilecek veri yok. Önce listeleyin.")
                   : PaginatedDataTable(
                       header: const Text("Kitap Listesi"),
                       rowsPerPage: itemsPerPage,
+                      onPageChanged: (int firstRowIndex) {
+                        int parsedLimit = int.tryParse(limit) ?? 20;
+                        setState(() {
+                          currentPageNumber =
+                              (firstRowIndex / parsedLimit).floor() + 1;
+                        });
+                        _fetchData();
+                      },
                       columns: const [
                         DataColumn(label: Text("ID")),
                         DataColumn(label: Text("Kitap Adı")),

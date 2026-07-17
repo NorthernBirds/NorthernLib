@@ -322,6 +322,52 @@ class _ListLoansWidgetState extends State<ListLoansWidget> {
   List<String> loanStatuses = [];
   List<String> whoAddeds = [];
 
+  Future<void> _fetchData() async {
+    int parsedLimit = int.tryParse(limit) ?? 20;
+    var response = await listLoans(
+      isWithFilter: isWithFilter,
+      filterType: BfilterType,
+      filterValue: filterValue,
+      limit: parsedLimit,
+      pageNumber: currentPageNumber,
+    );
+
+    if (response?["success"] == false) {
+      if (context.mounted) {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text("Hata"),
+              content: Text(
+                response?["message"] ?? "Bilinmeyen bir hata oluştu.",
+              ),
+              actions: <Widget>[
+                ElevatedButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text("Tamam"),
+                ),
+              ],
+            );
+          },
+        );
+      }
+    } else {
+      var data = response?["data"];
+      setState(() {
+        IDs = List<int>.from(data?["ids"] ?? []);
+        studentIDs = List<int>.from(data?["studentIDs"] ?? []);
+        bookNames = List<String>.from(data?["bookNames"] ?? []);
+        borrowDates = List<String>.from(data?["borrowDates"] ?? []);
+        returnDates = List<String>.from(data?["returnDates"] ?? []);
+        returnedAts = List<String>.from(data?["pageCounts"] ?? []);
+        loanStatuses = List<String>.from(data?["loanStatuses"] ?? []);
+        whoAddeds = List<String>.from(data?["whoAddeds"] ?? []);
+        itemsPerPage = parsedLimit;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -425,59 +471,11 @@ class _ListLoansWidgetState extends State<ListLoansWidget> {
                 ),
               ),
               ElevatedButton(
-                onPressed: () async {
-                  var response = await listLoans(
-                    isWithFilter: isWithFilter,
-                    filterType: BfilterType,
-                    filterValue: filterValue,
-                    limit: int.tryParse(limit) ?? 20,
-                    pageNumber: currentPageNumber,
-                  );
-
-                  if (response?["success"] == false) {
-                    if (context.mounted) {
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                            title: const Text("Hata"),
-                            content: Text(
-                              response?["message"] ??
-                                  "Bilinmeyen bir hata oluştu.",
-                            ),
-                            actions: <Widget>[
-                              ElevatedButton(
-                                onPressed: () => Navigator.of(context).pop(),
-                                child: const Text("Tamam"),
-                              ),
-                            ],
-                          );
-                        },
-                      );
-                    }
-                  } else {
-                    var data = response?["data"];
-                    setState(() {
-                      IDs = List<int>.from(data?["ids"] ?? []);
-                      studentIDs = List<int>.from(data?["studentIDs"] ?? []);
-                      bookNames = List<String>.from(data?["bookNames"] ?? []);
-                      borrowDates = List<String>.from(
-                        data?["borrowDates"] ?? [],
-                      );
-                      returnDates = List<String>.from(
-                        data?["returnDates"] ?? [],
-                      );
-                      returnedAts = List<String>.from(
-                        data?["pageCounts"] ?? [],
-                      );
-                      loanStatuses = List<String>.from(
-                        data?["loanStatuses"] ?? [],
-                      );
-                      whoAddeds = List<String>.from(data?["whoAddeds"] ?? []);
-
-                      itemsPerPage = IDs.length == 0 ? 10 : IDs.length;
-                    });
-                  }
+                onPressed: () {
+                  setState(() {
+                    currentPageNumber = 1;
+                  });
+                  _fetchData();
                 },
                 style: ElevatedButton.styleFrom(
                   side: const BorderSide(color: Colors.black),
@@ -502,12 +500,19 @@ class _ListLoansWidgetState extends State<ListLoansWidget> {
                 ),
               ),
               const SizedBox(height: 20),
-
               IDs.isEmpty
                   ? const Text("Gösterilecek veri yok. Önce listeleyin.")
                   : PaginatedDataTable(
                       header: const Text("Kitap Listesi"),
                       rowsPerPage: itemsPerPage,
+                      onPageChanged: (int firstRowIndex) {
+                        int parsedLimit = int.tryParse(limit) ?? 20;
+                        setState(() {
+                          currentPageNumber =
+                              (firstRowIndex / parsedLimit).floor() + 1;
+                        });
+                        _fetchData();
+                      },
                       columns: const [
                         DataColumn(label: Text("ID")),
                         DataColumn(label: Text("Öğrenci No")),
