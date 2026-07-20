@@ -1,18 +1,30 @@
-MIT License & Custom Attribution Clause
+GNU AFFERO GENERAL PUBLIC LICENSE
+Version 3, 19 November 2007
 
-2026 © Bird Softwares Inc. All rights reserved.
+Copyright (C) 2026 Bird Softwares Inc. <https://github.com/bird-softwares>
+Everyone is permitted to copy and distribute verbatim copies of this license document, but changing it is not allowed.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, subject to the following conditions:
+Preamble
+The GNU Affero General Public License is a free, copyleft license for software and other kinds of works, specifically designed to ensure that network-server software remains open and free to its community.
 
-1. THE COPYRIGHT NOTICE AND THIS PERMISSION NOTICE SHALL BE INCLUDED IN ALL
-COPIES OR SUBSTANTIAL PORTIONS OF THE SOFTWARE.
+Most licenses for databases and other server software are designed to take away your freedom to share and change it. By contrast, our licenses are intended to guarantee your freedom to share and change all versions of a program--to make sure it remains free software for all its users.
 
-2. CUSTOM ATTRIBUTION CLAUSE: The original developer name and branding, 
-specifically "Bird Softwares" and "Bird Softwares Inc.", MUST remain visible, 
-unaltered, and clearly displayed in the source code, application splash screens, 
-and deployment configurations. Removal or obfuscation of this attribution 
-is strictly prohibited under this license.
+When we speak of free software, we are referring to freedom, not price. Our General Public Licenses are designed to make sure that you have the freedom to distribute copies of free software (and charge for them if you wish), that you receive source code or can get it if you want it, that you can change the software or use pieces of it in new free programs, and that you know you can do these things.
+
+Developers that use our General Public Licenses protect your rights with two steps: (1) assert copyright on the software, and (2) offer you this License which gives you legal permission to copy, distribute and/or modify the software.
+
+A major limitation of the ordinary GNU General Public License is that it does not cover the use of the software over a network. If someone modifies your software and runs it on a private server, providing access to users over the network, the ordinary GPL does not require them to release their modified source code. 
+
+The GNU Affero General Public License is designed specifically to alter this. Section 13 of this license explicitly requires that if you modify the program and run it on a server to offer network services to users, you MUST make the entire source code of your modified version available to those users at no charge, under the terms of this same license.
+
+---------------------------------------------------------
+TERMS AND CONDITIONS (Summary of Section 13 & Attribution)
+---------------------------------------------------------
+
+1. NETWORK INTERACTION AND SOURCE CODE AVAILABILITY:
+If you modify this software or use it as part of a network service (SaaS, Web Application, API, Backend Service), you MUST prominently offer all users interacting with it through a network the opportunity to receive the Corresponding Source of your version at no charge. The source code must be disclosed under the terms of this AGPLv3 license.
+
+2. ORIGINAL DEVELOPER ATTRIBUTION (Section 7 - Additional Terms):
+In accordance with Section 7 of the GNU AGPLv3, you must preserve the original developer name, branding, copyright notices, and specific attributions of "Bird Softwares" and "Bird Softwares Inc.". These notices MUST remain visible, unaltered, and clearly displayed in the source code, user interfaces (such as application splash screens), and deployment configurations. Removal or obfuscation of this attribution is a direct violation of this license.
+
+[For the full, unmodified text of the GNU Affero General Public License, see <https://www.gnu.org/licenses/agpl-3.0.txt>]
