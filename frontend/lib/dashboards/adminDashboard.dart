@@ -65,7 +65,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
                     Image.asset(
-                      "assets/images/image.png",
+                      "assets/images/adminUserPhoto.png",
                       width: 200.0,
                       height: 200.0,
                     ),
