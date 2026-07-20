@@ -1,9 +1,5 @@
-<<<<<<< HEAD
-Library Management System Copyright (c) 2026 Yusuf Enes Corp. All rights reserved.
-=======
 Library Management System
-Copyright (c) 2026 Yusuf Enes Corp. All rights reserved.
->>>>>>> c2b82e6bb16eb920edcc19fd2cec7202ed2554ea
+2026 © Bird Softwares Inc. All rights reserved.
 
 A backend-oriented system for academic library management, focusing on modularity, secure data flow, and centralized control.
 
