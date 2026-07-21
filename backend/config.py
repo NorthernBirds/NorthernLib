@@ -19,8 +19,6 @@ LEADERS_LOG_PATH = os.path.join(BASE_DIR,"logs", "leaders.log")
 
 BOOK_CATEGORIES = ["Roman","Hikaye","Şiir","Biyografi","Otobiyografi","Tarih","Bilim","Kişisel Gelişim","Ders Kitabı","Ansiklopedi","Çizgi Roman"]
 
-CONFIG_JSON_PATH_FOR_SENDEMAIL = os.path.join(BASE_DIR,"db", "config.json")
-
 CERTIFICATE_FILE = os.path.join(BASE_DIR,"cert.pem")
 KEY_FILE = os.path.join(BASE_DIR,"cert.key")
 

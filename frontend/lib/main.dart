@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/config.dart';
 import 'package:frontend/dashboards/signInDashboard.dart';
 import 'package:frontend/dashboards/signUpDashboard.dart';
-import 'api_requests.dart' as api;
 
 void main() {
   runApp(const MyApp());
@@ -20,9 +20,9 @@ class MyApp extends StatelessWidget {
           seedColor: const Color.fromARGB(255, 44, 119, 81),
         ),
       ),
+      navigatorKey: navigatorKey,
       home: const MyHomePage(title: 'NorthernLib'),
       builder: (context, child) {
-        api.globalContext = context;
         return child!;
       },
     );

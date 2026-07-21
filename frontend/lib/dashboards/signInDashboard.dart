@@ -4,6 +4,7 @@ import 'package:frontend/main.dart';
 import 'adminDashboard.dart';
 import 'student_staffDashboard.dart';
 import 'teacherDashboard.dart';
+import 'package:frontend/auth/auth.dart';
 
 class LoginDashboard extends StatefulWidget {
   const LoginDashboard({super.key});
@@ -149,6 +150,7 @@ class _LoginDashboardState extends State<LoginDashboard> {
                         password: password,
                       );
                       if (response!["success"] == true) {
+                        startDurationHeartbeat();
                         if (response["role"] == "admin") {
                           Navigator.push(
                             context,

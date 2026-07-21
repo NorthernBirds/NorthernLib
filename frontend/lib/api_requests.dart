@@ -2,9 +2,8 @@ import "config.dart";
 import "package:dio/dio.dart";
 import "package:flutter/material.dart";
 import "package:frontend/dashboards/signInDashboard.dart";
-
-// Dashboard'ları kirletmeden context'i burada tutacağız
-BuildContext? globalContext;
+import "package:frontend/auth/auth.dart";
+import 'package:frontend/config.dart';
 
 final BaseOptions options = BaseOptions(
   baseUrl: baseUrl,
@@ -22,17 +21,27 @@ final Dio dio = Dio(options)
             response.data["message"]?.toString().contains("401 Unauthorized") ==
                 true) {
           session.clear();
-          if (globalContext != null && globalContext!.mounted) {
-            Navigator.pushAndRemoveUntil(
-              globalContext!,
-              MaterialPageRoute(builder: (context) => const LoginDashboard()),
-              (route) => false,
-            );
-          }
+
+          navigatorKey.currentState?.pushAndRemoveUntil(
+            MaterialPageRoute(builder: (context) => const LoginDashboard()),
+            (route) => false,
+          );
+        }
+        if (response.data?["success"] == true) {
+          resetDuration();
         }
         return handler.next(response);
       },
-      onError: (DioException e, handler) => handler.next(e),
+      onError: (DioException e, handler) => handler.resolve(
+        Response(
+          requestOptions: e.requestOptions,
+          data: {
+            "success": false,
+            "message":
+                e.response?.data?["message"] ?? "Bağlantı hatası oluştu.",
+          },
+        ),
+      ),
     ),
   );
 
@@ -64,6 +73,7 @@ Future<Map<String, dynamic>?> signIn({
     session["token"] = response.data["token"];
     session["userName"] = response.data["userName"];
     session["role"] = response.data["role"];
+    session["duration"] = 0;
   }
   return response.data;
 }
@@ -327,7 +337,6 @@ Future<Map<String, dynamic>?> reset({
   required bool categories,
   required bool loans,
   required bool users,
-  required bool processes,
 }) async {
   var response = await dio.post(
     "/reset",
@@ -336,7 +345,6 @@ Future<Map<String, dynamic>?> reset({
       "categories": categories,
       "loans": loans,
       "users": users,
-      "processes": processes,
       "appToken": appKey,
       "token": session["token"],
     },

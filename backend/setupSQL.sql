@@ -2,6 +2,8 @@ CREATE DATABASE IF NOT EXISTS <your_db_name> CHARACTER SET utf8mb4 COLLATE utf8m
 USE <your_db_name>;
 
 DROP USER IF EXISTS '<your_db_user>'@'127.0.0.1';
+CREATE USER '<your_db_user>'@'<127.0.0.1>' IDENTIFIED BY 'your_db_password';
+GRANT ALL PRIVILEGES ON <your_db_name>.* TO '<your_db_user>'@'127.0.0.1';
 
 FLUSH PRIVILEGES;
 

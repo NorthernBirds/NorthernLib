@@ -1,11 +1,6 @@
 import db.connection
-from flask import Flask, request, jsonify
-from flask_cors import CORS
-import os
-import ssl
 import config
 
-session = config.session
 developingMode = True
 
 resultDB1 = db.connection.getDB(dbName=config.db_name,password=config.db_password,dbUser=config.db_user)
@@ -25,6 +20,8 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import os
 import ssl
+from flask import Flask, request, jsonify
+from flask_cors import CORS
 import threading
 
 
