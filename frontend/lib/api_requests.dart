@@ -3,7 +3,6 @@ import "package:dio/dio.dart";
 import "package:flutter/material.dart";
 import "package:frontend/dashboards/signInDashboard.dart";
 import "package:frontend/auth/auth.dart";
-import 'package:frontend/config.dart';
 
 final BaseOptions options = BaseOptions(
   baseUrl: baseUrl,

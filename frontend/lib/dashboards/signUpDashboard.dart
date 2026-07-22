@@ -89,10 +89,10 @@ class _signUpStateDash extends State<signUpDash> {
                             return AlertDialog(
                               title: const Text("Kayıt Başarılı!"),
                               content: Text(
-                                "Admin kullanıcı adı: admin admin\n" // admin admin yerine sadece admin (veya backend'deki gibi)
-                                "Admin şifresi: ${response?["data"]?["adminPassword"] ?? "Bilinmiyor"}\n"
+                                "Admin kullanıcı adı: admin admin\n"
+                                "Admin şifresi: ${response["data"]?["adminPassword"] ?? "Bilinmiyor"}\n"
                                 "Kütüphane adı: $dbName\n"
-                                "Kütüphane şifresi: ${response?["data"]?["dbPassword"] ?? "Bilinmiyor"}",
+                                "Kütüphane şifresi: ${response["data"]?["dbPassword"] ?? "Bilinmiyor"}",
                               ),
                               actions: <Widget>[
                                 ElevatedButton(
