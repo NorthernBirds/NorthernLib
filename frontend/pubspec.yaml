@@ -81,6 +81,21 @@ flutter:
         - asset: assets/fonts/Inter_24pt-Bold.ttf
           weight: 700
         - asset: assets/fonts/Inter_24pt-Regular.ttf
+    - family: Public Sans
+      fonts:
+        - asset: assets/fonts/PublicSans-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/PublicSans-Regular.ttf
+    - family: Bricolage Grotesque
+      fonts:
+        - asset: assets/fonts/BricolageGrotesque-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/BricolageGrotesque-Regular.ttf
+    - family: Roboto
+      fonts:
+        - asset: assets/fonts/Roboto-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/Roboto-Regular.ttf
 #     - family: Trajan Pro
 #       fonts:
 #         - asset: fonts/TrajanPro.ttf
