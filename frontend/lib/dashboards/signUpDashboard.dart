@@ -27,10 +27,10 @@ class _signUpStateDash extends State<signUpDash> {
           child: Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(30.0),
-              color: Colors.white,
+              color: const Color(0xFF3A8772),
             ),
             width: 400.0,
-            height: 600.0,
+            height: 400.0,
             child: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -108,10 +108,8 @@ class _signUpStateDash extends State<signUpDash> {
                       }
                     },
                     style: ElevatedButton.styleFrom(
-                      side: BorderSide(
-                        color: const Color.fromARGB(255, 0, 0, 0),
-                      ),
-                      backgroundColor: Colors.white,
+                      side: BorderSide(color: const Color(0xFF3A8772)),
+                      backgroundColor: const Color(0xFF3A8772),
                     ),
                     child: const Text(
                       "Kayıt Ol",
@@ -129,10 +127,8 @@ class _signUpStateDash extends State<signUpDash> {
                       );
                     },
                     style: ElevatedButton.styleFrom(
-                      side: const BorderSide(
-                        color: Color.fromARGB(255, 0, 0, 0),
-                      ),
-                      backgroundColor: Colors.white,
+                      side: const BorderSide(color: Color(0xFF3A8772)),
+                      backgroundColor: const Color(0xFF3A8772),
                     ),
                     child: const Text(
                       "İptal",

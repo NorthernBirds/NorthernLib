@@ -2,7 +2,7 @@ import "config.dart";
 import "package:dio/dio.dart";
 import "package:flutter/material.dart";
 import "package:frontend/dashboards/signInDashboard.dart";
-import "package:frontend/auth/auth.dart";
+import 'utils/writeLog.dart';
 
 final BaseOptions options = BaseOptions(
   baseUrl: baseUrl,
@@ -27,20 +27,23 @@ final Dio dio = Dio(options)
           );
         }
         if (response.data?["success"] == true) {
-          resetDuration();
+          session["duration"] = 0;
         }
         return handler.next(response);
       },
-      onError: (DioException e, handler) => handler.resolve(
-        Response(
-          requestOptions: e.requestOptions,
-          data: {
-            "success": false,
-            "message":
-                e.response?.data?["message"] ?? "Bağlantı hatası oluştu.",
-          },
-        ),
-      ),
+      onError: (DioException e, handler) {
+        writeLog(logName: e.type.name, log: e.message ?? "No message");
+        return handler.resolve(
+          Response(
+            requestOptions: e.requestOptions,
+            data: {
+              "success": false,
+              "message":
+                  e.response?.data?["message"] ?? "Bağlantı hatası oluştu.",
+            },
+          ),
+        );
+      },
     ),
   );
 

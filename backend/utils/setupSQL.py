@@ -53,7 +53,7 @@ def setup(name, password, conn, cursor, adminPassword):
         cursor.execute("FLUSH PRIVILEGES")
         conn.commit()
         
-        cursor.execute("USE library")
+        cursor.execute("USE library_admin")
         conn.commit()
         
         return {"success": True}

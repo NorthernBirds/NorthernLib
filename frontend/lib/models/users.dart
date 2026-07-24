@@ -26,9 +26,9 @@ class _AddUserWidgetState extends State<AddUserWidget> {
     return Center(
       child: Container(
         width: 400,
-        height: 700,
+        height: 600,
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: const Color(0xFF3A8772),
           borderRadius: BorderRadius.circular(30.0),
           border: Border.all(color: Colors.black, width: 2.0),
         ),
@@ -133,17 +133,17 @@ class _AddUserWidgetState extends State<AddUserWidget> {
                 }
               },
               style: ElevatedButton.styleFrom(
-                side: const BorderSide(color: Colors.black),
+                side: const BorderSide(color: Color(0xFF3A8772)),
                 padding: const EdgeInsets.all(20.0),
-                backgroundColor: Colors.white,
+                backgroundColor: const Color(0xFF3A8772),
               ),
               child: const Text("Ekle", style: TextStyle(color: Colors.black)),
             ),
             ElevatedButton(
               onPressed: widget.onCancel,
               style: ElevatedButton.styleFrom(
-                side: const BorderSide(color: Colors.black),
-                backgroundColor: Colors.white,
+                side: const BorderSide(color: Color(0xFF3A8772)),
+                backgroundColor: const Color(0xFF3A8772),
               ),
               child: const Text(
                 "İptal",
@@ -176,7 +176,7 @@ class _DeleteUserWidgetState extends State<DeleteUserWidget> {
         width: 400,
         height: 400,
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: const Color(0xFF3A8772),
           borderRadius: BorderRadius.circular(30.0),
           border: Border.all(color: Colors.black, width: 2.0),
         ),
@@ -242,17 +242,17 @@ class _DeleteUserWidgetState extends State<DeleteUserWidget> {
                 }
               },
               style: ElevatedButton.styleFrom(
-                side: const BorderSide(color: Colors.black),
+                side: const BorderSide(color: Color(0xFF3A8772)),
                 padding: const EdgeInsets.all(20.0),
-                backgroundColor: Colors.white,
+                backgroundColor: const Color(0xFF3A8772),
               ),
               child: const Text("Sil", style: TextStyle(color: Colors.black)),
             ),
             ElevatedButton(
               onPressed: widget.onCancel,
               style: ElevatedButton.styleFrom(
-                side: const BorderSide(color: Colors.black),
-                backgroundColor: Colors.white,
+                side: const BorderSide(color: Color(0xFF3A8772)),
+                backgroundColor: const Color(0xFF3A8772),
               ),
               child: const Text(
                 "İptal",
@@ -289,9 +289,9 @@ class _ChangeRoleWidgetState extends State<ChangeRoleWidget> {
     return Center(
       child: Container(
         width: 400,
-        height: 700,
+        height: 600,
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: const Color(0xFF3A8772),
           borderRadius: BorderRadius.circular(30.0),
           border: Border.all(color: Colors.black, width: 2.0),
         ),
@@ -377,17 +377,17 @@ class _ChangeRoleWidgetState extends State<ChangeRoleWidget> {
                 }
               },
               style: ElevatedButton.styleFrom(
-                side: const BorderSide(color: Colors.black),
+                side: const BorderSide(color: Color(0xFF3A8772)),
                 padding: const EdgeInsets.all(20.0),
-                backgroundColor: Colors.white,
+                backgroundColor: const Color(0xFF3A8772),
               ),
               child: const Text("Ekle", style: TextStyle(color: Colors.black)),
             ),
             ElevatedButton(
               onPressed: widget.onCancel,
               style: ElevatedButton.styleFrom(
-                side: const BorderSide(color: Colors.black),
-                backgroundColor: Colors.white,
+                side: const BorderSide(color: Color(0xFF3A8772)),
+                backgroundColor: const Color(0xFF3A8772),
               ),
               child: const Text(
                 "İptal",
@@ -474,7 +474,7 @@ class _ListUsersWidgetState extends State<ListUsersWidget> {
       child: Container(
         width: 1200,
         height: 1200,
-        color: Colors.white,
+        color: const Color(0xFF3A8772),
         child: SingleChildScrollView(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -578,9 +578,9 @@ class _ListUsersWidgetState extends State<ListUsersWidget> {
                   _fetchData();
                 },
                 style: ElevatedButton.styleFrom(
-                  side: const BorderSide(color: Colors.black),
+                  side: const BorderSide(color: Color(0xFF3A8772)),
                   padding: const EdgeInsets.all(20.0),
-                  backgroundColor: Colors.white,
+                  backgroundColor: const Color(0xFF3A8772),
                 ),
                 child: const Text(
                   "Listele",
@@ -591,8 +591,8 @@ class _ListUsersWidgetState extends State<ListUsersWidget> {
               ElevatedButton(
                 onPressed: widget.onCancel,
                 style: ElevatedButton.styleFrom(
-                  side: const BorderSide(color: Colors.black),
-                  backgroundColor: Colors.white,
+                  side: const BorderSide(color: Color(0xFF3A8772)),
+                  backgroundColor: const Color(0xFF3A8772),
                 ),
                 child: const Text(
                   "İptal",

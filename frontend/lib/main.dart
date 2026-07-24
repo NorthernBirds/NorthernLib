@@ -58,6 +58,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         fontFamily: "Public Sans",
                         fontSize: 15.0,
                         fontWeight: FontWeight.normal,
+                        color: Colors.white,
                       ),
                     ),
                     onPressed: () {
@@ -77,11 +78,13 @@ class _MyHomePageState extends State<MyHomePage> {
                                 fontSize: 24.0,
                               ),
                             ),
-                            content: const Text(
-                              aboutUsText,
-                              style: TextStyle(
-                                color: Colors.white70,
-                                fontSize: 14.0,
+                            content: const SingleChildScrollView(
+                              child: Text(
+                                aboutUsText,
+                                style: TextStyle(
+                                  color: Colors.white70,
+                                  fontSize: 14.0,
+                                ),
                               ),
                             ),
                             actions: [
@@ -121,11 +124,13 @@ class _MyHomePageState extends State<MyHomePage> {
                                 fontSize: 24.0,
                               ),
                             ),
-                            content: const Text(
-                              communicationInfos,
-                              style: TextStyle(
-                                color: Colors.white70,
-                                fontSize: 14.0,
+                            content: const SingleChildScrollView(
+                              child: Text(
+                                communicationInfos,
+                                style: TextStyle(
+                                  color: Colors.white70,
+                                  fontSize: 14.0,
+                                ),
                               ),
                             ),
                             actions: [
@@ -187,6 +192,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           fontFamily: "Inter",
                           fontSize: 16.0,
                           fontWeight: FontWeight.normal,
+                          color: Colors.black,
                         ),
                       ),
                     ),
@@ -228,7 +234,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: 42.3,
+                          fontSize: 60.3,
                           height: 1.75,
                           fontWeight: FontWeight.bold,
                         ),
@@ -255,6 +261,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             fontFamily: "Inter",
                             fontSize: 16.0,
                             fontWeight: FontWeight.normal,
+                            color: Colors.black,
                           ),
                         ),
                       ),

@@ -26,7 +26,7 @@ class _AddBookWidgetState extends State<AddBookWidget> {
         width: 400,
         height: 700,
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: const Color(0xFF3A8772),
           borderRadius: BorderRadius.circular(30.0),
           border: Border.all(color: Colors.black, width: 2.0),
         ),
@@ -168,17 +168,17 @@ class _AddBookWidgetState extends State<AddBookWidget> {
                 }
               },
               style: ElevatedButton.styleFrom(
-                side: const BorderSide(color: Colors.black),
+                side: const BorderSide(color: Color(0xFF3A8772)),
                 padding: const EdgeInsets.all(20.0),
-                backgroundColor: Colors.white,
+                backgroundColor: const Color(0xFF3A8772),
               ),
               child: const Text("Ekle", style: TextStyle(color: Colors.black)),
             ),
             ElevatedButton(
               onPressed: widget.onCancel,
               style: ElevatedButton.styleFrom(
-                side: const BorderSide(color: Colors.black),
-                backgroundColor: Colors.white,
+                side: const BorderSide(color: Color(0xFF3A8772)),
+                backgroundColor: const Color(0xFF3A8772),
               ),
               child: const Text(
                 "İptal",
@@ -211,7 +211,7 @@ class _DeleteBookWidgetState extends State<DeleteBookWidget> {
         width: 400,
         height: 400,
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: const Color(0xFF3A8772),
           borderRadius: BorderRadius.circular(30.0),
           border: Border.all(color: Colors.black, width: 2.0),
         ),
@@ -277,17 +277,17 @@ class _DeleteBookWidgetState extends State<DeleteBookWidget> {
                 }
               },
               style: ElevatedButton.styleFrom(
-                side: const BorderSide(color: Colors.black),
+                side: const BorderSide(color: Color(0xFF3A8772)),
                 padding: const EdgeInsets.all(20.0),
-                backgroundColor: Colors.white,
+                backgroundColor: const Color(0xFF3A8772),
               ),
               child: const Text("Sil", style: TextStyle(color: Colors.black)),
             ),
             ElevatedButton(
               onPressed: widget.onCancel,
               style: ElevatedButton.styleFrom(
-                side: const BorderSide(color: Colors.black),
-                backgroundColor: Colors.white,
+                side: const BorderSide(color: Color(0xFF3A8772)),
+                backgroundColor: const Color(0xFF3A8772),
               ),
               child: const Text(
                 "İptal",
@@ -389,7 +389,7 @@ class _ListBooksWidgetState extends State<ListBooksWidget> {
       child: Container(
         width: 1200,
         height: 1200,
-        color: Colors.white,
+        color: const Color(0xFF3A8772),
         child: SingleChildScrollView(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -493,9 +493,9 @@ class _ListBooksWidgetState extends State<ListBooksWidget> {
                   _fetchData();
                 },
                 style: ElevatedButton.styleFrom(
-                  side: const BorderSide(color: Colors.black),
+                  side: const BorderSide(color: Color(0xFF3A8772)),
                   padding: const EdgeInsets.all(20.0),
-                  backgroundColor: Colors.white,
+                  backgroundColor: const Color(0xFF3A8772),
                 ),
                 child: const Text(
                   "Listele",
@@ -506,8 +506,8 @@ class _ListBooksWidgetState extends State<ListBooksWidget> {
               ElevatedButton(
                 onPressed: widget.onCancel,
                 style: ElevatedButton.styleFrom(
-                  side: const BorderSide(color: Colors.black),
-                  backgroundColor: Colors.white,
+                  side: const BorderSide(color: Color(0xFF3A8772)),
+                  backgroundColor: const Color(0xFF3A8772),
                 ),
                 child: const Text(
                   "İptal",

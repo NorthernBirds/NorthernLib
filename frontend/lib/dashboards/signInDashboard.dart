@@ -4,7 +4,6 @@ import 'package:frontend/main.dart';
 import 'adminDashboard.dart';
 import 'student_staffDashboard.dart';
 import 'teacherDashboard.dart';
-import 'package:frontend/auth/auth.dart';
 
 class LoginDashboard extends StatefulWidget {
   const LoginDashboard({super.key});
@@ -35,7 +34,7 @@ class _LoginDashboardState extends State<LoginDashboard> {
           child: Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(30.0),
-              color: Colors.white,
+              color: const Color(0xFF3A8772),
             ),
             width: 400.0,
             height: 600.0,
@@ -150,7 +149,6 @@ class _LoginDashboardState extends State<LoginDashboard> {
                         password: password,
                       );
                       if (response!["success"] == true) {
-                        startDurationHeartbeat();
                         if (response["role"] == "admin") {
                           Navigator.push(
                             context,
@@ -194,10 +192,8 @@ class _LoginDashboardState extends State<LoginDashboard> {
                       }
                     },
                     style: ElevatedButton.styleFrom(
-                      side: const BorderSide(
-                        color: Color.fromARGB(255, 0, 0, 0),
-                      ),
-                      backgroundColor: Colors.white,
+                      side: const BorderSide(color: Color(0xFF3A8772)),
+                      backgroundColor: const Color(0xFF3A8772),
                     ),
                     child: const Text(
                       "Sign In",
@@ -215,10 +211,8 @@ class _LoginDashboardState extends State<LoginDashboard> {
                       );
                     },
                     style: ElevatedButton.styleFrom(
-                      side: const BorderSide(
-                        color: Color.fromARGB(255, 0, 0, 0),
-                      ),
-                      backgroundColor: Colors.white,
+                      side: const BorderSide(color: Color(0xFF3A8772)),
+                      backgroundColor: const Color(0xFF3A8772),
                     ),
                     child: const Text(
                       "İptal",

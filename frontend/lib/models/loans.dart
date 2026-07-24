@@ -21,9 +21,9 @@ class _BorrowBookWidgetState extends State<BorrowBookWidget> {
     return Center(
       child: Container(
         width: 400,
-        height: 700,
+        height: 500,
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: const Color(0xFF3A8772),
           borderRadius: BorderRadius.circular(30.0),
           border: Border.all(color: Colors.black, width: 2.0),
         ),
@@ -153,17 +153,17 @@ class _BorrowBookWidgetState extends State<BorrowBookWidget> {
                 }
               },
               style: ElevatedButton.styleFrom(
-                side: const BorderSide(color: Colors.black),
+                side: const BorderSide(color: Color(0xFF3A8772)),
                 padding: const EdgeInsets.all(20.0),
-                backgroundColor: Colors.white,
+                backgroundColor: const Color(0xFF3A8772),
               ),
               child: const Text("Ekle", style: TextStyle(color: Colors.black)),
             ),
             ElevatedButton(
               onPressed: widget.onCancel,
               style: ElevatedButton.styleFrom(
-                side: const BorderSide(color: Colors.black),
-                backgroundColor: Colors.white,
+                side: const BorderSide(color: Color(0xFF3A8772)),
+                backgroundColor: const Color(0xFF3A8772),
               ),
               child: const Text(
                 "İptal",
@@ -262,17 +262,20 @@ class _ReturnBookWidgetState extends State<ReturnBookWidget> {
                 }
               },
               style: ElevatedButton.styleFrom(
-                side: const BorderSide(color: Colors.black),
+                side: const BorderSide(color: Color(0xFF3A8772)),
                 padding: const EdgeInsets.all(20.0),
-                backgroundColor: Colors.white,
+                backgroundColor: const Color(0xFF3A8772),
               ),
-              child: const Text("Sil", style: TextStyle(color: Colors.black)),
+              child: const Text(
+                "Geri Al",
+                style: TextStyle(color: Colors.black),
+              ),
             ),
             ElevatedButton(
               onPressed: widget.onCancel,
               style: ElevatedButton.styleFrom(
-                side: const BorderSide(color: Colors.black),
-                backgroundColor: Colors.white,
+                side: const BorderSide(color: Color(0xFF3A8772)),
+                backgroundColor: const Color(0xFF3A8772),
               ),
               child: const Text(
                 "İptal",
@@ -374,7 +377,7 @@ class _ListLoansWidgetState extends State<ListLoansWidget> {
       child: Container(
         width: 1200,
         height: 1200,
-        color: Colors.white,
+        color: const Color(0xFF3A8772),
         child: SingleChildScrollView(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -478,9 +481,9 @@ class _ListLoansWidgetState extends State<ListLoansWidget> {
                   _fetchData();
                 },
                 style: ElevatedButton.styleFrom(
-                  side: const BorderSide(color: Colors.black),
+                  side: const BorderSide(color: Color(0xFF3A8772)),
                   padding: const EdgeInsets.all(20.0),
-                  backgroundColor: Colors.white,
+                  backgroundColor: const Color(0xFF3A8772),
                 ),
                 child: const Text(
                   "Listele",
@@ -491,8 +494,8 @@ class _ListLoansWidgetState extends State<ListLoansWidget> {
               ElevatedButton(
                 onPressed: widget.onCancel,
                 style: ElevatedButton.styleFrom(
-                  side: const BorderSide(color: Colors.black),
-                  backgroundColor: Colors.white,
+                  side: const BorderSide(color: Color(0xFF3A8772)),
+                  backgroundColor: const Color(0xFF3A8772),
                 ),
                 child: const Text(
                   "İptal",

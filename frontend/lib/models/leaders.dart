@@ -61,7 +61,7 @@ class _ListLeadersWidgetState extends State<ListLeadersWidget> {
       child: Container(
         width: 1200,
         height: 1200,
-        color: Colors.white,
+        color: const Color(0xFF3A8772),
         child: SingleChildScrollView(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -107,9 +107,9 @@ class _ListLeadersWidgetState extends State<ListLeadersWidget> {
                   _fetchData();
                 },
                 style: ElevatedButton.styleFrom(
-                  side: const BorderSide(color: Colors.black),
+                  side: const BorderSide(color: Color(0xFF3A8772)),
                   padding: const EdgeInsets.all(20.0),
-                  backgroundColor: Colors.white,
+                  backgroundColor: const Color(0xFF3A8772),
                 ),
                 child: const Text(
                   "Listele",
@@ -120,8 +120,8 @@ class _ListLeadersWidgetState extends State<ListLeadersWidget> {
               ElevatedButton(
                 onPressed: widget.onCancel,
                 style: ElevatedButton.styleFrom(
-                  side: const BorderSide(color: Colors.black),
-                  backgroundColor: Colors.white,
+                  side: const BorderSide(color: Color(0xFF3A8772)),
+                  backgroundColor: const Color(0xFF3A8772),
                 ),
                 child: const Text(
                   "İptal",

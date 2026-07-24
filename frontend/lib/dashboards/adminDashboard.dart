@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/api_requests.dart';
+import 'package:frontend/config.dart';
 import 'package:frontend/dashboards/signInDashboard.dart';
 import 'package:frontend/models/books.dart';
 import 'package:frontend/models/categories.dart';
 import 'package:frontend/models/loans.dart';
 import 'package:frontend/models/leaders.dart';
+import 'package:frontend/models/users.dart';
+import 'package:frontend/models/reset.dart';
 
 class AdminDashboard extends StatefulWidget {
   const AdminDashboard({super.key});
@@ -15,7 +18,7 @@ class AdminDashboard extends StatefulWidget {
 
 class _AdminDashboardState extends State<AdminDashboard> {
   final ButtonStyle _menuButtonStyle = ElevatedButton.styleFrom(
-    side: const BorderSide(color: Colors.black),
+    side: const BorderSide(color: Color(0xFF3A8772)),
     padding: const EdgeInsets.all(20.0),
     backgroundColor: const Color(0xFF3A8772),
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
@@ -40,6 +43,13 @@ class _AdminDashboardState extends State<AdminDashboard> {
   bool isReturnBookWidgetVisible = false;
   bool isListLoansWidgetVisible = false;
   bool isListLeadersWidgetVisible = false;
+
+  bool isAddUserWidgetVisible = false;
+  bool isDeleteUserWidgetVisible = false;
+  bool isListUsersWidgetVisible = false;
+  bool isChangeRoleWidgetVisible = false;
+
+  bool isResetWidgetVisible = false;
 
   @override
   Widget build(BuildContext context) {
@@ -218,21 +228,46 @@ class _AdminDashboardState extends State<AdminDashboard> {
                     ),
                     const SizedBox(height: 17.0),
                     ElevatedButton(
-                      onPressed: () => print(9),
+                      onPressed: () {
+                        setState(() {
+                          isAddUserWidgetVisible = true;
+                        });
+                      },
                       style: _menuButtonStyle,
                       child: Text("Kullanıcı Ekle", style: _labelTextStyle),
                     ),
                     const SizedBox(height: 9.0),
                     ElevatedButton(
-                      onPressed: () => print(10),
+                      onPressed: () {
+                        setState(() {
+                          isDeleteUserWidgetVisible = true;
+                        });
+                      },
                       style: _menuButtonStyle,
                       child: Text("Kullanıcı Sil", style: _labelTextStyle),
                     ),
                     const SizedBox(height: 9.0),
                     ElevatedButton(
-                      onPressed: () => print(11),
+                      onPressed: () {
+                        setState(() {
+                          isListUsersWidgetVisible = true;
+                        });
+                      },
                       style: _menuButtonStyle,
                       child: Text("Kullanıcı Listele", style: _labelTextStyle),
+                    ),
+                    const SizedBox(height: 9.0),
+                    ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          isChangeRoleWidgetVisible = true;
+                        });
+                      },
+                      style: _menuButtonStyle,
+                      child: Text(
+                        "Kullanıcı Rolü Değiştir",
+                        style: _labelTextStyle,
+                      ),
                     ),
                     const SizedBox(height: 17.0),
 
@@ -247,7 +282,11 @@ class _AdminDashboardState extends State<AdminDashboard> {
                     ),
                     const SizedBox(height: 17.0),
                     ElevatedButton(
-                      onPressed: () => print(14),
+                      onPressed: () {
+                        setState(() {
+                          isResetWidgetVisible = true;
+                        });
+                      },
                       style: _menuButtonStyle,
                       child: Text("Sistemi Sıfırla", style: _labelTextStyle),
                     ),
@@ -266,6 +305,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                     ElevatedButton(
                       onPressed: () async {
                         await signOut();
+                        session.clear();
                         Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -365,6 +405,126 @@ class _AdminDashboardState extends State<AdminDashboard> {
                     )
                   : isListLeadersWidgetVisible
                   ? ListLeadersWidget(
+                      onCancel: () {
+                        setState(() {
+                          isListLeadersWidgetVisible = false;
+                        });
+                      },
+                    )
+                  : isListCategoriesWidgetVisible
+                  ? ListCategoriesWidget(
+                      onCancel: () {
+                        setState(() {
+                          isListCategoriesWidgetVisible = false;
+                        });
+                      },
+                    )
+                  : isBorrowBookWidgetVisible
+                  ? BorrowBookWidget(
+                      onCancel: () {
+                        setState(() {
+                          isBorrowBookWidgetVisible = false;
+                        });
+                      },
+                    )
+                  : isReturnBookWidgetVisible
+                  ? ReturnBookWidget(
+                      onCancel: () {
+                        setState(() {
+                          isReturnBookWidgetVisible = false;
+                        });
+                      },
+                    )
+                  : isListLoansWidgetVisible
+                  ? ListLoansWidget(
+                      onCancel: () {
+                        setState(() {
+                          isListLoansWidgetVisible = false;
+                        });
+                      },
+                    )
+                  : isListLeadersWidgetVisible
+                  ? ListLeadersWidget(
+                      onCancel: () {
+                        setState(() {
+                          isListLeadersWidgetVisible = false;
+                        });
+                      },
+                    )
+                  : isListCategoriesWidgetVisible
+                  ? ListCategoriesWidget(
+                      onCancel: () {
+                        setState(() {
+                          isListCategoriesWidgetVisible = false;
+                        });
+                      },
+                    )
+                  : isBorrowBookWidgetVisible
+                  ? BorrowBookWidget(
+                      onCancel: () {
+                        setState(() {
+                          isBorrowBookWidgetVisible = false;
+                        });
+                      },
+                    )
+                  : isReturnBookWidgetVisible
+                  ? ReturnBookWidget(
+                      onCancel: () {
+                        setState(() {
+                          isReturnBookWidgetVisible = false;
+                        });
+                      },
+                    )
+                  : isListLoansWidgetVisible
+                  ? ListLoansWidget(
+                      onCancel: () {
+                        setState(() {
+                          isListLoansWidgetVisible = false;
+                        });
+                      },
+                    )
+                  : isListLeadersWidgetVisible
+                  ? ListLeadersWidget(
+                      onCancel: () {
+                        setState(() {
+                          isListLeadersWidgetVisible = false;
+                        });
+                      },
+                    )
+                  : isAddUserWidgetVisible
+                  ? AddUserWidget(
+                      onCancel: () {
+                        setState(() {
+                          isBorrowBookWidgetVisible = false;
+                        });
+                      },
+                    )
+                  : isDeleteUserWidgetVisible
+                  ? DeleteUserWidget(
+                      onCancel: () {
+                        setState(() {
+                          isReturnBookWidgetVisible = false;
+                        });
+                      },
+                    )
+                  : isListUsersWidgetVisible
+                  ? ListUsersWidget(
+                      onCancel: () {
+                        setState(() {
+                          isListLoansWidgetVisible = false;
+                        });
+                      },
+                    )
+                  : isChangeRoleWidgetVisible
+                  ? ChangeRoleWidget(
+                      onCancel: () {
+                        setState(() {
+                          isListLeadersWidgetVisible = false;
+                        });
+                      },
+                    )
+                  : isResetWidgetVisible
+                  ? ResetWidget(
                       onCancel: () {
                         setState(() {
                           isListLeadersWidgetVisible = false;

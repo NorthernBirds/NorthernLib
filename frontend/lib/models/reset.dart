@@ -19,7 +19,7 @@ class _ResetWidgetState extends State<ResetWidget> {
   Widget build(BuildContext context) {
     return Center(
       child: Container(
-        height: 700,
+        height: 600,
         width: 400,
         decoration: BoxDecoration(
           color: Colors.white,
@@ -154,17 +154,20 @@ class _ResetWidgetState extends State<ResetWidget> {
                 }
               },
               style: ElevatedButton.styleFrom(
-                side: const BorderSide(color: Colors.black),
+                side: const BorderSide(color: Color(0xFF3A8772)),
                 padding: const EdgeInsets.all(20.0),
-                backgroundColor: Colors.white,
+                backgroundColor: const Color(0xFF3A8772),
               ),
-              child: const Text("Sil", style: TextStyle(color: Colors.black)),
+              child: const Text(
+                "Sıfırla",
+                style: TextStyle(color: Colors.black),
+              ),
             ),
             ElevatedButton(
               onPressed: widget.onCancel,
               style: ElevatedButton.styleFrom(
-                side: const BorderSide(color: Colors.black),
-                backgroundColor: Colors.white,
+                side: const BorderSide(color: Color(0xFF3A8772)),
+                backgroundColor: const Color(0xFF3A8772),
               ),
               child: const Text(
                 "İptal",
