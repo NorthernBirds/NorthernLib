@@ -363,10 +363,10 @@ class _ListLoansWidgetState extends State<ListLoansWidget> {
         bookNames = List<String>.from(data?["bookNames"] ?? []);
         borrowDates = List<String>.from(data?["borrowDates"] ?? []);
         returnDates = List<String>.from(data?["returnDates"] ?? []);
-        returnedAts = List<String>.from(data?["pageCounts"] ?? []);
+        returnedAts = List<String>.from(data?["returnedAts"] ?? []);
         loanStatuses = List<String>.from(data?["loanStatuses"] ?? []);
         whoAddeds = List<String>.from(data?["whoAddeds"] ?? []);
-        itemsPerPage = parsedLimit;
+        itemsPerPage = IDs.length;
       });
     }
   }

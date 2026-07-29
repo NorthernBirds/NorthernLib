@@ -277,7 +277,7 @@ class _ListCategoriesWidgetState extends State<ListCategoriesWidget> {
         IDs = List<int>.from(data?["ids"] ?? []);
         categoryNames = List<String>.from(data?["names"] ?? []);
         whoAddeds = List<String>.from(data?["whoAddeds"] ?? []);
-        itemsPerPage = parsedLimit;
+        itemsPerPage = IDs.length;
       });
     }
   }

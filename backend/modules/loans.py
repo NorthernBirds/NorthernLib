@@ -25,7 +25,7 @@ class Loan:
                     return {"success":False,"message":"Kitap bulunamadı!"}
                 else:
 
-                    if result[6] == "Alındı":
+                    if result[6] == "Alindi":
                         return {"success":False,"message":"Bu kitap zaten alınmış!"}
                     else:
 
@@ -35,7 +35,7 @@ class Loan:
 
                             self.cursor.execute("INSERT INTO loans (studentID,bookID,returnDate,whoAdded) VALUES (%s,%s,%s,%s)",(studentID,bookID,returnDate,activeUserName))
                             self.conn.commit()
-                            self.cursor.execute("UPDATE books SET isTaken = %s WHERE id = %s",("Alındı",bookID))
+                            self.cursor.execute("UPDATE books SET isTaken = %s WHERE id = %s",("Alindi",bookID))
                             self.conn.commit()
                             
                             return {"success":True,"message":"Kitap ödünç alındı."}
@@ -61,14 +61,14 @@ class Loan:
                     return {"success":False,"message":"Kitap bulunamadı!"}
                 else:
 
-                    if result[6] == "Alınmadı":
+                    if result[6] == "Alinmadi":
                         return {"success":False,"message":"Bu kitap zaten ödünç alınmamış!"}
                     else:
 
                         now = datetime.now().strftime("%d/%m/%Y")
                         self.cursor.execute("UPDATE loans SET loanStatus = %s,returnedAt = %s WHERE bookID = %s",("returned",now,bookID))
                         self.conn.commit()
-                        self.cursor.execute("UPDATE books SET isTaken = %s WHERE id = %s",("Alınmadı",bookID))
+                        self.cursor.execute("UPDATE books SET isTaken = %s WHERE id = %s",("Alinmadi",bookID))
                         self.conn.commit()
                         
                         return {"success":True,"message":"Kitap geri verildi."}

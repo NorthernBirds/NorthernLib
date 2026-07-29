@@ -527,7 +527,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                   ? ResetWidget(
                       onCancel: () {
                         setState(() {
-                          isListLeadersWidgetVisible = false;
+                          isResetWidgetVisible = false;
                         });
                       },
                     )

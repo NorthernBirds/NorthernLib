@@ -16,7 +16,7 @@ class _AddBookWidgetState extends State<AddBookWidget> {
   String bookName = "";
   String writer = "";
   String publisher = "";
-  String category = "";
+  String category = "Roman";
   String pageCount = "";
 
   @override
@@ -24,7 +24,7 @@ class _AddBookWidgetState extends State<AddBookWidget> {
     return Center(
       child: Container(
         width: 400,
-        height: 700,
+        height: 600,
         decoration: BoxDecoration(
           color: const Color(0xFF3A8772),
           borderRadius: BorderRadius.circular(30.0),
@@ -378,7 +378,7 @@ class _ListBooksWidgetState extends State<ListBooksWidget> {
         pageCounts = List<int>.from(data?["pageCounts"] ?? []);
         isTakens = List<String>.from(data?["isTakens"] ?? []);
         whoAddeds = List<String>.from(data?["whoAddeds"] ?? []);
-        itemsPerPage = parsedLimit;
+        itemsPerPage = IDs.length;
       });
     }
   }

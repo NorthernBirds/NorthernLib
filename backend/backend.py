@@ -1,5 +1,5 @@
-import db.connection
 import config
+import db.connection
 
 developingMode = True
 
@@ -29,10 +29,15 @@ auth = modules.auth.Auth(conn=conn,cursor=cursor)
 thread = threading.Thread(target=modules.auth.durationHeartbeat,daemon=True)
 thread.start()
 
+pause = threading.Event()
+pause.set()
+
 app = Flask(__name__)
 CORS(app)
 
 def checkRoleAndToken(token,appToken,allowedRoles):
+
+    pause.clear()
 
     result = auth.verifyUserToken(token=token)
     
@@ -61,6 +66,8 @@ def checkRoleAndToken(token,appToken,allowedRoles):
                 else:
 
                     modules.auth.resetDuration(token=token)
+
+                    pause.set()
                     
                     return {
                         "success":True

@@ -117,9 +117,9 @@ class Book:
                         IDs.append(rV[0])
                         names.append(rV[1])
                         writers.append(rV[2])
-                        categories.append(rV[3])
-                        publishers.append(rV[4])
-                        pageCounts.append(rV[5])
+                        publishers.append(rV[3])
+                        pageCounts.append(rV[4])
+                        categories.append(rV[5])
                         isTakens.append(rV[6])
                         whoAddeds.append(rV[7])
 

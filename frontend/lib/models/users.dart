@@ -381,7 +381,10 @@ class _ChangeRoleWidgetState extends State<ChangeRoleWidget> {
                 padding: const EdgeInsets.all(20.0),
                 backgroundColor: const Color(0xFF3A8772),
               ),
-              child: const Text("Ekle", style: TextStyle(color: Colors.black)),
+              child: const Text(
+                "Güncelle",
+                style: TextStyle(color: Colors.black),
+              ),
             ),
             ElevatedButton(
               onPressed: widget.onCancel,
@@ -463,7 +466,7 @@ class _ListUsersWidgetState extends State<ListUsersWidget> {
         IDs = List<int>.from(data?["ids"] ?? []);
         userNames = List<String>.from(data?["userNames"] ?? []);
         roles = List<String>.from(data?["roles"] ?? []);
-        itemsPerPage = parsedLimit;
+        itemsPerPage = IDs.length;
       });
     }
   }
@@ -616,7 +619,7 @@ class _ListUsersWidgetState extends State<ListUsersWidget> {
                       columns: const [
                         DataColumn(label: Text("ID")),
                         DataColumn(label: Text("Kullanıcı Adı")),
-                        DataColumn(label: Text("Rolh")),
+                        DataColumn(label: Text("Rol")),
                       ],
                       source: UserDataSource(
                         ids: IDs,

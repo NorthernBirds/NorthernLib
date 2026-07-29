@@ -21,7 +21,7 @@ class Leader:
                     pageCount += 1
                 offset = ((pageNumber - 1) * limit)
 
-            self.cursor.execute("SELECT studentID, COUNT(*) AS readBooks FROM loans WHERE status = 'returned' GROUP BY studentID ORDER BY readBooks DESC LIMIT %s OFFSET %s;", (limit, offset))
+            self.cursor.execute("SELECT studentID, COUNT(*) AS readBooks FROM loans WHERE loanStatus = 'returned' GROUP BY studentID ORDER BY readBooks DESC LIMIT %s OFFSET %s;", (limit, offset))
             result = self.cursor.fetchall()
                 
             if result:

@@ -22,7 +22,7 @@ class _ResetWidgetState extends State<ResetWidget> {
         height: 600,
         width: 400,
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: const Color(0xFF3A8772),
           borderRadius: BorderRadius.circular(30.0),
         ),
         child: Column(

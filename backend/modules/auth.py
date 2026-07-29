@@ -64,11 +64,11 @@ class Auth:
                 return {"success":False,"message":"Lütfen boş bırakmayın!"}
             else:
 
-                self.cursor.execute("SELECT * FROM library_admin.libraries WHERE libName = %s",(dbName,))
+                self.cursor.execute("SELECT * FROM libraries WHERE libName = %s",(dbName,))
 
                 result = self.cursor.fetchone()
 
-                if result is not None or dbName == "library_admin":
+                if result is not None or dbName == "library":
                     return {"success":False,"message":"Bu kütüphane adı zaten var!"}
                 else:
 
@@ -96,11 +96,11 @@ class Auth:
             if dbName == "" or dbPassword == "":
                 return {"success":False,"message":"Lütfen boş bırakmayın!"}
             else:
-                self.cursor.execute("SELECT * FROM library_admin.libraries WHERE libName = %s",(dbName,))
+                self.cursor.execute("SELECT * FROM libraries WHERE libName = %s",(dbName,))
 
                 result = self.cursor.fetchone()
 
-                if result is None or dbName == "library_admin":
+                if result is None or dbName == "library":
                     return {"success":False,"message":"Bu kütüphane adı bulunamadı!"}
                 else:
 

@@ -50,7 +50,7 @@ class _ListLeadersWidgetState extends State<ListLeadersWidget> {
       setState(() {
         studentIDs = List<int>.from(data?["studentIDs"] ?? []);
         readBooks = List<String>.from(data?["readBook"] ?? []);
-        itemsPerPage = parsedLimit;
+        itemsPerPage = studentIDs.length;
       });
     }
   }
