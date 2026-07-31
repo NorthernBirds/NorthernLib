@@ -4,6 +4,7 @@ import 'package:frontend/main.dart';
 import 'adminDashboard.dart';
 import 'student_staffDashboard.dart';
 import 'teacherDashboard.dart';
+import 'package:frontend/config.dart';
 
 class LoginDashboard extends StatefulWidget {
   const LoginDashboard({super.key});
@@ -34,7 +35,7 @@ class _LoginDashboardState extends State<LoginDashboard> {
           child: Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(30.0),
-              color: const Color(0xFF3A8772),
+              color: color,
             ),
             width: 400.0,
             height: 600.0,
@@ -193,7 +194,7 @@ class _LoginDashboardState extends State<LoginDashboard> {
                     },
                     style: ElevatedButton.styleFrom(
                       side: const BorderSide(color: Color(0xFF3A8772)),
-                      backgroundColor: const Color(0xFF3A8772),
+                      backgroundColor: color,
                     ),
                     child: const Text(
                       "Sign In",
@@ -212,7 +213,7 @@ class _LoginDashboardState extends State<LoginDashboard> {
                     },
                     style: ElevatedButton.styleFrom(
                       side: const BorderSide(color: Color(0xFF3A8772)),
-                      backgroundColor: const Color(0xFF3A8772),
+                      backgroundColor: color,
                     ),
                     child: const Text(
                       "İptal",

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/api_requests.dart';
 import 'package:frontend/main.dart';
+import 'package:frontend/config.dart';
 
 class signUpDash extends StatefulWidget {
   const signUpDash({super.key});
@@ -27,7 +28,7 @@ class _signUpStateDash extends State<signUpDash> {
           child: Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(30.0),
-              color: const Color(0xFF3A8772),
+              color: color,
             ),
             width: 400.0,
             height: 400.0,
@@ -108,8 +109,8 @@ class _signUpStateDash extends State<signUpDash> {
                       }
                     },
                     style: ElevatedButton.styleFrom(
-                      side: BorderSide(color: const Color(0xFF3A8772)),
-                      backgroundColor: const Color(0xFF3A8772),
+                      side: BorderSide(color: color),
+                      backgroundColor: color,
                     ),
                     child: const Text(
                       "Kayıt Ol",
@@ -128,7 +129,7 @@ class _signUpStateDash extends State<signUpDash> {
                     },
                     style: ElevatedButton.styleFrom(
                       side: const BorderSide(color: Color(0xFF3A8772)),
-                      backgroundColor: const Color(0xFF3A8772),
+                      backgroundColor: color,
                     ),
                     child: const Text(
                       "İptal",

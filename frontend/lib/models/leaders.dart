@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/api_requests.dart';
 import 'package:flutter/services.dart';
+import 'package:frontend/config.dart';
 
 class ListLeadersWidget extends StatefulWidget {
   final VoidCallback onCancel;
@@ -61,7 +62,7 @@ class _ListLeadersWidgetState extends State<ListLeadersWidget> {
       child: Container(
         width: 1200,
         height: 1200,
-        color: const Color(0xFF3A8772),
+        color: color,
         child: SingleChildScrollView(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -89,9 +90,7 @@ class _ListLeadersWidgetState extends State<ListLeadersWidget> {
                     keyboardType: TextInputType.number,
                     decoration: InputDecoration(
                       hintText: "Sayfaya Düşen Satır Sayısı",
-                      hintStyle: const TextStyle(
-                        color: Color.fromARGB(255, 151, 144, 144),
-                      ),
+                      hintStyle: const TextStyle(color: color2),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(20.0),
                       ),
@@ -109,7 +108,7 @@ class _ListLeadersWidgetState extends State<ListLeadersWidget> {
                 style: ElevatedButton.styleFrom(
                   side: const BorderSide(color: Color(0xFF3A8772)),
                   padding: const EdgeInsets.all(20.0),
-                  backgroundColor: const Color(0xFF3A8772),
+                  backgroundColor: color,
                 ),
                 child: const Text(
                   "Listele",
@@ -121,7 +120,7 @@ class _ListLeadersWidgetState extends State<ListLeadersWidget> {
                 onPressed: widget.onCancel,
                 style: ElevatedButton.styleFrom(
                   side: const BorderSide(color: Color(0xFF3A8772)),
-                  backgroundColor: const Color(0xFF3A8772),
+                  backgroundColor: color,
                 ),
                 child: const Text(
                   "İptal",

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:frontend/api_requests.dart';
+import 'package:frontend/config.dart';
 
 class AddUserWidget extends StatefulWidget {
   final VoidCallback onCancel;
@@ -28,7 +29,7 @@ class _AddUserWidgetState extends State<AddUserWidget> {
         width: 400,
         height: 600,
         decoration: BoxDecoration(
-          color: const Color(0xFF3A8772),
+          color: color,
           borderRadius: BorderRadius.circular(30.0),
           border: Border.all(color: Colors.black, width: 2.0),
         ),
@@ -53,9 +54,7 @@ class _AddUserWidgetState extends State<AddUserWidget> {
                   onChanged: (value) => userName = value,
                   decoration: InputDecoration(
                     hintText: "Kullanıcı Adı",
-                    hintStyle: const TextStyle(
-                      color: Color.fromARGB(255, 151, 144, 144),
-                    ),
+                    hintStyle: const TextStyle(color: color2),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(20.0),
                     ),
@@ -90,9 +89,7 @@ class _AddUserWidgetState extends State<AddUserWidget> {
                   onChanged: (value) => password = value,
                   decoration: InputDecoration(
                     hintText: "Şifre",
-                    hintStyle: const TextStyle(
-                      color: Color.fromARGB(255, 151, 144, 144),
-                    ),
+                    hintStyle: const TextStyle(color: color2),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(20.0),
                     ),
@@ -135,7 +132,7 @@ class _AddUserWidgetState extends State<AddUserWidget> {
               style: ElevatedButton.styleFrom(
                 side: const BorderSide(color: Color(0xFF3A8772)),
                 padding: const EdgeInsets.all(20.0),
-                backgroundColor: const Color(0xFF3A8772),
+                backgroundColor: color,
               ),
               child: const Text("Ekle", style: TextStyle(color: Colors.black)),
             ),
@@ -143,7 +140,7 @@ class _AddUserWidgetState extends State<AddUserWidget> {
               onPressed: widget.onCancel,
               style: ElevatedButton.styleFrom(
                 side: const BorderSide(color: Color(0xFF3A8772)),
-                backgroundColor: const Color(0xFF3A8772),
+                backgroundColor: color,
               ),
               child: const Text(
                 "İptal",
@@ -176,7 +173,7 @@ class _DeleteUserWidgetState extends State<DeleteUserWidget> {
         width: 400,
         height: 400,
         decoration: BoxDecoration(
-          color: const Color(0xFF3A8772),
+          color: color,
           borderRadius: BorderRadius.circular(30.0),
           border: Border.all(color: Colors.black, width: 2.0),
         ),
@@ -203,9 +200,7 @@ class _DeleteUserWidgetState extends State<DeleteUserWidget> {
                   keyboardType: TextInputType.number,
                   decoration: InputDecoration(
                     hintText: "Kullanıcı ID",
-                    hintStyle: const TextStyle(
-                      color: Color.fromARGB(255, 151, 144, 144),
-                    ),
+                    hintStyle: const TextStyle(color: color2),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(20.0),
                     ),
@@ -244,7 +239,7 @@ class _DeleteUserWidgetState extends State<DeleteUserWidget> {
               style: ElevatedButton.styleFrom(
                 side: const BorderSide(color: Color(0xFF3A8772)),
                 padding: const EdgeInsets.all(20.0),
-                backgroundColor: const Color(0xFF3A8772),
+                backgroundColor: color,
               ),
               child: const Text("Sil", style: TextStyle(color: Colors.black)),
             ),
@@ -252,7 +247,7 @@ class _DeleteUserWidgetState extends State<DeleteUserWidget> {
               onPressed: widget.onCancel,
               style: ElevatedButton.styleFrom(
                 side: const BorderSide(color: Color(0xFF3A8772)),
-                backgroundColor: const Color(0xFF3A8772),
+                backgroundColor: color,
               ),
               child: const Text(
                 "İptal",
@@ -291,7 +286,7 @@ class _ChangeRoleWidgetState extends State<ChangeRoleWidget> {
         width: 400,
         height: 600,
         decoration: BoxDecoration(
-          color: const Color(0xFF3A8772),
+          color: color,
           borderRadius: BorderRadius.circular(30.0),
           border: Border.all(color: Colors.black, width: 2.0),
         ),
@@ -316,9 +311,7 @@ class _ChangeRoleWidgetState extends State<ChangeRoleWidget> {
                   onChanged: (value) => userName = value,
                   decoration: InputDecoration(
                     hintText: "Kullanıcı Adı",
-                    hintStyle: const TextStyle(
-                      color: Color.fromARGB(255, 151, 144, 144),
-                    ),
+                    hintStyle: const TextStyle(color: color2),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(20.0),
                     ),
@@ -379,7 +372,7 @@ class _ChangeRoleWidgetState extends State<ChangeRoleWidget> {
               style: ElevatedButton.styleFrom(
                 side: const BorderSide(color: Color(0xFF3A8772)),
                 padding: const EdgeInsets.all(20.0),
-                backgroundColor: const Color(0xFF3A8772),
+                backgroundColor: color,
               ),
               child: const Text(
                 "Güncelle",
@@ -390,7 +383,7 @@ class _ChangeRoleWidgetState extends State<ChangeRoleWidget> {
               onPressed: widget.onCancel,
               style: ElevatedButton.styleFrom(
                 side: const BorderSide(color: Color(0xFF3A8772)),
-                backgroundColor: const Color(0xFF3A8772),
+                backgroundColor: color,
               ),
               child: const Text(
                 "İptal",
@@ -477,7 +470,7 @@ class _ListUsersWidgetState extends State<ListUsersWidget> {
       child: Container(
         width: 1200,
         height: 1200,
-        color: const Color(0xFF3A8772),
+        color: color,
         child: SingleChildScrollView(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -543,9 +536,7 @@ class _ListUsersWidgetState extends State<ListUsersWidget> {
                     onChanged: (value) => filterValue = value,
                     decoration: InputDecoration(
                       hintText: "Filtre Değişkeni",
-                      hintStyle: const TextStyle(
-                        color: Color.fromARGB(255, 151, 144, 144),
-                      ),
+                      hintStyle: const TextStyle(color: color2),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(20.0),
                       ),
@@ -563,9 +554,7 @@ class _ListUsersWidgetState extends State<ListUsersWidget> {
                     keyboardType: TextInputType.number,
                     decoration: InputDecoration(
                       hintText: "Sayfaya Düşen Satır Sayısı",
-                      hintStyle: const TextStyle(
-                        color: Color.fromARGB(255, 151, 144, 144),
-                      ),
+                      hintStyle: const TextStyle(color: color2),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(20.0),
                       ),
@@ -583,7 +572,7 @@ class _ListUsersWidgetState extends State<ListUsersWidget> {
                 style: ElevatedButton.styleFrom(
                   side: const BorderSide(color: Color(0xFF3A8772)),
                   padding: const EdgeInsets.all(20.0),
-                  backgroundColor: const Color(0xFF3A8772),
+                  backgroundColor: color,
                 ),
                 child: const Text(
                   "Listele",
@@ -595,7 +584,7 @@ class _ListUsersWidgetState extends State<ListUsersWidget> {
                 onPressed: widget.onCancel,
                 style: ElevatedButton.styleFrom(
                   side: const BorderSide(color: Color(0xFF3A8772)),
-                  backgroundColor: const Color(0xFF3A8772),
+                  backgroundColor: color,
                 ),
                 child: const Text(
                   "İptal",

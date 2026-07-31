@@ -22,7 +22,7 @@ class _AddCategoryWidgetState extends State<AddCategoryWidget> {
         width: 400,
         height: 400,
         decoration: BoxDecoration(
-          color: const Color(0xFF3A8772),
+          color: color,
           borderRadius: BorderRadius.circular(30.0),
           border: Border.all(color: Colors.black, width: 2.0),
         ),
@@ -84,7 +84,7 @@ class _AddCategoryWidgetState extends State<AddCategoryWidget> {
               style: ElevatedButton.styleFrom(
                 side: const BorderSide(color: Color(0xFF3A8772)),
                 padding: const EdgeInsets.all(20.0),
-                backgroundColor: const Color(0xFF3A8772),
+                backgroundColor: color,
               ),
               child: const Text("Ekle", style: TextStyle(color: Colors.black)),
             ),
@@ -92,7 +92,7 @@ class _AddCategoryWidgetState extends State<AddCategoryWidget> {
               onPressed: widget.onCancel,
               style: ElevatedButton.styleFrom(
                 side: const BorderSide(color: Color(0xFF3A8772)),
-                backgroundColor: const Color(0xFF3A8772),
+                backgroundColor: color,
               ),
               child: const Text(
                 "İptal",
@@ -125,7 +125,7 @@ class _DeleteCategoryWidgetState extends State<DeleteCategoryWidget> {
         width: 400,
         height: 400,
         decoration: BoxDecoration(
-          color: const Color(0xFF3A8772),
+          color: color,
           borderRadius: BorderRadius.circular(30.0),
           border: Border.all(color: Colors.black, width: 2.0),
         ),
@@ -152,9 +152,7 @@ class _DeleteCategoryWidgetState extends State<DeleteCategoryWidget> {
                   keyboardType: TextInputType.number,
                   decoration: InputDecoration(
                     hintText: "Kategori ID",
-                    hintStyle: const TextStyle(
-                      color: Color.fromARGB(255, 151, 144, 144),
-                    ),
+                    hintStyle: const TextStyle(color: color2),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(20.0),
                     ),
@@ -193,7 +191,7 @@ class _DeleteCategoryWidgetState extends State<DeleteCategoryWidget> {
               style: ElevatedButton.styleFrom(
                 side: const BorderSide(color: Color(0xFF3A8772)),
                 padding: const EdgeInsets.all(20.0),
-                backgroundColor: const Color(0xFF3A8772),
+                backgroundColor: color,
               ),
               child: const Text("Sil", style: TextStyle(color: Colors.black)),
             ),
@@ -201,7 +199,7 @@ class _DeleteCategoryWidgetState extends State<DeleteCategoryWidget> {
               onPressed: widget.onCancel,
               style: ElevatedButton.styleFrom(
                 side: const BorderSide(color: Color(0xFF3A8772)),
-                backgroundColor: const Color(0xFF3A8772),
+                backgroundColor: color,
               ),
               child: const Text(
                 "İptal",
@@ -288,7 +286,7 @@ class _ListCategoriesWidgetState extends State<ListCategoriesWidget> {
       child: Container(
         width: 1200,
         height: 1200,
-        color: const Color(0xFF3A8772),
+        color: color,
         child: SingleChildScrollView(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -354,9 +352,7 @@ class _ListCategoriesWidgetState extends State<ListCategoriesWidget> {
                     onChanged: (value) => filterValue = value,
                     decoration: InputDecoration(
                       hintText: "Filtre Değişkeni",
-                      hintStyle: const TextStyle(
-                        color: Color.fromARGB(255, 151, 144, 144),
-                      ),
+                      hintStyle: const TextStyle(color: color2),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(20.0),
                       ),
@@ -374,9 +370,7 @@ class _ListCategoriesWidgetState extends State<ListCategoriesWidget> {
                     keyboardType: TextInputType.number,
                     decoration: InputDecoration(
                       hintText: "Sayfaya Düşen Satır Sayısı",
-                      hintStyle: const TextStyle(
-                        color: Color.fromARGB(255, 151, 144, 144),
-                      ),
+                      hintStyle: const TextStyle(color: color2),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(20.0),
                       ),
@@ -394,7 +388,7 @@ class _ListCategoriesWidgetState extends State<ListCategoriesWidget> {
                 style: ElevatedButton.styleFrom(
                   side: const BorderSide(color: Color(0xFF3A8772)),
                   padding: const EdgeInsets.all(20.0),
-                  backgroundColor: const Color(0xFF3A8772),
+                  backgroundColor: color,
                 ),
                 child: const Text(
                   "Listele",
@@ -406,7 +400,7 @@ class _ListCategoriesWidgetState extends State<ListCategoriesWidget> {
                 onPressed: widget.onCancel,
                 style: ElevatedButton.styleFrom(
                   side: const BorderSide(color: Color(0xFF3A8772)),
-                  backgroundColor: const Color(0xFF3A8772),
+                  backgroundColor: color,
                 ),
                 child: const Text(
                   "İptal",

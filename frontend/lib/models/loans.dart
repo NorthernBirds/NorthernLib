@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:frontend/api_requests.dart';
+import 'package:frontend/config.dart';
 
 class BorrowBookWidget extends StatefulWidget {
   final VoidCallback onCancel;
@@ -23,7 +24,7 @@ class _BorrowBookWidgetState extends State<BorrowBookWidget> {
         width: 400,
         height: 500,
         decoration: BoxDecoration(
-          color: const Color(0xFF3A8772),
+          color: color,
           borderRadius: BorderRadius.circular(30.0),
           border: Border.all(color: Colors.black, width: 2.0),
         ),
@@ -50,9 +51,7 @@ class _BorrowBookWidgetState extends State<BorrowBookWidget> {
                   keyboardType: TextInputType.number,
                   decoration: InputDecoration(
                     hintText: "Öğrenci No",
-                    hintStyle: const TextStyle(
-                      color: Color.fromARGB(255, 151, 144, 144),
-                    ),
+                    hintStyle: const TextStyle(color: color2),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(20.0),
                     ),
@@ -70,9 +69,7 @@ class _BorrowBookWidgetState extends State<BorrowBookWidget> {
                   keyboardType: TextInputType.number,
                   decoration: InputDecoration(
                     hintText: "Kitap ID",
-                    hintStyle: const TextStyle(
-                      color: Color.fromARGB(255, 151, 144, 144),
-                    ),
+                    hintStyle: const TextStyle(color: color2),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(20.0),
                     ),
@@ -155,7 +152,7 @@ class _BorrowBookWidgetState extends State<BorrowBookWidget> {
               style: ElevatedButton.styleFrom(
                 side: const BorderSide(color: Color(0xFF3A8772)),
                 padding: const EdgeInsets.all(20.0),
-                backgroundColor: const Color(0xFF3A8772),
+                backgroundColor: color,
               ),
               child: const Text("Ekle", style: TextStyle(color: Colors.black)),
             ),
@@ -163,7 +160,7 @@ class _BorrowBookWidgetState extends State<BorrowBookWidget> {
               onPressed: widget.onCancel,
               style: ElevatedButton.styleFrom(
                 side: const BorderSide(color: Color(0xFF3A8772)),
-                backgroundColor: const Color(0xFF3A8772),
+                backgroundColor: color,
               ),
               child: const Text(
                 "İptal",
@@ -223,9 +220,7 @@ class _ReturnBookWidgetState extends State<ReturnBookWidget> {
                   keyboardType: TextInputType.number,
                   decoration: InputDecoration(
                     hintText: "Kitap ID",
-                    hintStyle: const TextStyle(
-                      color: Color.fromARGB(255, 151, 144, 144),
-                    ),
+                    hintStyle: const TextStyle(color: color2),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(20.0),
                     ),
@@ -264,7 +259,7 @@ class _ReturnBookWidgetState extends State<ReturnBookWidget> {
               style: ElevatedButton.styleFrom(
                 side: const BorderSide(color: Color(0xFF3A8772)),
                 padding: const EdgeInsets.all(20.0),
-                backgroundColor: const Color(0xFF3A8772),
+                backgroundColor: color,
               ),
               child: const Text(
                 "Geri Al",
@@ -275,7 +270,7 @@ class _ReturnBookWidgetState extends State<ReturnBookWidget> {
               onPressed: widget.onCancel,
               style: ElevatedButton.styleFrom(
                 side: const BorderSide(color: Color(0xFF3A8772)),
-                backgroundColor: const Color(0xFF3A8772),
+                backgroundColor: color,
               ),
               child: const Text(
                 "İptal",
@@ -377,7 +372,7 @@ class _ListLoansWidgetState extends State<ListLoansWidget> {
       child: Container(
         width: 1200,
         height: 1200,
-        color: const Color(0xFF3A8772),
+        color: color,
         child: SingleChildScrollView(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -443,9 +438,7 @@ class _ListLoansWidgetState extends State<ListLoansWidget> {
                     onChanged: (value) => filterValue = value,
                     decoration: InputDecoration(
                       hintText: "Filtre Değişkeni",
-                      hintStyle: const TextStyle(
-                        color: Color.fromARGB(255, 151, 144, 144),
-                      ),
+                      hintStyle: const TextStyle(color: color2),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(20.0),
                       ),
@@ -463,9 +456,7 @@ class _ListLoansWidgetState extends State<ListLoansWidget> {
                     keyboardType: TextInputType.number,
                     decoration: InputDecoration(
                       hintText: "Sayfaya Düşen Satır Sayısı",
-                      hintStyle: const TextStyle(
-                        color: Color.fromARGB(255, 151, 144, 144),
-                      ),
+                      hintStyle: const TextStyle(color: color2),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(20.0),
                       ),
@@ -483,7 +474,7 @@ class _ListLoansWidgetState extends State<ListLoansWidget> {
                 style: ElevatedButton.styleFrom(
                   side: const BorderSide(color: Color(0xFF3A8772)),
                   padding: const EdgeInsets.all(20.0),
-                  backgroundColor: const Color(0xFF3A8772),
+                  backgroundColor: color,
                 ),
                 child: const Text(
                   "Listele",
@@ -495,7 +486,7 @@ class _ListLoansWidgetState extends State<ListLoansWidget> {
                 onPressed: widget.onCancel,
                 style: ElevatedButton.styleFrom(
                   side: const BorderSide(color: Color(0xFF3A8772)),
-                  backgroundColor: const Color(0xFF3A8772),
+                  backgroundColor: color,
                 ),
                 child: const Text(
                   "İptal",

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/api_requests.dart';
+import 'package:frontend/config.dart';
 
 class ResetWidget extends StatefulWidget {
   final VoidCallback onCancel;
@@ -22,7 +23,7 @@ class _ResetWidgetState extends State<ResetWidget> {
         height: 600,
         width: 400,
         decoration: BoxDecoration(
-          color: const Color(0xFF3A8772),
+          color: color,
           borderRadius: BorderRadius.circular(30.0),
         ),
         child: Column(
@@ -156,7 +157,7 @@ class _ResetWidgetState extends State<ResetWidget> {
               style: ElevatedButton.styleFrom(
                 side: const BorderSide(color: Color(0xFF3A8772)),
                 padding: const EdgeInsets.all(20.0),
-                backgroundColor: const Color(0xFF3A8772),
+                backgroundColor: color,
               ),
               child: const Text(
                 "Sıfırla",
@@ -167,7 +168,7 @@ class _ResetWidgetState extends State<ResetWidget> {
               onPressed: widget.onCancel,
               style: ElevatedButton.styleFrom(
                 side: const BorderSide(color: Color(0xFF3A8772)),
-                backgroundColor: const Color(0xFF3A8772),
+                backgroundColor: color,
               ),
               child: const Text(
                 "İptal",

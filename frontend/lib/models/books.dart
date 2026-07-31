@@ -26,7 +26,7 @@ class _AddBookWidgetState extends State<AddBookWidget> {
         width: 400,
         height: 600,
         decoration: BoxDecoration(
-          color: const Color(0xFF3A8772),
+          color: color,
           borderRadius: BorderRadius.circular(30.0),
           border: Border.all(color: Colors.black, width: 2.0),
         ),
@@ -51,9 +51,7 @@ class _AddBookWidgetState extends State<AddBookWidget> {
                   onChanged: (value) => bookName = value,
                   decoration: InputDecoration(
                     hintText: "Kitap Adı",
-                    hintStyle: const TextStyle(
-                      color: Color.fromARGB(255, 151, 144, 144),
-                    ),
+                    hintStyle: const TextStyle(color: color2),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(20.0),
                     ),
@@ -69,9 +67,7 @@ class _AddBookWidgetState extends State<AddBookWidget> {
                   onChanged: (value) => writer = value,
                   decoration: InputDecoration(
                     hintText: "Yazar Adı",
-                    hintStyle: const TextStyle(
-                      color: Color.fromARGB(255, 151, 144, 144),
-                    ),
+                    hintStyle: const TextStyle(color: color2),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(20.0),
                     ),
@@ -87,9 +83,7 @@ class _AddBookWidgetState extends State<AddBookWidget> {
                   onChanged: (value) => publisher = value,
                   decoration: InputDecoration(
                     hintText: "Yayımcı Adı",
-                    hintStyle: const TextStyle(
-                      color: Color.fromARGB(255, 151, 144, 144),
-                    ),
+                    hintStyle: const TextStyle(color: color2),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(20.0),
                     ),
@@ -121,9 +115,7 @@ class _AddBookWidgetState extends State<AddBookWidget> {
                   keyboardType: TextInputType.number,
                   decoration: InputDecoration(
                     hintText: "Sayfa Sayısı",
-                    hintStyle: const TextStyle(
-                      color: Color.fromARGB(255, 151, 144, 144),
-                    ),
+                    hintStyle: const TextStyle(color: color2),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(20.0),
                     ),
@@ -170,7 +162,7 @@ class _AddBookWidgetState extends State<AddBookWidget> {
               style: ElevatedButton.styleFrom(
                 side: const BorderSide(color: Color(0xFF3A8772)),
                 padding: const EdgeInsets.all(20.0),
-                backgroundColor: const Color(0xFF3A8772),
+                backgroundColor: color,
               ),
               child: const Text("Ekle", style: TextStyle(color: Colors.black)),
             ),
@@ -178,7 +170,7 @@ class _AddBookWidgetState extends State<AddBookWidget> {
               onPressed: widget.onCancel,
               style: ElevatedButton.styleFrom(
                 side: const BorderSide(color: Color(0xFF3A8772)),
-                backgroundColor: const Color(0xFF3A8772),
+                backgroundColor: color,
               ),
               child: const Text(
                 "İptal",
@@ -211,7 +203,7 @@ class _DeleteBookWidgetState extends State<DeleteBookWidget> {
         width: 400,
         height: 400,
         decoration: BoxDecoration(
-          color: const Color(0xFF3A8772),
+          color: color,
           borderRadius: BorderRadius.circular(30.0),
           border: Border.all(color: Colors.black, width: 2.0),
         ),
@@ -238,9 +230,7 @@ class _DeleteBookWidgetState extends State<DeleteBookWidget> {
                   keyboardType: TextInputType.number,
                   decoration: InputDecoration(
                     hintText: "Kitap ID",
-                    hintStyle: const TextStyle(
-                      color: Color.fromARGB(255, 151, 144, 144),
-                    ),
+                    hintStyle: const TextStyle(color: color2),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(20.0),
                     ),
@@ -279,7 +269,7 @@ class _DeleteBookWidgetState extends State<DeleteBookWidget> {
               style: ElevatedButton.styleFrom(
                 side: const BorderSide(color: Color(0xFF3A8772)),
                 padding: const EdgeInsets.all(20.0),
-                backgroundColor: const Color(0xFF3A8772),
+                backgroundColor: color,
               ),
               child: const Text("Sil", style: TextStyle(color: Colors.black)),
             ),
@@ -287,7 +277,7 @@ class _DeleteBookWidgetState extends State<DeleteBookWidget> {
               onPressed: widget.onCancel,
               style: ElevatedButton.styleFrom(
                 side: const BorderSide(color: Color(0xFF3A8772)),
-                backgroundColor: const Color(0xFF3A8772),
+                backgroundColor: color,
               ),
               child: const Text(
                 "İptal",
@@ -389,7 +379,7 @@ class _ListBooksWidgetState extends State<ListBooksWidget> {
       child: Container(
         width: 1200,
         height: 1200,
-        color: const Color(0xFF3A8772),
+        color: color,
         child: SingleChildScrollView(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -455,9 +445,7 @@ class _ListBooksWidgetState extends State<ListBooksWidget> {
                     onChanged: (value) => filterValue = value,
                     decoration: InputDecoration(
                       hintText: "Filtre Değişkeni",
-                      hintStyle: const TextStyle(
-                        color: Color.fromARGB(255, 151, 144, 144),
-                      ),
+                      hintStyle: const TextStyle(color: color2),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(20.0),
                       ),
@@ -475,9 +463,7 @@ class _ListBooksWidgetState extends State<ListBooksWidget> {
                     keyboardType: TextInputType.number,
                     decoration: InputDecoration(
                       hintText: "Sayfaya Düşen Satır Sayısı",
-                      hintStyle: const TextStyle(
-                        color: Color.fromARGB(255, 151, 144, 144),
-                      ),
+                      hintStyle: const TextStyle(color: color2),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(20.0),
                       ),
@@ -495,7 +481,7 @@ class _ListBooksWidgetState extends State<ListBooksWidget> {
                 style: ElevatedButton.styleFrom(
                   side: const BorderSide(color: Color(0xFF3A8772)),
                   padding: const EdgeInsets.all(20.0),
-                  backgroundColor: const Color(0xFF3A8772),
+                  backgroundColor: color,
                 ),
                 child: const Text(
                   "Listele",
@@ -507,7 +493,7 @@ class _ListBooksWidgetState extends State<ListBooksWidget> {
                 onPressed: widget.onCancel,
                 style: ElevatedButton.styleFrom(
                   side: const BorderSide(color: Color(0xFF3A8772)),
-                  backgroundColor: const Color(0xFF3A8772),
+                  backgroundColor: color,
                 ),
                 child: const Text(
                   "İptal",
