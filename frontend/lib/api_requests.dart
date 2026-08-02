@@ -10,6 +10,7 @@ final BaseOptions options = BaseOptions(
   receiveTimeout: const Duration(seconds: 10),
   contentType: Headers.jsonContentType,
   responseType: ResponseType.json,
+  headers: {"appToken": appKey},
 );
 
 final Dio dio = Dio(options)
