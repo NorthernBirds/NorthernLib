@@ -26,8 +26,9 @@ session = {}
 db_name = os.getenv("DB_NAME","")
 db_password = os.getenv("DB_PASSWORD","")
 db_user = os.getenv("DB_USER","")
+developer_password = os.getenv("DEVELOPER_PASSWORD","")
 
 APP_KEY = os.getenv("APP_KEY","")
 
-if db_name == "" or db_password == "" or db_user == "" or APP_KEY == "":
+if db_name == "" or db_password == "" or db_user == "" or APP_KEY == "" or developer_password == "":
     sys.exit(1)

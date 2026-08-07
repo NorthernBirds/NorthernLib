@@ -93,7 +93,7 @@ def signUp():
             return jsonify(result)
         else:
 
-            return jsonify(auth.signUp(dbName=data.get("dbName","")))
+            return jsonify(auth.signUp(dbName=data.get("dbName",""),developerPassword=data.get("developerPassword","")))
     
     except Exception as e:
 

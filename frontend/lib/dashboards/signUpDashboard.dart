@@ -12,6 +12,8 @@ class signUpDash extends StatefulWidget {
 
 class _signUpStateDash extends State<signUpDash> {
   String dbName = "";
+  String developerPassword = "";
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -31,7 +33,7 @@ class _signUpStateDash extends State<signUpDash> {
               color: color,
             ),
             width: 400.0,
-            height: 400.0,
+            height: 500.0,
             child: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -62,9 +64,29 @@ class _signUpStateDash extends State<signUpDash> {
                       ),
                     ),
                   ),
+                  Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: SizedBox(
+                      width: 300.0,
+                      child: TextField(
+                        onChanged: (value) {
+                          developerPassword = value;
+                        },
+                        decoration: InputDecoration(
+                          hintText: "Yönetici Şifresi",
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
                   ElevatedButton(
                     onPressed: () async {
-                      var response = await signUp(dbName: dbName);
+                      var response = await signUp(
+                        dbName: dbName,
+                        developerPassword: developerPassword,
+                      );
                       if (response!["success"] != true) {
                         showDialog(
                           context: context,

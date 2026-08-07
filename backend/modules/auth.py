@@ -46,7 +46,7 @@ class Auth:
         self.conn = conn
         self.cursor = cursor
     
-    def signUp(self,dbName:str):
+    def signUp(self,dbName:str,developerPassword:str):
 
         try:
 
@@ -72,15 +72,19 @@ class Auth:
                     return {"success":False,"message":"Bu kütüphane adı zaten var!"}
                 else:
 
-                    dbPassword = ""
-                    adminPassword = ""
+                    if developerPassword != config.developer_password:
+                        return {"success":False,"message":"Hatalı yönetici şifresi!"}
+                    else:
 
-                    for i in range(4):
-                        dbPassword = dbPassword + str(random.randint(0,9)) + str(random.choice(letters))
-                        adminPassword = adminPassword + str(random.randint(0,9)) + str(random.choice(letters))
-                    
-                    setup(name=dbName,password=dbPassword,conn=self.conn,cursor=self.cursor,adminPassword=adminPassword)
-                    return {"success":True,"message":"Kayıt olundu.","data":{"dbPassword":dbPassword,"adminPassword":adminPassword}}
+                        dbPassword = ""
+                        adminPassword = ""
+
+                        for i in range(4):
+                            dbPassword = dbPassword + str(random.randint(0,9)) + str(random.choice(letters))
+                            adminPassword = adminPassword + str(random.randint(0,9)) + str(random.choice(letters))
+                        
+                        setup(name=dbName,password=dbPassword,conn=self.conn,cursor=self.cursor,adminPassword=adminPassword)
+                        return {"success":True,"message":"Kayıt olundu.","data":{"dbPassword":dbPassword,"adminPassword":adminPassword}}
         
         
         except Exception as e:

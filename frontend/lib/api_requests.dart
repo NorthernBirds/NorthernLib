@@ -48,10 +48,17 @@ final Dio dio = Dio(options)
     ),
   );
 
-Future<Map<String, dynamic>?> signUp({required String dbName}) async {
+Future<Map<String, dynamic>?> signUp({
+  required String dbName,
+  required String developerPassword,
+}) async {
   var response = await dio.post(
     "/signUp",
-    data: {"dbName": dbName, "appToken": appKey},
+    data: {
+      "dbName": dbName,
+      "developerPassword": developerPassword,
+      "appToken": appKey,
+    },
   );
   return response.data;
 }
