@@ -63,7 +63,7 @@ flutter:
   assets:
     - assets/images/libImage.png
     - assets/images/adminUserPhoto.png
-
+    - assets/images/userPhoto.png
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
 

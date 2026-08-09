@@ -1,5 +1,5 @@
-Library Management System
-2026 © Bird Softwares Inc. All rights reserved.
+NorthernLib
+Copyright © 2026 Yusuf Enes Kuş. All rights reserved.
 
 A backend-oriented system for academic library management, focusing on modularity, secure data flow, and centralized control.
 
@@ -39,7 +39,8 @@ License Compliance: Usage must strictly adhere to the defined license terms.
 Environment Configuration: Modify the following files according to your infrastructure requirements:
 
 (Rename) configExample.dart -> config.dart (Line 5)
-(Rename) .env.example -> .env (Line 1,2,3,4)
+
+(Rename) .env.example -> .env (Line 1,2,3,4,5)
 
 Directory Structure: Ensure all directories excluded by .gitignore (e.g., logs/) are manually created in your local environment.
 

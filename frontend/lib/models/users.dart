@@ -489,6 +489,8 @@ class _ListUsersWidgetState extends State<ListUsersWidget> {
                 ),
               ),
               SwitchListTile(
+                controlAffinity: ListTileControlAffinity.leading,
+                contentPadding: const EdgeInsets.symmetric(horizontal: 430.0),
                 title: const Text(
                   "Filtreli arama",
                   style: TextStyle(

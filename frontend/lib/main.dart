@@ -71,7 +71,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               borderRadius: BorderRadius.circular(16),
                             ),
                             title: const Text(
-                              'Hakkımızda',
+                              'Hakkımda',
                               style: TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
@@ -80,7 +80,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             ),
                             content: const SingleChildScrollView(
                               child: Text(
-                                aboutUsText,
+                                aboutMeText,
                                 style: TextStyle(
                                   color: Colors.white70,
                                   fontSize: 14.0,
@@ -117,7 +117,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               borderRadius: BorderRadius.circular(16),
                             ),
                             title: const Text(
-                              'Hakkımızda',
+                              'Hakkımda',
                               style: TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
@@ -279,7 +279,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     children: [
                       SizedBox(width: 20),
                       Text(
-                        '2026 © Bird Softwares. All rights reserved.',
+                        'Copyright © 2026 Yusuf Enes Kuş. All rights reserved.',
                         style: TextStyle(
                           color: Colors.white54,
                           fontSize: 12,

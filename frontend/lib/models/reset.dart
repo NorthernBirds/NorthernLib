@@ -30,7 +30,7 @@ class _ResetWidgetState extends State<ResetWidget> {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            Text(
+            const Text(
               "Sıfırlama",
               style: TextStyle(
                 fontFamily: "Inter",
@@ -38,84 +38,36 @@ class _ResetWidgetState extends State<ResetWidget> {
                 color: Colors.black,
               ),
             ),
-            SwitchListTile(
-              title: const Text(
-                "Kitap kayıtları",
-                style: TextStyle(
-                  fontFamily: "Inter",
-                  color: Colors.black,
-                  fontSize: 16,
-                  fontWeight: FontWeight.normal,
-                ),
-              ),
+            _buildSwitchTile(
+              title: "Kitap kayıtları",
               value: books,
-              activeThumbColor: Colors.teal,
-              activeTrackColor: Colors.tealAccent,
-              inactiveThumbColor: Colors.grey,
-              inactiveTrackColor: Colors.grey.shade400,
               onChanged: (bool value) {
                 setState(() {
                   books = value;
                 });
               },
             ),
-            SwitchListTile(
-              title: const Text(
-                "Kategori kayıtları",
-                style: TextStyle(
-                  fontFamily: "Inter",
-                  color: Colors.black,
-                  fontSize: 16,
-                  fontWeight: FontWeight.normal,
-                ),
-              ),
+            _buildSwitchTile(
+              title: "Kategori kayıtları",
               value: categories,
-              activeThumbColor: Colors.teal,
-              activeTrackColor: Colors.tealAccent,
-              inactiveThumbColor: Colors.grey,
-              inactiveTrackColor: Colors.grey.shade400,
               onChanged: (bool value) {
                 setState(() {
                   categories = value;
                 });
               },
             ),
-            SwitchListTile(
-              title: const Text(
-                "Ödünç alma kayıtları",
-                style: TextStyle(
-                  fontFamily: "Inter",
-                  color: Colors.black,
-                  fontSize: 16,
-                  fontWeight: FontWeight.normal,
-                ),
-              ),
+            _buildSwitchTile(
+              title: "Ödünç alma kayıtları",
               value: loans,
-              activeThumbColor: Colors.teal,
-              activeTrackColor: Colors.tealAccent,
-              inactiveThumbColor: Colors.grey,
-              inactiveTrackColor: Colors.grey.shade400,
               onChanged: (bool value) {
                 setState(() {
                   loans = value;
                 });
               },
             ),
-            SwitchListTile(
-              title: const Text(
-                "Kullanıcı kayıtları",
-                style: TextStyle(
-                  fontFamily: "Inter",
-                  color: Colors.black,
-                  fontSize: 16,
-                  fontWeight: FontWeight.normal,
-                ),
-              ),
+            _buildSwitchTile(
+              title: "Kullanıcı kayıtları",
               value: users,
-              activeThumbColor: Colors.teal,
-              activeTrackColor: Colors.tealAccent,
-              inactiveThumbColor: Colors.grey,
-              inactiveTrackColor: Colors.grey.shade400,
               onChanged: (bool value) {
                 setState(() {
                   users = value;
@@ -178,6 +130,31 @@ class _ResetWidgetState extends State<ResetWidget> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildSwitchTile({
+    required String title,
+    required bool value,
+    required ValueChanged<bool> onChanged,
+  }) {
+    return SwitchListTile(
+      contentPadding: const EdgeInsets.symmetric(horizontal: 45.0),
+      title: Text(
+        title,
+        style: const TextStyle(
+          fontFamily: "Inter",
+          color: Colors.black,
+          fontSize: 16,
+          fontWeight: FontWeight.normal,
+        ),
+      ),
+      value: value,
+      activeThumbColor: Colors.teal,
+      activeTrackColor: Colors.tealAccent,
+      inactiveThumbColor: Colors.grey,
+      inactiveTrackColor: Colors.grey.shade400,
+      onChanged: onChanged,
     );
   }
 }

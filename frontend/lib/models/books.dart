@@ -398,6 +398,8 @@ class _ListBooksWidgetState extends State<ListBooksWidget> {
                 ),
               ),
               SwitchListTile(
+                controlAffinity: ListTileControlAffinity.leading,
+                contentPadding: const EdgeInsets.symmetric(horizontal: 430.0),
                 title: const Text(
                   "Filtreli arama",
                   style: TextStyle(

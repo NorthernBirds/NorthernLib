@@ -66,7 +66,7 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
                     Image.asset(
-                      "assets/images/adminUserPhoto.png",
+                      userPhotoForTeachersAndStudentStaffs,
                       width: 200.0,
                       height: 200.0,
                     ),
