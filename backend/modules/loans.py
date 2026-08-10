@@ -2,6 +2,7 @@ from utils.writeLog import writeLog
 import config
 from datetime import datetime
 
+daysPerMonth = {1: 31, 2: 28, 3: 31, 4: 30, 5: 31, 6: 30, 7: 31, 8: 31, 9: 30, 10: 31, 11: 30, 12: 31}
 
 class Loan:
 
@@ -33,12 +34,25 @@ class Loan:
                             return {"success":False,"message":"Teslim tarihi geçmişe dönük olamaz, cihazın saatini ayarlayın!"}
                         else:
 
-                            self.cursor.execute("INSERT INTO loans (studentID,bookID,returnDate,whoAdded) VALUES (%s,%s,%s,%s)",(studentID,bookID,returnDate,activeUserName))
-                            self.conn.commit()
-                            self.cursor.execute("UPDATE books SET isTaken = %s WHERE id = %s",("Alindi",bookID))
-                            self.conn.commit()
-                            
-                            return {"success":True,"message":"Kitap ödünç alındı."}
+                            list = returnDate.split("/")
+                            if list[1] not in daysPerMonth.keys():
+                                return {"success":False,"message":"Lütfen geçerli bir ay giriniz!"}
+                            else:
+                                
+                                if list[2] % 4 == 0 and list[1] == "2":
+                                    if int(list[0]) > 29:
+                                        return {"success":False,"message":"Lütfen geçerli bir gün giriniz!"}
+                                else:
+                                    if int(list[0]) > daysPerMonth[int(list[1])]:
+                                        return {"success":False,"message":"Lütfen geçerli bir gün giriniz!"}
+                                    
+
+                                self.cursor.execute("INSERT INTO loans (studentID,bookID,returnDate,whoAdded) VALUES (%s,%s,%s,%s)",(studentID,bookID,returnDate,activeUserName))
+                                self.conn.commit()
+                                self.cursor.execute("UPDATE books SET isTaken = %s WHERE id = %s",("Alindi",bookID))
+                                self.conn.commit()
+                                    
+                                return {"success":True,"message":"Kitap ödünç alındı."}
         
         except Exception as e:
 

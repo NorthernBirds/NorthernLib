@@ -36,6 +36,7 @@ class _ResetWidgetState extends State<ResetWidget> {
                 fontFamily: "Inter",
                 fontSize: 36.0,
                 color: Colors.black,
+                fontWeight: FontWeight.bold,
               ),
             ),
             _buildSwitchTile(

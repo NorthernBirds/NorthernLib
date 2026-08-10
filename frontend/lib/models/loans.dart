@@ -77,42 +77,51 @@ class _BorrowBookWidgetState extends State<BorrowBookWidget> {
                 ),
               ),
             ),
-            TextFormField(
-              controller: _returnDateController,
-              readOnly: true,
-              decoration: const InputDecoration(
-                hintText: "Kitap Teslim Tarihi: GG/AA/YYYY",
-                prefixIcon: Icon(Icons.calendar_today),
-                border: OutlineInputBorder(),
+            Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: SizedBox(
+                width: 300.0,
+                child: TextFormField(
+                  controller: _returnDateController,
+                  readOnly: true,
+                  decoration: const InputDecoration(
+                    hintText: "Kitap Teslim Tarihi: GG/AA/YYYY",
+                    prefixIcon: Icon(Icons.calendar_today),
+                    border: OutlineInputBorder(),
+                  ),
+                  onTap: () async {
+                    final DateTime today = DateTime(
+                      DateTime.now().year,
+                      DateTime.now().month,
+                      DateTime.now().day,
+                    );
+
+                    final DateTime? pickedDate = await showDatePicker(
+                      context: context,
+                      initialDate: today,
+                      firstDate: today,
+                      lastDate: DateTime(today.year + 4, 6, 10),
+                    );
+
+                    if (pickedDate != null) {
+                      String day = pickedDate.day.toString().padLeft(2, '0');
+                      String month = pickedDate.month.toString().padLeft(
+                        2,
+                        '0',
+                      );
+                      String year = pickedDate.year.toString();
+
+                      setState(() {
+                        _returnDateController.text = "$day/$month/$year";
+                      });
+                    } else {
+                      setState(() {
+                        _returnDateController.text = "";
+                      });
+                    }
+                  },
+                ),
               ),
-              onTap: () async {
-                final DateTime today = DateTime(
-                  DateTime.now().year,
-                  DateTime.now().month,
-                  DateTime.now().day,
-                );
-
-                final DateTime? pickedDate = await showDatePicker(
-                  context: context,
-                  initialDate: today,
-                  firstDate: today,
-                  lastDate: DateTime(today.year + 4, 6, 10),
-                );
-
-                if (pickedDate != null) {
-                  String day = pickedDate.day.toString().padLeft(2, '0');
-                  String month = pickedDate.month.toString().padLeft(2, '0');
-                  String year = pickedDate.year.toString();
-
-                  setState(() {
-                    _returnDateController.text = "$day/$month/$year";
-                  });
-                } else {
-                  setState(() {
-                    _returnDateController.text = "";
-                  });
-                }
-              },
             ),
             ElevatedButton(
               onPressed: () async {

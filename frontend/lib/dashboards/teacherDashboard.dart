@@ -209,17 +209,6 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
                     const SizedBox(height: 17.0),
 
                     const Text(
-                      "Kullanıcı İşlemleri",
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 15.7,
-                        fontFamily: "Inter",
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 17.0),
-
-                    const Text(
                       "Çıkış İşlemleri",
                       style: TextStyle(
                         color: Colors.black,

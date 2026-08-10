@@ -78,6 +78,8 @@ class _signUpStateDash extends State<signUpDash> {
                             borderRadius: BorderRadius.circular(10.0),
                           ),
                         ),
+                        obscureText: true,
+                        obscuringCharacter: '*',
                       ),
                     ),
                   ),

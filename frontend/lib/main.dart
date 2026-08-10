@@ -53,7 +53,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 children: <Widget>[
                   TextButton(
                     child: Text(
-                      "Hakkımızda",
+                      "Hakkımda",
                       style: TextStyle(
                         fontFamily: "Public Sans",
                         fontSize: 15.0,
@@ -117,7 +117,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               borderRadius: BorderRadius.circular(16),
                             ),
                             title: const Text(
-                              'Hakkımda',
+                              'İletişim Bilgileri',
                               style: TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
