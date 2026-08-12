@@ -205,3 +205,61 @@ class Book:
             
             writeLog(config.BOOKS_LOG_PATH,type(e).__name__,str(e))
             return {"success":False,"message":"Bir hata oluştu!"}
+
+    def updateBook(self,id:int,bookName:str,writer:str,category:str,publisher:str,pageCount:int,activeUserName:str):
+
+        try:
+
+            if id == 0 or bookName == "" or writer == "" or publisher ==  "" or pageCount == 0 or id == 0 or category == "":
+                return {"success":False,"message":"Lütfen boş bırakmayın!"}
+            else:
+
+                self.cursor.execute("SELECT * FROM books WHERE id = %s",(id,))
+                result = self.cursor.fetchone()
+
+                if result is None:
+                    return {"success":False,"message":"Kitap bulunamadı!"}
+                else:
+                
+                    self.cursor.execute("SELECT * FROM categories WHERE categoryName = %s",(category,))
+                    result = self.cursor.fetchone()
+                    
+                    if result is None:
+                        return {"success":False,"message":"Bu kategori mevcut değil!"}
+                    else:
+
+                        if len(bookName) > 50:
+                            return {"success":False,"message":"Kitap ismi 50 karakterden fazla olamaz!"}
+                        else:
+
+                            if len(writer) > 50:
+                                return {"success":False,"message":"Yazar ismi 50 karakterden fazla olamaz!"}
+                            else:
+
+                                if len(publisher) > 20:
+                                    return {"success":False,"message":"Yayınevi ismi 20 karakterden fazla olamaz!"}
+                                else:
+
+                                    if not str(pageCount).isdigit():
+                                        return {"success":False,"message":"Sayfa sayısı sayı olmalıdır!"}
+                                    else:
+
+                                        if int(pageCount) > 99999:
+                                            return {"success":False,"message":"Sayfa sayısı 99999'dan fazla olamaz!"}
+                                        elif int(pageCount) == 0 or int(pageCount) < 0:
+                                            return {"success":False,"message":"Sayfa sayısı 0 veya 0'dan az olamaz!"}
+                                        else:
+
+                                            self.cursor.execute(
+                                                "UPDATE books SET bookName = %s, writer = %s, category = %s, publisher = %s, pageCount = %s, whoAdded = %s WHERE id = %s",
+                                                (bookName,writer,category,publisher,pageCount,activeUserName,id)
+                                            )
+
+                                            self.conn.commit()
+                                            
+                                            return {"success":True,"message":"Kitap güncellendi."}
+
+        except Exception as e:
+
+            writeLog(config.BOOKS_LOG_PATH,type(e).__name__,str(e))
+            return {"success":False,"message":"Bir hata oluştu!"}

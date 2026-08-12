@@ -34,20 +34,24 @@ class _AdminDashboardState extends State<AdminDashboard> {
   bool isAddBookWidgetVisible = false;
   bool isDeleteBookWidgetVisible = false;
   bool isListBooksWidgetVisible = false;
+  bool isUpdateBookWidgetVisible = false;
 
   bool isAddCategoryWidgetVisible = false;
   bool isDeleteCategoryWidgetVisible = false;
   bool isListCategoriesWidgetVisible = false;
+  bool isUpdateCategoryWidgetVisible = false;
 
   bool isBorrowBookWidgetVisible = false;
   bool isReturnBookWidgetVisible = false;
   bool isListLoansWidgetVisible = false;
   bool isListLeadersWidgetVisible = false;
+  bool isUpdateLoanWidgetVisible = false;
 
   bool isAddUserWidgetVisible = false;
   bool isDeleteUserWidgetVisible = false;
   bool isListUsersWidgetVisible = false;
   bool isChangeRoleWidgetVisible = false;
+  bool isUpdateUserWidgetVisible = false;
 
   bool isResetWidgetVisible = false;
 
@@ -120,6 +124,16 @@ class _AdminDashboardState extends State<AdminDashboard> {
                       style: _menuButtonStyle,
                       child: Text("Kitap Listele", style: _labelTextStyle),
                     ),
+                    const SizedBox(height: 9.0),
+                    ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          isUpdateBookWidgetVisible = true;
+                        });
+                      },
+                      style: _menuButtonStyle,
+                      child: Text("Kitap Güncelle", style: _labelTextStyle),
+                    ),
                     const SizedBox(height: 17.0),
 
                     const Text(
@@ -160,6 +174,16 @@ class _AdminDashboardState extends State<AdminDashboard> {
                       },
                       style: _menuButtonStyle,
                       child: Text("Kategori Listele", style: _labelTextStyle),
+                    ),
+                    const SizedBox(height: 9.0),
+                    ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          isUpdateCategoryWidgetVisible = true;
+                        });
+                      },
+                      style: _menuButtonStyle,
+                      child: Text("Kategori Güncelle", style: _labelTextStyle),
                     ),
                     const SizedBox(height: 17.0),
 
@@ -202,6 +226,19 @@ class _AdminDashboardState extends State<AdminDashboard> {
                       style: _menuButtonStyle,
                       child: Text(
                         "Ödünç Kitapları Listele",
+                        style: _labelTextStyle,
+                      ),
+                    ),
+                    const SizedBox(height: 9.0),
+                    ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          isUpdateLoanWidgetVisible = true;
+                        });
+                      },
+                      style: _menuButtonStyle,
+                      child: Text(
+                        "Ödünç Kitap Güncelle",
                         style: _labelTextStyle,
                       ),
                     ),
@@ -268,6 +305,16 @@ class _AdminDashboardState extends State<AdminDashboard> {
                         "Kullanıcı Rolü Değiştir",
                         style: _labelTextStyle,
                       ),
+                    ),
+                    const SizedBox(height: 9.0),
+                    ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          isUpdateUserWidgetVisible = true;
+                        });
+                      },
+                      style: _menuButtonStyle,
+                      child: Text("Kullanıcı Güncelle", style: _labelTextStyle),
                     ),
                     const SizedBox(height: 17.0),
 
@@ -411,91 +458,11 @@ class _AdminDashboardState extends State<AdminDashboard> {
                         });
                       },
                     )
-                  : isListCategoriesWidgetVisible
-                  ? ListCategoriesWidget(
-                      onCancel: () {
-                        setState(() {
-                          isListCategoriesWidgetVisible = false;
-                        });
-                      },
-                    )
-                  : isBorrowBookWidgetVisible
-                  ? BorrowBookWidget(
-                      onCancel: () {
-                        setState(() {
-                          isBorrowBookWidgetVisible = false;
-                        });
-                      },
-                    )
-                  : isReturnBookWidgetVisible
-                  ? ReturnBookWidget(
-                      onCancel: () {
-                        setState(() {
-                          isReturnBookWidgetVisible = false;
-                        });
-                      },
-                    )
-                  : isListLoansWidgetVisible
-                  ? ListLoansWidget(
-                      onCancel: () {
-                        setState(() {
-                          isListLoansWidgetVisible = false;
-                        });
-                      },
-                    )
-                  : isListLeadersWidgetVisible
-                  ? ListLeadersWidget(
-                      onCancel: () {
-                        setState(() {
-                          isListLeadersWidgetVisible = false;
-                        });
-                      },
-                    )
-                  : isListCategoriesWidgetVisible
-                  ? ListCategoriesWidget(
-                      onCancel: () {
-                        setState(() {
-                          isListCategoriesWidgetVisible = false;
-                        });
-                      },
-                    )
-                  : isBorrowBookWidgetVisible
-                  ? BorrowBookWidget(
-                      onCancel: () {
-                        setState(() {
-                          isBorrowBookWidgetVisible = false;
-                        });
-                      },
-                    )
-                  : isReturnBookWidgetVisible
-                  ? ReturnBookWidget(
-                      onCancel: () {
-                        setState(() {
-                          isReturnBookWidgetVisible = false;
-                        });
-                      },
-                    )
-                  : isListLoansWidgetVisible
-                  ? ListLoansWidget(
-                      onCancel: () {
-                        setState(() {
-                          isListLoansWidgetVisible = false;
-                        });
-                      },
-                    )
-                  : isListLeadersWidgetVisible
-                  ? ListLeadersWidget(
-                      onCancel: () {
-                        setState(() {
-                          isListLeadersWidgetVisible = false;
-                        });
-                      },
-                    )
                   : isAddUserWidgetVisible
                   ? AddUserWidget(
                       onCancel: () {
                         setState(() {
-                          isBorrowBookWidgetVisible = false;
+                          isAddUserWidgetVisible = false;
                         });
                       },
                     )
@@ -503,7 +470,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                   ? DeleteUserWidget(
                       onCancel: () {
                         setState(() {
-                          isReturnBookWidgetVisible = false;
+                          isDeleteUserWidgetVisible = false;
                         });
                       },
                     )
@@ -511,7 +478,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                   ? ListUsersWidget(
                       onCancel: () {
                         setState(() {
-                          isListLoansWidgetVisible = false;
+                          isListUsersWidgetVisible = false;
                         });
                       },
                     )
@@ -519,7 +486,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                   ? ChangeRoleWidget(
                       onCancel: () {
                         setState(() {
-                          isListLeadersWidgetVisible = false;
+                          isChangeRoleWidgetVisible = false;
                         });
                       },
                     )
@@ -528,6 +495,38 @@ class _AdminDashboardState extends State<AdminDashboard> {
                       onCancel: () {
                         setState(() {
                           isResetWidgetVisible = false;
+                        });
+                      },
+                    )
+                  : isUpdateBookWidgetVisible
+                  ? UpdateBookWidget(
+                      onCancel: () {
+                        setState(() {
+                          isUpdateBookWidgetVisible = false;
+                        });
+                      },
+                    )
+                  : isUpdateCategoryWidgetVisible
+                  ? UpdateCategoryWidget(
+                      onCancel: () {
+                        setState(() {
+                          isUpdateCategoryWidgetVisible = false;
+                        });
+                      },
+                    )
+                  : isUpdateUserWidgetVisible
+                  ? UpdateUserWidget(
+                      onCancel: () {
+                        setState(() {
+                          isUpdateUserWidgetVisible = false;
+                        });
+                      },
+                    )
+                  : isUpdateLoanWidgetVisible
+                  ? UpdateLoanWidget(
+                      onCancel: () {
+                        setState(() {
+                          isUpdateLoanWidgetVisible = false;
                         });
                       },
                     )

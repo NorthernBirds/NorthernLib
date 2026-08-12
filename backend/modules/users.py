@@ -84,14 +84,14 @@ class User:
             return {"success": False, "message": "Bir hata oluştu!"}
     
 
-    def changeRole(self,userName:str,newRole:str):
+    def changeRole(self,id:int,newRole:str):
 
         try:
-            if userName == "" or newRole == "":
+            if id == 0 or newRole == "":
                 return {"success": False, "message": "Lütfen boş bırakmayın!"}
             else:
 
-                self.cursor.execute("SELECT * FROM users WHERE userName = %s",(userName,))
+                self.cursor.execute("SELECT * FROM users WHERE id = %s",(id,))
                 result = self.cursor.fetchone()
                 if result is None:
                     return {"success": False, "message": "Kullanıcı bulunamadı!"}
@@ -110,8 +110,8 @@ class User:
                             else:
 
                                 self.cursor.execute(
-                                    "UPDATE users SET userRole = %s WHERE userName = %s",
-                                    (newRole,userName)
+                                    "UPDATE users SET userRole = %s WHERE id = %s",
+                                    (newRole,id)
                                 )
                                 self.conn.commit()
                                 
@@ -228,3 +228,54 @@ class User:
             
             writeLog(config.USERS_LOG_PATH,type(e).__name__,str(e))
             return {"success":False,"message":"Bir hata oluştu!"}
+
+    def updateUser(self,id:int,userName:str,password:str,role:str):
+
+        try:
+            if password == "" or userName == "" or role == "" or id == 0:
+                return {"success": False, "message": "Lütfen boş bırakmayınız!"}
+            else:
+
+                self.cursor.execute("SELECT * FROM users WHERE id = %s",(id,))
+                result = self.cursor.fetchone()
+
+                if result is None:
+                    return {"success": False, "message": "Kullanıcı bulunamadı!"}
+                else:
+
+                    if len(userName) > 20:
+                        return {"success": False, "message": "Kullanıcı ismi 20 karakterden fazla olamaz!"}
+                    else:
+
+                        self.cursor.execute("SELECT * FROM users WHERE userName = %s",(userName,))
+                        result = self.cursor.fetchone()
+                        if result is not None:
+                            return {"success": False, "message": "Bu kullanıcı adı zaten mevcut!"}
+                        else:
+
+                            if len(password) < 8 or len(password) > 15:
+                                return {"success": False, "message": "Şifre 8 - 15 karakter arasında olmalıdır!"}
+                            else:
+                                
+                                if role == "admin":
+                                    return {"success": False, "message": "Oluşturulan kullanıcı yönetici yetkisine sahip olamaz!"}
+                                else:
+
+                                    if role not in ["student_staff", "teacher"]:
+                                        return {"success": False, "message": "Böyle bir yetki seviyesi bulunmamaktadır!"}
+                                    else:
+
+                                        password = password.encode()
+                                        hashed = bcrypt.hashpw(password, bcrypt.gensalt())
+                                        self.cursor.execute(
+                                            "UPDATE users SET userName = %s, userPassword = %s, userRole = %s WHERE id = %s",
+                                            (userName,hashed.decode(),role,id)
+                                        )
+                                        self.conn.commit()
+                                        
+                                        return {"success": True, "message": "Kullanıcı güncellendi"}
+            
+        except Exception as e:
+
+            writeLog(config.USERS_LOG_PATH,type(e).__name__,str(e))
+            return {"success": False, "message": "Bir hata oluştu!"}

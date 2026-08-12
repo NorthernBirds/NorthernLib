@@ -32,15 +32,18 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
   bool isAddBookWidgetVisible = false;
   bool isDeleteBookWidgetVisible = false;
   bool isListBooksWidgetVisible = false;
+  bool isUpdateBookWidgetVisible = false;
 
   bool isAddCategoryWidgetVisible = false;
   bool isDeleteCategoryWidgetVisible = false;
   bool isListCategoriesWidgetVisible = false;
+  bool isUpdateCategoryWidgetVisible = false;
 
   bool isBorrowBookWidgetVisible = false;
   bool isReturnBookWidgetVisible = false;
   bool isListLoansWidgetVisible = false;
   bool isListLeadersWidgetVisible = false;
+  bool isUpdateLoanWidgetVisible = false;
 
   @override
   Widget build(BuildContext context) {
@@ -66,7 +69,7 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
                     Image.asset(
-                      userPhotoForTeachersAndStudentStaffs,
+                      "assets/images/userPhoto.png",
                       width: 200.0,
                       height: 200.0,
                     ),
@@ -111,6 +114,16 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
                       style: _menuButtonStyle,
                       child: Text("Kitap Listele", style: _labelTextStyle),
                     ),
+                    const SizedBox(height: 9.0),
+                    ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          isUpdateBookWidgetVisible = true;
+                        });
+                      },
+                      style: _menuButtonStyle,
+                      child: Text("Kitap Güncelle", style: _labelTextStyle),
+                    ),
                     const SizedBox(height: 17.0),
 
                     const Text(
@@ -151,6 +164,16 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
                       },
                       style: _menuButtonStyle,
                       child: Text("Kategori Listele", style: _labelTextStyle),
+                    ),
+                    const SizedBox(height: 9.0),
+                    ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          isUpdateCategoryWidgetVisible = true;
+                        });
+                      },
+                      style: _menuButtonStyle,
+                      child: Text("Kategori Güncelle", style: _labelTextStyle),
                     ),
                     const SizedBox(height: 17.0),
 
@@ -200,12 +223,26 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
                     ElevatedButton(
                       onPressed: () {
                         setState(() {
+                          isUpdateLoanWidgetVisible = true;
+                        });
+                      },
+                      style: _menuButtonStyle,
+                      child: Text(
+                        "Ödünç Kitap Güncelle",
+                        style: _labelTextStyle,
+                      ),
+                    ),
+                    const SizedBox(height: 9.0),
+                    ElevatedButton(
+                      onPressed: () {
+                        setState(() {
                           isListLeadersWidgetVisible = true;
                         });
                       },
                       style: _menuButtonStyle,
                       child: Text("Liderleri Listele", style: _labelTextStyle),
                     ),
+
                     const SizedBox(height: 17.0),
 
                     const Text(
@@ -327,83 +364,27 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
                         });
                       },
                     )
-                  : isListCategoriesWidgetVisible
-                  ? ListCategoriesWidget(
+                  : isUpdateBookWidgetVisible
+                  ? UpdateBookWidget(
                       onCancel: () {
                         setState(() {
-                          isListCategoriesWidgetVisible = false;
+                          isUpdateBookWidgetVisible = false;
                         });
                       },
                     )
-                  : isBorrowBookWidgetVisible
-                  ? BorrowBookWidget(
+                  : isUpdateCategoryWidgetVisible
+                  ? UpdateCategoryWidget(
                       onCancel: () {
                         setState(() {
-                          isBorrowBookWidgetVisible = false;
+                          isUpdateCategoryWidgetVisible = false;
                         });
                       },
                     )
-                  : isReturnBookWidgetVisible
-                  ? ReturnBookWidget(
+                  : isUpdateLoanWidgetVisible
+                  ? UpdateLoanWidget(
                       onCancel: () {
                         setState(() {
-                          isReturnBookWidgetVisible = false;
-                        });
-                      },
-                    )
-                  : isListLoansWidgetVisible
-                  ? ListLoansWidget(
-                      onCancel: () {
-                        setState(() {
-                          isListLoansWidgetVisible = false;
-                        });
-                      },
-                    )
-                  : isListLeadersWidgetVisible
-                  ? ListLeadersWidget(
-                      onCancel: () {
-                        setState(() {
-                          isListLeadersWidgetVisible = false;
-                        });
-                      },
-                    )
-                  : isListCategoriesWidgetVisible
-                  ? ListCategoriesWidget(
-                      onCancel: () {
-                        setState(() {
-                          isListCategoriesWidgetVisible = false;
-                        });
-                      },
-                    )
-                  : isBorrowBookWidgetVisible
-                  ? BorrowBookWidget(
-                      onCancel: () {
-                        setState(() {
-                          isBorrowBookWidgetVisible = false;
-                        });
-                      },
-                    )
-                  : isReturnBookWidgetVisible
-                  ? ReturnBookWidget(
-                      onCancel: () {
-                        setState(() {
-                          isReturnBookWidgetVisible = false;
-                        });
-                      },
-                    )
-                  : isListLoansWidgetVisible
-                  ? ListLoansWidget(
-                      onCancel: () {
-                        setState(() {
-                          isListLoansWidgetVisible = false;
-                        });
-                      },
-                    )
-                  : isListLeadersWidgetVisible
-                  ? ListLeadersWidget(
-                      onCancel: () {
-                        setState(() {
-                          isListLeadersWidgetVisible = false;
+                          isUpdateLoanWidgetVisible = false;
                         });
                       },
                     )

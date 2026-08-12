@@ -273,7 +273,7 @@ class _ListCategoriesWidgetState extends State<ListCategoriesWidget> {
       var data = response?["data"];
       setState(() {
         IDs = List<int>.from(data?["ids"] ?? []);
-        categoryNames = List<String>.from(data?["names"] ?? []);
+        categoryNames = List<String>.from(data?["categoryNames"] ?? []);
         whoAddeds = List<String>.from(data?["whoAddeds"] ?? []);
         itemsPerPage = IDs.length;
       });
@@ -473,4 +473,164 @@ class CategoryDataSource extends DataTableSource {
 
   @override
   int get selectedRowCount => 0;
+}
+
+class UpdateCategoryWidget extends StatefulWidget {
+  final VoidCallback onCancel;
+
+  const UpdateCategoryWidget({super.key, required this.onCancel});
+
+  @override
+  State<UpdateCategoryWidget> createState() => _UpdateCategoryWidgetState();
+}
+
+class _UpdateCategoryWidgetState extends State<UpdateCategoryWidget> {
+  TextEditingController idController = TextEditingController();
+  String categoryName = "Roman";
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Container(
+        width: 400,
+        height: 500,
+        decoration: BoxDecoration(
+          color: color,
+          borderRadius: BorderRadius.circular(30.0),
+          border: Border.all(color: Colors.black, width: 2.0),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            const Text(
+              "Kategori Güncelleme",
+              style: TextStyle(
+                fontSize: 36,
+                fontFamily: "Inter",
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                const SizedBox(width: 100.0),
+                Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: SizedBox(
+                    width: 100.0,
+                    child: TextField(
+                      controller: idController,
+                      decoration: InputDecoration(
+                        hintText: "Kategori ID",
+                        hintStyle: const TextStyle(color: color2),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(20.0),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10.0),
+                IconButton(
+                  icon: const Icon(
+                    Icons.search,
+                    size: 30.0,
+                    color: Colors.black,
+                  ),
+                  onPressed: () async {
+                    var response = await listCategories(
+                      isWithFilter: true,
+                      filterType: "id",
+                      filterValue: idController.text,
+                      limit: 1,
+                      pageNumber: 1,
+                    );
+                    setState(() {
+                      if (response?["success"] == true &&
+                          response?["data"]["ids"].isNotEmpty) {
+                        categoryName =
+                            response?["data"]["categoryNames"][0] ?? "Roman";
+                      } else {
+                        categoryName = "Roman";
+                      }
+                    });
+                  },
+                ),
+                const SizedBox(width: 100.0),
+              ],
+            ),
+            DropdownButton<String>(
+              value: categoryName,
+              items: categoriesList.map<DropdownMenuItem<String>>((category) {
+                return DropdownMenuItem<String>(
+                  value: category.toString(),
+                  child: Text(category.toString()),
+                );
+              }).toList(),
+              onChanged: (String? value) {
+                setState(() {
+                  categoryName = value!;
+                });
+              },
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                var response = await updateCategory(
+                  id: int.tryParse(idController.text) ?? 0,
+                  categoryName: categoryName,
+                );
+
+                String alertTitle = (response?["success"] == true)
+                    ? "Kayıt Başarılı"
+                    : "Hata";
+
+                if (context.mounted) {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: Text(alertTitle),
+                        content: Text(
+                          response?["message"] ?? "Bilinmeyen bir hata oluştu.",
+                        ),
+                        actions: <Widget>[
+                          ElevatedButton(
+                            onPressed: () => Navigator.of(context).pop(),
+                            child: const Text("Tamam"),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                side: const BorderSide(color: Color(0xFF3A8772)),
+                padding: const EdgeInsets.all(20.0),
+                backgroundColor: color,
+              ),
+              child: const Text(
+                "Güncelle",
+                style: TextStyle(color: Colors.black),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: widget.onCancel,
+              style: ElevatedButton.styleFrom(
+                side: const BorderSide(color: Color(0xFF3A8772)),
+                backgroundColor: color,
+              ),
+              child: const Text(
+                "İptal",
+                style: TextStyle(fontSize: 14, color: Colors.black),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }

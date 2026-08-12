@@ -592,3 +592,259 @@ class BookDataSource extends DataTableSource {
   @override
   int get selectedRowCount => 0;
 }
+
+class UpdateBookWidget extends StatefulWidget {
+  final VoidCallback onCancel;
+
+  const UpdateBookWidget({super.key, required this.onCancel});
+
+  @override
+  State<UpdateBookWidget> createState() => _UpdateBookWidgetState();
+}
+
+class _UpdateBookWidgetState extends State<UpdateBookWidget> {
+  TextEditingController idController = TextEditingController();
+  TextEditingController bookNameController = TextEditingController();
+  TextEditingController writerController = TextEditingController();
+  TextEditingController publisherController = TextEditingController();
+  String category = "Roman";
+  TextEditingController pageCountController = TextEditingController();
+
+  @override
+  void dispose() {
+    idController.dispose();
+    bookNameController.dispose();
+    writerController.dispose();
+    publisherController.dispose();
+    pageCountController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Container(
+        width: 400,
+        height: 700,
+        decoration: BoxDecoration(
+          color: color,
+          borderRadius: BorderRadius.circular(30.0),
+          border: Border.all(color: Colors.black, width: 2.0),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            const Text(
+              "Kitap Güncelleme",
+              style: TextStyle(
+                fontSize: 36,
+                fontFamily: "Inter",
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                const SizedBox(width: 100.0),
+                Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: SizedBox(
+                    width: 100.0,
+                    child: TextField(
+                      controller: idController,
+                      decoration: InputDecoration(
+                        hintText: "Kitap ID",
+                        hintStyle: const TextStyle(color: color2),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(20.0),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10.0),
+                IconButton(
+                  icon: const Icon(
+                    Icons.search,
+                    size: 30.0,
+                    color: Colors.black,
+                  ),
+                  onPressed: () async {
+                    var response = await listBooks(
+                      isWithFilter: true,
+                      filterType: "id",
+                      filterValue: idController.text,
+                      limit: 1,
+                      pageNumber: 1,
+                    );
+                    setState(() {
+                      if (response?["success"] == true &&
+                          response?["data"]["ids"].isNotEmpty) {
+                        bookNameController.text =
+                            response?["data"]["names"][0] ?? "";
+                        writerController.text =
+                            response?["data"]["writers"][0] ?? "";
+                        publisherController.text =
+                            response?["data"]["publishers"][0] ?? "";
+                        category =
+                            response?["data"]["categories"][0] ?? "Roman";
+                        pageCountController.text =
+                            response?["data"]["pageCounts"][0].toString() ?? "";
+                      } else {
+                        bookNameController.clear();
+                        writerController.clear();
+                        publisherController.clear();
+                        category = "Roman";
+                        pageCountController.clear();
+                      }
+                    });
+                  },
+                ),
+                const SizedBox(width: 100.0),
+              ],
+            ),
+            Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: SizedBox(
+                width: 300.0,
+                child: TextField(
+                  controller: bookNameController,
+                  decoration: InputDecoration(
+                    hintText: "Kitap Adı",
+                    hintStyle: const TextStyle(color: color2),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: SizedBox(
+                width: 300.0,
+                child: TextField(
+                  controller: writerController,
+                  decoration: InputDecoration(
+                    hintText: "Yazar Adı",
+                    hintStyle: const TextStyle(color: color2),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: SizedBox(
+                width: 300.0,
+                child: TextField(
+                  controller: publisherController,
+                  decoration: InputDecoration(
+                    hintText: "Yayımcı Adı",
+                    hintStyle: const TextStyle(color: color2),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            DropdownButton<String>(
+              value: category,
+              items: categoriesList.map<DropdownMenuItem<String>>((category) {
+                return DropdownMenuItem<String>(
+                  value: category.toString(),
+                  child: Text(category.toString()),
+                );
+              }).toList(),
+              onChanged: (String? value) {
+                setState(() {
+                  category = value!;
+                });
+              },
+            ),
+            Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: SizedBox(
+                width: 300.0,
+                child: TextField(
+                  controller: pageCountController,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    hintText: "Sayfa Sayısı",
+                    hintStyle: const TextStyle(color: color2),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                var response = await updateBook(
+                  id: int.tryParse(idController.text) ?? 0,
+                  bookName: bookNameController.text,
+                  writer: writerController.text,
+                  category: category,
+                  publisher: publisherController.text,
+                  pageCount: int.tryParse(pageCountController.text) ?? 0,
+                );
+
+                String alertTitle = (response?["success"] == true)
+                    ? "Kayıt Başarılı"
+                    : "Hata";
+
+                if (context.mounted) {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: Text(alertTitle),
+                        content: Text(
+                          response?["message"] ?? "Bilinmeyen bir hata oluştu.",
+                        ),
+                        actions: <Widget>[
+                          ElevatedButton(
+                            onPressed: () => Navigator.of(context).pop(),
+                            child: const Text("Tamam"),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                side: const BorderSide(color: Color(0xFF3A8772)),
+                padding: const EdgeInsets.all(20.0),
+                backgroundColor: color,
+              ),
+              child: const Text(
+                "Güncelle",
+                style: TextStyle(color: Colors.black),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: widget.onCancel,
+              style: ElevatedButton.styleFrom(
+                side: const BorderSide(color: Color(0xFF3A8772)),
+                backgroundColor: color,
+              ),
+              child: const Text(
+                "İptal",
+                style: TextStyle(fontSize: 14, color: Colors.black),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

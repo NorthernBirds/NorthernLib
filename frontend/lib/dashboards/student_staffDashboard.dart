@@ -31,11 +31,13 @@ class _StudentStaffDashboardState extends State<StudentStaffDashboard> {
   bool isAddBookWidgetVisible = false;
   bool isDeleteBookWidgetVisible = false;
   bool isListBooksWidgetVisible = false;
+  bool isUpdateBookWidgetVisible = false;
 
   bool isBorrowBookWidgetVisible = false;
   bool isReturnBookWidgetVisible = false;
   bool isListLoansWidgetVisible = false;
   bool isListLeadersWidgetVisible = false;
+  bool isUpdateLoanWidgetVisible = false;
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +63,7 @@ class _StudentStaffDashboardState extends State<StudentStaffDashboard> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
                     Image.asset(
-                      userPhotoForTeachersAndStudentStaffs,
+                      "assets/images/userPhoto.png",
                       width: 200.0,
                       height: 200.0,
                     ),
@@ -106,18 +108,18 @@ class _StudentStaffDashboardState extends State<StudentStaffDashboard> {
                       style: _menuButtonStyle,
                       child: Text("Kitap Listele", style: _labelTextStyle),
                     ),
-                    const SizedBox(height: 17.0),
-
-                    const Text(
-                      "Kategori İşlemleri",
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 15.7,
-                        fontFamily: "Inter",
-                        fontWeight: FontWeight.bold,
-                      ),
+                    const SizedBox(height: 9.0),
+                    ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          isUpdateBookWidgetVisible = true;
+                        });
+                      },
+                      style: _menuButtonStyle,
+                      child: Text("Kitap Güncelle", style: _labelTextStyle),
                     ),
                     const SizedBox(height: 17.0),
+
                     const Text(
                       "Ödünç Alma İşlemleri",
                       style: TextStyle(
@@ -157,6 +159,19 @@ class _StudentStaffDashboardState extends State<StudentStaffDashboard> {
                       style: _menuButtonStyle,
                       child: Text(
                         "Ödünç Kitapları Listele",
+                        style: _labelTextStyle,
+                      ),
+                    ),
+                    const SizedBox(height: 9.0),
+                    ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          isUpdateLoanWidgetVisible = true;
+                        });
+                      },
+                      style: _menuButtonStyle,
+                      child: Text(
+                        "Ödünç Kitap Güncelle",
                         style: _labelTextStyle,
                       ),
                     ),
@@ -275,6 +290,22 @@ class _StudentStaffDashboardState extends State<StudentStaffDashboard> {
                       onCancel: () {
                         setState(() {
                           isListLeadersWidgetVisible = false;
+                        });
+                      },
+                    )
+                  : isUpdateBookWidgetVisible
+                  ? UpdateBookWidget(
+                      onCancel: () {
+                        setState(() {
+                          isUpdateBookWidgetVisible = false;
+                        });
+                      },
+                    )
+                  : isUpdateLoanWidgetVisible
+                  ? UpdateLoanWidget(
+                      onCancel: () {
+                        setState(() {
+                          isUpdateLoanWidgetVisible = false;
                         });
                       },
                     )

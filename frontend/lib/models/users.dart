@@ -271,7 +271,7 @@ class ChangeRoleWidget extends StatefulWidget {
 }
 
 class _ChangeRoleWidgetState extends State<ChangeRoleWidget> {
-  String userName = "";
+  int id = 0;
   String newRole = "teacher";
 
   Map<String, String> roleMap = {
@@ -308,9 +308,9 @@ class _ChangeRoleWidgetState extends State<ChangeRoleWidget> {
               child: SizedBox(
                 width: 300.0,
                 child: TextField(
-                  onChanged: (value) => userName = value,
+                  onChanged: (value) => id = int.tryParse(value) ?? 0,
                   decoration: InputDecoration(
-                    hintText: "Kullanıcı Adı",
+                    hintText: "Kullanıcı ID",
                     hintStyle: const TextStyle(color: color2),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(20.0),
@@ -340,10 +340,7 @@ class _ChangeRoleWidgetState extends State<ChangeRoleWidget> {
             ),
             ElevatedButton(
               onPressed: () async {
-                var response = await changeRole(
-                  userName: userName,
-                  newRole: newRole,
-                );
+                var response = await changeRole(id: id, newRole: newRole);
 
                 String alertTitle = (response?["success"] == true)
                     ? "Kayıt Başarılı"
@@ -657,4 +654,215 @@ class UserDataSource extends DataTableSource {
 
   @override
   int get selectedRowCount => 0;
+}
+
+class UpdateUserWidget extends StatefulWidget {
+  final VoidCallback onCancel;
+
+  const UpdateUserWidget({super.key, required this.onCancel});
+
+  @override
+  State<UpdateUserWidget> createState() => _UpdateUserWidgetState();
+}
+
+class _UpdateUserWidgetState extends State<UpdateUserWidget> {
+  TextEditingController idController = TextEditingController();
+  TextEditingController userNameController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+  String role = "teacher";
+
+  Map<String, String> roleMap = {
+    "Öğretmen": "teacher",
+    "Öğrenci": "student_staff",
+  };
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Container(
+        width: 400,
+        height: 700,
+        decoration: BoxDecoration(
+          color: color,
+          borderRadius: BorderRadius.circular(30.0),
+          border: Border.all(color: Colors.black, width: 2.0),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            const Text(
+              "Kullanıcı Güncelleme",
+              style: TextStyle(
+                fontSize: 36,
+                fontFamily: "Inter",
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                const SizedBox(width: 125.0),
+                Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: SizedBox(
+                    width: 100.0,
+                    child: TextField(
+                      controller: idController,
+                      decoration: InputDecoration(
+                        hintText: "Kullanıcı ID",
+                        hintStyle: const TextStyle(color: color2),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(20.0),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 20.0),
+                IconButton(
+                  icon: const Icon(
+                    Icons.search,
+                    size: 30.0,
+                    color: Colors.black,
+                  ),
+                  onPressed: () async {
+                    var response = await listUsers(
+                      isWithFilter: true,
+                      filterType: "id",
+                      filterValue: idController.text,
+                      limit: 1,
+                      pageNumber: 1,
+                    );
+                    setState(() {
+                      if (response?["success"] == true &&
+                          response?["data"]["ids"].isNotEmpty) {
+                        userNameController.text =
+                            response?["data"]["names"][0] ?? "";
+                        passwordController.text =
+                            response?["data"]["passwords"][0] ?? "";
+                        role = response?["data"]["roles"][0] ?? "teacher";
+                      } else {
+                        userNameController.clear();
+                        passwordController.clear();
+                        role = "teacher";
+                      }
+                    });
+                  },
+                ),
+                const SizedBox(width: 125.0),
+              ],
+            ),
+            Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: SizedBox(
+                width: 300.0,
+                child: TextField(
+                  controller: userNameController,
+                  decoration: InputDecoration(
+                    hintText: "Kullanıcı Adı",
+                    hintStyle: const TextStyle(color: color2),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            DropdownButton<String>(
+              value: role,
+              items: roleMap.entries
+                  .map(
+                    (e) => DropdownMenuItem(
+                      value: e.value,
+                      child: Text(
+                        e.key,
+                        style: const TextStyle(color: Colors.black),
+                      ),
+                    ),
+                  )
+                  .toList(),
+              onChanged: (String? value) {
+                setState(() {
+                  role = value!;
+                });
+              },
+            ),
+            Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: SizedBox(
+                width: 300.0,
+                child: TextField(
+                  controller: passwordController,
+                  decoration: InputDecoration(
+                    hintText: "Şifre",
+                    hintStyle: const TextStyle(color: color2),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                var response = await updateUser(
+                  id: int.tryParse(idController.text) ?? 0,
+                  userName: userNameController.text,
+                  password: passwordController.text,
+                  role: role,
+                );
+
+                String alertTitle = (response?["success"] == true)
+                    ? "Kayıt Başarılı"
+                    : "Hata";
+
+                if (context.mounted) {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: Text(alertTitle),
+                        content: Text(
+                          response?["message"] ?? "Bilinmeyen bir hata oluştu.",
+                        ),
+                        actions: <Widget>[
+                          ElevatedButton(
+                            onPressed: () => Navigator.of(context).pop(),
+                            child: const Text("Tamam"),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                side: const BorderSide(color: Color(0xFF3A8772)),
+                padding: const EdgeInsets.all(20.0),
+                backgroundColor: color,
+              ),
+              child: const Text(
+                "Güncelle",
+                style: TextStyle(color: Colors.black),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: widget.onCancel,
+              style: ElevatedButton.styleFrom(
+                side: const BorderSide(color: Color(0xFF3A8772)),
+                backgroundColor: color,
+              ),
+              child: const Text(
+                "İptal",
+                style: TextStyle(fontSize: 14, color: Colors.black),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }

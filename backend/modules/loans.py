@@ -2,7 +2,7 @@ from utils.writeLog import writeLog
 import config
 from datetime import datetime
 
-daysPerMonth = {1: 31, 2: 28, 3: 31, 4: 30, 5: 31, 6: 30, 7: 31, 8: 31, 9: 30, 10: 31, 11: 30, 12: 31}
+daysPerMonth = {"01": 31, "02": 28, "03": 31, "04": 30, "05": 31, "06": 30, "07": 31, "08": 31, "09": 30, "10": 31, "11": 30, "12": 31}
 
 class Loan:
 
@@ -43,7 +43,7 @@ class Loan:
                                     if int(list[0]) > 29:
                                         return {"success":False,"message":"Lütfen geçerli bir gün giriniz!"}
                                 else:
-                                    if int(list[0]) > daysPerMonth[int(list[1])]:
+                                    if int(list[0]) > daysPerMonth[list[1]]:
                                         return {"success":False,"message":"Lütfen geçerli bir gün giriniz!"}
                                     
 
@@ -106,7 +106,7 @@ class Loan:
                     return {"success":False,"message":"Limit en fazla 50 olabilir!"}
                 else:
             
-                        IDs,studentIDs,bookNames,borrowDates,returnDates,returnedAts,statuses,whoAddeds = [],[],[],[],[],[],[],[]
+                        IDs,studentIDs,bookNames,borrowDates,returnDates,returnedAts,statuses,whoAddeds,bookIDs = [],[],[],[],[],[],[],[],[]
                         self.cursor.execute("SELECT COUNT(*) FROM loans")
                         totalLoans = self.cursor.fetchone()[0]
                         if totalLoans is not None:
@@ -132,7 +132,8 @@ class Loan:
                             returnedAts.append(rV[5])
                             statuses.append(rV[6])
                             whoAddeds.append(rV[7])
-
+                            bookIDs.append(rV[2])
+                            
                         if isWithFilter == True:
 
                             if filterValue == "" or filterType == "":
@@ -202,6 +203,7 @@ class Loan:
                                 "data":{
                                     "ids":IDs,
                                     "studentIDs":studentIDs,
+                                    "bookIDs":bookIDs,
                                     "bookNames":bookNames,
                                     "borrowDates":borrowDates,
                                     "returnDates":returnDates,
@@ -216,5 +218,66 @@ class Loan:
 
         except Exception as e:
             
+            writeLog(config.LOANS_LOG_PATH,type(e).__name__,str(e))
+            return {"success":False,"message":"Bir hata oluştu!"}
+
+    def updateLoan(self,id:int,bookID:int,studentID:int,returnDate:str,activeUserName:str):
+
+        try:
+
+            if bookID == 0 or studentID == 0 or returnDate == "" or id == 0:
+                return {"success":False,"message":"Lütfen boş bırakmayın!"}
+            else:
+
+                self.cursor.execute("SELECT * FROM loans WHERE id = %s",(id,))
+                result1 = self.cursor.fetchone()
+
+                if result1 is None:
+                    return {"success":False,"message":"Ödünç alma kaydı bulunamadı!"}
+                else:
+
+                    self.cursor.execute("SELECT * FROM books WHERE id = %s",(bookID,))
+                    result = self.cursor.fetchone()
+                    
+                    if result is None:
+                        return {"success":False,"message":"Kitap bulunamadı!"}
+                    else:
+
+                        if result[6] == "Alindi":
+                            return {"success":False,"message":"Bu kitap zaten alınmış!"}
+                        else:
+
+                            if datetime.strptime(returnDate, "%d/%m/%Y").date() < datetime.now().date():
+                                return {"success":False,"message":"Teslim tarihi geçmişe dönük olamaz, cihazın saatini ayarlayın!"}
+                            else:
+
+                                list = returnDate.split("/")
+                                if list[1] not in daysPerMonth.keys():
+                                    return {"success":False,"message":"Lütfen geçerli bir ay giriniz!"}
+                                else:
+                                    
+                                    if list[2] % 4 == 0 and list[1] == "2":
+                                        if int(list[0]) > 29:
+                                            return {"success":False,"message":"Lütfen geçerli bir gün giriniz!"}
+                                    else:
+                                        if int(list[0]) > daysPerMonth[int(list[1])]:
+                                            return {"success":False,"message":"Lütfen geçerli bir gün giriniz!"}
+                                        
+                                        self.cursor.execute("SELECT * FROM loans WHERE id = %s",(id,))
+                                        result = self.cursor.fetchone()
+
+                                        if result1[2] != bookID:
+                                            self.cursor.execute("UPDATE books SET isTaken = %s WHERE id = %s",("Alinmadi",result1[2]))
+                                            self.conn.commit()
+                                            self.cursor.execute("UPDATE books SET isTaken = %s WHERE id = %s",("Alindi",bookID))
+                                            self.conn.commit()
+
+                                        self.cursor.execute("UPDATE loans SET studentID = %s, bookID = %s, returnDate = %s, whoAdded = %s WHERE id = %s",(studentID,bookID,returnDate,activeUserName,id))
+                                        self.conn.commit()
+                                            
+                                        return {"success":True,"message":"Ödünç Alım Güncellendi."}
+        
+        except Exception as e:
+
             writeLog(config.LOANS_LOG_PATH,type(e).__name__,str(e))
             return {"success":False,"message":"Bir hata oluştu!"}

@@ -12,7 +12,7 @@ class Leader:
 
         try:
             
-            self.cursor.execute("SELECT COUNT(DISTINCT studentID) FROM loans WHERE status = 'returned';")
+            self.cursor.execute("SELECT COUNT(DISTINCT studentID) FROM loans WHERE loanStatus = 'returned';")
             totalLeaders = self.cursor.fetchone()[0]
             
             if totalLeaders is not None:

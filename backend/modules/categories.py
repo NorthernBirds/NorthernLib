@@ -176,3 +176,47 @@ class Category:
             
             writeLog(config.CATEGORIES_LOG_PATH,type(e).__name__,str(e))
             return {"success":False,"message":"Bir hata oluştu!"}
+
+    def updateCategory(self,id:int,categoryName:str,activeUserName:str):
+
+        try:
+
+            if id == 0 or categoryName == "":
+                return {"success":False,"message":"Lütfen boş bırakmayın!"}
+            else:
+
+                self.cursor.execute("SELECT * FROM categories WHERE id = %s",(id,))
+                result = self.cursor.fetchone()
+
+                if result is None:
+                    return {"success":False,"message":"Kategori bulunamadı!"}
+                else:
+                
+                    if categoryName not in config.BOOK_CATEGORIES:
+                        return {"success":False,"message":"Bu kategori mevcut değil!"}
+                    else:
+
+                        self.cursor.execute(
+                            "SELECT * FROM categories WHERE categoryName = %s",
+                            (categoryName,)
+                        )
+
+                        result = self.cursor.fetchone()
+
+                        if result is not None:
+                            return {"success":False,"message":"Bu kategori zaten mevcut!"}
+                        else:
+
+                            self.cursor.execute(
+                                "UPDATE categories SET categoryName = %s, whoAdded = %s WHERE id = %s",
+                                (categoryName,activeUserName,id)
+                            )
+
+                            self.conn.commit()
+                            
+                            return {"success":True,"message":"Kategori güncellendi."}
+                
+        except Exception as e:
+
+            writeLog(config.CATEGORIES_LOG_PATH,type(e).__name__,str(e))
+            return {"success":False,"message":"Bir hata oluştu!"}

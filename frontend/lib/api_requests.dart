@@ -10,7 +10,6 @@ final BaseOptions options = BaseOptions(
   receiveTimeout: const Duration(seconds: 10),
   contentType: Headers.jsonContentType,
   responseType: ResponseType.json,
-  headers: {"appToken": appKey},
 );
 
 final Dio dio = Dio(options)
@@ -140,6 +139,30 @@ Future<Map<String, dynamic>?> listBooks({
   return response.data;
 }
 
+Future<Map<String, dynamic>?> updateBook({
+  required int id,
+  required String bookName,
+  required String writer,
+  required String publisher,
+  required String category,
+  required int pageCount,
+}) async {
+  var response = await dio.post(
+    "/updateBook",
+    data: {
+      "id": id,
+      "bookName": bookName,
+      "writer": writer,
+      "publisher": publisher,
+      "category": category,
+      "pageCount": pageCount,
+      "appToken": appKey,
+      "token": session["token"],
+    },
+  );
+  return response.data;
+}
+
 Future<Map<String, dynamic>?> addCategory({
   required String categoryName,
 }) async {
@@ -177,6 +200,22 @@ Future<Map<String, dynamic>?> listCategories({
       "filterValue": filterValue,
       "limit": limit,
       "pageNumber": pageNumber,
+      "appToken": appKey,
+      "token": session["token"],
+    },
+  );
+  return response.data;
+}
+
+Future<Map<String, dynamic>?> updateCategory({
+  required int id,
+  required String categoryName,
+}) async {
+  var response = await dio.post(
+    "/updateCategory",
+    data: {
+      "id": id,
+      "categoryName": categoryName,
       "appToken": appKey,
       "token": session["token"],
     },
@@ -232,6 +271,26 @@ Future<Map<String, dynamic>?> listLoans({
   return response.data;
 }
 
+Future<Map<String, dynamic>?> updateLoan({
+  required int id,
+  required int studentID,
+  required int bookID,
+  required String returnDate,
+}) async {
+  var response = await dio.post(
+    "/updateLoan",
+    data: {
+      "id": id,
+      "studentID": studentID,
+      "bookID": bookID,
+      "returnDate": returnDate,
+      "appToken": appKey,
+      "token": session["token"],
+    },
+  );
+  return response.data;
+}
+
 Future<Map<String, dynamic>?> listLeaders({
   required int limit,
   required int pageNumber,
@@ -275,13 +334,13 @@ Future<Map<String, dynamic>?> deleteUser({required int id}) async {
 }
 
 Future<Map<String, dynamic>?> changeRole({
-  required String userName,
+  required int id,
   required String newRole,
 }) async {
   var response = await dio.post(
     "/changeRole",
     data: {
-      "userName": userName,
+      "id": id,
       "newRole": newRole,
       "appToken": appKey,
       "token": session["token"],
@@ -312,29 +371,19 @@ Future<Map<String, dynamic>?> listUsers({
   return response.data;
 }
 
-Future<Map<String, dynamic>?> deleteProcess({required int id}) async {
-  var response = await dio.post(
-    "/deleteProcess",
-    data: {"id": id, "appToken": appKey, "token": session["token"]},
-  );
-  return response.data;
-}
-
-Future<Map<String, dynamic>?> listProcesses({
-  required bool isWithFilter,
-  required String filterType,
-  required String filterValue,
-  required int limit,
-  required int pageNumber,
+Future<Map<String, dynamic>?> updateUser({
+  required int id,
+  required String userName,
+  required String password,
+  required String role,
 }) async {
   var response = await dio.post(
-    "/listProcesses",
+    "/addUser",
     data: {
-      "isWithFilter": isWithFilter,
-      "filterType": filterType,
-      "filterValue": filterValue,
-      "limit": limit,
-      "pageNumber": pageNumber,
+      "id": id,
+      "userName": userName,
+      "password": password,
+      "role": role,
       "appToken": appKey,
       "token": session["token"],
     },

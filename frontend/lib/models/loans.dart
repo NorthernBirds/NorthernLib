@@ -202,7 +202,7 @@ class _ReturnBookWidgetState extends State<ReturnBookWidget> {
         width: 400,
         height: 400,
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: color,
           borderRadius: BorderRadius.circular(30.0),
           border: Border.all(color: Colors.black, width: 2.0),
         ),
@@ -595,4 +595,252 @@ class LoanDataSource extends DataTableSource {
 
   @override
   int get selectedRowCount => 0;
+}
+
+class UpdateLoanWidget extends StatefulWidget {
+  final VoidCallback onCancel;
+
+  const UpdateLoanWidget({super.key, required this.onCancel});
+
+  @override
+  State<UpdateLoanWidget> createState() => _UpdateLoanWidgetState();
+}
+
+class _UpdateLoanWidgetState extends State<UpdateLoanWidget> {
+  TextEditingController idController = TextEditingController();
+  TextEditingController bookIDController = TextEditingController();
+  TextEditingController stdIDController = TextEditingController();
+  final TextEditingController _returnDateController = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Container(
+        width: 400,
+        height: 500,
+        decoration: BoxDecoration(
+          color: color,
+          borderRadius: BorderRadius.circular(30.0),
+          border: Border.all(color: Colors.black, width: 2.0),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            const Text(
+              "Kitap Ödünç Alım Güncelleme",
+              style: TextStyle(
+                fontSize: 36,
+                fontFamily: "Inter",
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                const SizedBox(width: 125.0),
+                Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: SizedBox(
+                    width: 100.0,
+                    child: TextField(
+                      controller: idController,
+                      decoration: InputDecoration(
+                        hintText: "Kitap ID",
+                        hintStyle: const TextStyle(color: color2),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(20.0),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 20.0),
+                IconButton(
+                  icon: const Icon(
+                    Icons.search,
+                    size: 30.0,
+                    color: Colors.black,
+                  ),
+                  onPressed: () async {
+                    var response = await listLoans(
+                      isWithFilter: true,
+                      filterType: "id",
+                      filterValue: idController.text,
+                      limit: 1,
+                      pageNumber: 1,
+                    );
+                    setState(() {
+                      if (response?["success"] == true &&
+                          response?["data"]["ids"].isNotEmpty) {
+                        bookIDController.text =
+                            response?["data"]["bookIDs"][0].toString() ?? "";
+                        stdIDController.text =
+                            response?["data"]["studentIDs"][0].toString() ?? "";
+                        _returnDateController.text =
+                            response?["data"]["publishers"][0] ?? "";
+                      } else {
+                        bookIDController.clear();
+                        stdIDController.clear();
+                        _returnDateController.clear();
+                      }
+                    });
+                  },
+                ),
+                const SizedBox(width: 125.0),
+              ],
+            ),
+            Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: SizedBox(
+                width: 300.0,
+                child: TextField(
+                  controller: stdIDController,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    hintText: "Öğrenci No",
+                    hintStyle: const TextStyle(color: color2),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: SizedBox(
+                width: 300.0,
+                child: TextField(
+                  controller: bookIDController,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    hintText: "Kitap ID",
+                    hintStyle: const TextStyle(color: color2),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: SizedBox(
+                width: 300.0,
+                child: TextFormField(
+                  controller: _returnDateController,
+                  readOnly: true,
+                  decoration: const InputDecoration(
+                    hintText: "Kitap Teslim Tarihi: GG/AA/YYYY",
+                    prefixIcon: Icon(Icons.calendar_today),
+                    border: OutlineInputBorder(),
+                  ),
+                  onTap: () async {
+                    final DateTime today = DateTime(
+                      DateTime.now().year,
+                      DateTime.now().month,
+                      DateTime.now().day,
+                    );
+
+                    DateTime initialDatePickerDate = today;
+                    if (_returnDateController.text.isNotEmpty) {
+                      try {
+                        List<String> parts = _returnDateController.text.split(
+                          '/',
+                        );
+                        if (parts.length == 3) {
+                          int day = int.parse(parts[0]);
+                          int month = int.parse(parts[1]);
+                          int year = int.parse(parts[2]);
+                          initialDatePickerDate = DateTime(year, month, day);
+                        }
+                      } catch (_) {
+                        initialDatePickerDate = today;
+                      }
+                    }
+
+                    final DateTime? pickedDate = await showDatePicker(
+                      context: context,
+                      initialDate: initialDatePickerDate,
+                      firstDate: today,
+                      lastDate: DateTime(today.year + 4, 6, 10),
+                    );
+
+                    if (pickedDate != null) {
+                      String day = pickedDate.day.toString().padLeft(2, '0');
+                      String month = pickedDate.month.toString().padLeft(
+                        2,
+                        '0',
+                      );
+                      String year = pickedDate.year.toString();
+
+                      _returnDateController.text = "$day/$month/$year";
+                    }
+                  },
+                ),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                int parsedStdID = int.tryParse(stdIDController.text) ?? 0;
+                int parsedBkID = int.tryParse(bookIDController.text) ?? 0;
+
+                var response = await borrowBook(
+                  studentID: parsedStdID,
+                  bookID: parsedBkID,
+                  returnDate: _returnDateController.text,
+                );
+
+                String alertTitle = (response?["success"] == true)
+                    ? "Kayıt Başarılı"
+                    : "Hata";
+
+                if (context.mounted) {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: Text(alertTitle),
+                        content: Text(
+                          response?["message"] ?? "Bilinmeyen bir hata oluştu.",
+                        ),
+                        actions: <Widget>[
+                          ElevatedButton(
+                            onPressed: () => Navigator.of(context).pop(),
+                            child: const Text("Tamam"),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                side: const BorderSide(color: Color(0xFF3A8772)),
+                padding: const EdgeInsets.all(20.0),
+                backgroundColor: color,
+              ),
+              child: const Text("Ekle", style: TextStyle(color: Colors.black)),
+            ),
+            ElevatedButton(
+              onPressed: widget.onCancel,
+              style: ElevatedButton.styleFrom(
+                side: const BorderSide(color: Color(0xFF3A8772)),
+                backgroundColor: color,
+              ),
+              child: const Text(
+                "İptal",
+                style: TextStyle(fontSize: 14, color: Colors.black),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }

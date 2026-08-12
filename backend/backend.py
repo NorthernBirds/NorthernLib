@@ -75,10 +75,29 @@ def checkRoleAndToken(token,appToken,allowedRoles):
 
 @app.route('/backend/getSession',methods=['POST'])
 def getSession():
-    if developingMode == True:
-        return jsonify(config.session)
+
+    data = request.get_json()
+    result = auth.verifyAppToken(appToken=data.get("appToken",""),withLock=False)
+
+    if result["success"] != True:
+        return jsonify(result)
     else:
-        pass
+
+        if config.developer_password != data.get("developerPassword",""):
+            return jsonify({
+                "success":False,
+                "message":"Yanlış şifre!"
+            })
+        else:
+
+            if developingMode == True:
+                return jsonify(config.session)
+            else:
+
+                return jsonify({
+                    "success":False,
+                    "message":"Bu işlem sadece geliştirme modunda kullanılabilir!"
+                })
 
 @app.route('/backend/signUp',methods=['POST'])
 def signUp():
@@ -239,6 +258,31 @@ def listBooks():
             "message":"Bir hata oluştu!"
         })
 
+@app.route('/backend/updateBook',methods=['POST'])
+def updateBook():
+
+    try:
+
+        data = request.get_json()
+        token = data.get("token","")
+
+        result = checkRoleAndToken(token=token,appToken=data.get("appToken",""), allowedRoles=["admin","teacher","student_staff"])
+
+        if result["success"] != True:
+            return jsonify(result)
+        else:
+
+            return jsonify(config.session[token]["classes"]["book"].updateBook(id=data.get("id",0), bookName=data.get("bookName",""), writer=data.get("writer",""), category=data.get("category",""), publisher=data.get("publisher",""), pageCount=data.get("pageCount",0),activeUserName=config.session[token]["userName"]))
+            
+
+    except Exception as e:
+
+        writeLog(config.BACKEND_LOG_PATH,type(e).__name__,str(e))
+
+        return jsonify({
+            "success":False,
+            "message":"Bir hata oluştu!"
+        })
 
 @app.route('/backend/addCategory',methods=["POST"])
 def addCategory():
@@ -314,6 +358,30 @@ def listCategories():
             "message":"Bir hata oluştu!"
         })
 
+@app.route('/backend/updateCategory',methods=["POST"])
+def updateCategory():
+
+    try:
+
+        data = request.get_json()
+        token = data.get("token","")
+
+        result = checkRoleAndToken(token=token,appToken=data.get("appToken",""), allowedRoles=["admin","teacher"])
+
+        if result["success"] != True:
+            return jsonify(result)
+        else:
+            return jsonify(config.session[token]["classes"]["category"].updateCategory(id=data.get("id",0), categoryName=data.get("categoryName",""), activeUserName=config.session[token]["userName"]))
+
+    except Exception as e:
+
+        writeLog(config.BACKEND_LOG_PATH,type(e).__name__,str(e))
+
+        return jsonify({
+            "success":False,
+            "message":"Bir hata oluştu!"
+        })
+
 @app.route('/backend/borrowBook',methods=["POST"])
 def borrowBook():
 
@@ -378,6 +446,30 @@ def listLoans():
             return jsonify(result)
         else:
             return jsonify(config.session[token]["classes"]["loan"].listLoans(filterType=data.get("filterType",""), filterValue=data.get("filterValue",""), isWithFilter=data.get("isWithFilter",""), pageNumber=data.get("pageNumber",1), limit=data.get("limit",20)))
+
+    except Exception as e:
+
+        writeLog(config.BACKEND_LOG_PATH,type(e).__name__,str(e))
+
+        return jsonify({
+            "success":False,
+            "message":"Bir hata oluştu!"
+        })
+
+@app.route('/backend/updateLoan',methods=["POST"])
+def updateLoan():
+
+    try:
+
+        data = request.get_json()
+        token = data.get("token","")
+
+        result = checkRoleAndToken(token=token,appToken=data.get("appToken",""), allowedRoles=["admin","teacher","student_staff"])
+
+        if result["success"] != True:
+            return jsonify(result)
+        else:
+            return jsonify(config.session[token]["classes"]["loan"].updateLoan(id=data.get("id",0), bookID=data.get("bookID",0), studentID=data.get("studentID",0), returnDate=data.get("returnDate",""), activeUserName=config.session[token]["userName"]))
 
     except Exception as e:
 
@@ -477,7 +569,7 @@ def changeRole():
         if result["success"] != True:
             return jsonify(result)
         else:
-            return jsonify(config.session[token]["classes"]["user"].changeRole(userName=data.get("userName",""), newRole=data.get("newRole","")))
+            return jsonify(config.session[token]["classes"]["user"].changeRole(id=data.get("id",0), newRole=data.get("newRole","")))
 
     except Exception as e:
 
@@ -502,6 +594,30 @@ def listUsers():
             return jsonify(result)
         else:
             return jsonify(config.session[token]["classes"]["user"].listUsers(filterType=data.get("filterType",""), filterValue=data.get("filterValue",""), isWithFilter=data.get("isWithFilter",""), pageNumber=data.get("pageNumber",1), limit=data.get("limit",20)))
+
+    except Exception as e:
+
+        writeLog(config.BACKEND_LOG_PATH,type(e).__name__,str(e))
+
+        return jsonify({
+            "success":False,
+            "message":"Bir hata oluştu!"
+        })
+
+@app.route('/backend/updateUser',methods=['POST'])
+def updateUser():
+
+    try:
+
+        data = request.get_json()
+        token = data.get("token","")
+
+        result = checkRoleAndToken(token=token,appToken=data.get("appToken",""), allowedRoles=["admin"])
+
+        if result["success"] != True:
+            return jsonify(result)
+        else:
+            return jsonify(config.session[token]["classes"]["user"].updateUser(id=data.get("id",0), userName=data.get("userName",""), password=data.get("password",""), role=data.get("role","")))
 
     except Exception as e:
 
