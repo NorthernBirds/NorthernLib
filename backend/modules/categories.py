@@ -58,7 +58,7 @@ class Category:
             return {"success":False,"message":"Bir hata oluştu!"}
     
 
-    def listCategories(self,filterValue:str,filterType:str,isWithFilter:bool | str,pageNumber:int,limit:int):
+    def listCategories(self,filterValue:str,filterType:str,isWithFilter:bool,pageNumber:int,limit:int):
 
         try:
 

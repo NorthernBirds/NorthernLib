@@ -74,7 +74,7 @@ class Book:
             return {"success":False,"message":"Bir hata oluştu!"}
     
 
-    def listBooks(self,filterValue:str,filterType:str,isWithFilter:bool | str,pageNumber:int,limit:int):
+    def listBooks(self,filterValue:str,filterType:str,isWithFilter:bool,pageNumber:int,limit:int):
 
         try:
 

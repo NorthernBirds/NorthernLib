@@ -22,9 +22,6 @@ def durationHeartbeat():
 
                     config.session[t]["dbValues"]["conn"].close()
                     del config.session[t]
-                
-                else:
-                    pass
 
             time.sleep(1)
         
@@ -36,8 +33,6 @@ def resetDuration(token:str):
 
     if token in config.session.keys():
         config.session[token]["duration"] = 0
-    else:
-        pass
 
 class Auth:
 
@@ -60,31 +55,27 @@ class Auth:
             ]
 
 
-            if dbName == "":
+            if dbName.replace(" ","") == "":
                 return {"success":False,"message":"Lütfen boş bırakmayın!"}
-            else:
+            
+            self.cursor.execute("SELECT * FROM libraries WHERE libName = %s",(dbName,))
+            result = self.cursor.fetchone()
 
-                self.cursor.execute("SELECT * FROM libraries WHERE libName = %s",(dbName,))
+            if result is not None or dbName == "library":
+                return {"success":False,"message":"Bu kütüphane adı zaten var!"}
+            
+            if developerPassword != config.developer_password:
+                return {"success":False,"message":"Hatalı yönetici şifresi!"}
 
-                result = self.cursor.fetchone()
+            dbPassword = ""
+            adminPassword = ""
 
-                if result is not None or dbName == "library":
-                    return {"success":False,"message":"Bu kütüphane adı zaten var!"}
-                else:
-
-                    if developerPassword != config.developer_password:
-                        return {"success":False,"message":"Hatalı yönetici şifresi!"}
-                    else:
-
-                        dbPassword = ""
-                        adminPassword = ""
-
-                        for i in range(4):
-                            dbPassword = dbPassword + str(random.randint(0,9)) + str(random.choice(letters))
-                            adminPassword = adminPassword + str(random.randint(0,9)) + str(random.choice(letters))
-                        
-                        setup(name=dbName,password=dbPassword,conn=self.conn,cursor=self.cursor,adminPassword=adminPassword)
-                        return {"success":True,"message":"Kayıt olundu.","data":{"dbPassword":dbPassword,"adminPassword":adminPassword}}
+            for i in range(4):
+                dbPassword = dbPassword + str(random.randint(0,9)) + str(random.choice(letters))
+                adminPassword = adminPassword + str(random.randint(0,9)) + str(random.choice(letters))
+                            
+            setup(name=dbName,password=dbPassword,conn=self.conn,cursor=self.cursor,adminPassword=adminPassword)
+            return {"success":True,"message":"Kayıt olundu.","data":{"dbPassword":dbPassword,"adminPassword":adminPassword}}
         
         
         except Exception as e:
@@ -97,27 +88,21 @@ class Auth:
         
         try:
 
-            if dbName == "" or dbPassword == "":
+            if dbName.replace(" ","") == "" or dbPassword.replace(" ","") == "":
                 return {"success":False,"message":"Lütfen boş bırakmayın!"}
-            else:
-                self.cursor.execute("SELECT * FROM libraries WHERE libName = %s",(dbName,))
+            
+            self.cursor.execute("SELECT * FROM libraries WHERE libName = %s",(dbName,))
+            result = self.cursor.fetchone()
 
-                result = self.cursor.fetchone()
+            if result is None or dbName == "library":
+                return {"success":False,"message":"Bu kütüphane adı bulunamadı!"}
 
-                if result is None or dbName == "library":
-                    return {"success":False,"message":"Bu kütüphane adı bulunamadı!"}
-                else:
+            passwordCorrect = bcrypt.checkpw(dbPassword.encode(),result[2].encode())
 
-                    passwordCorrect = bcrypt.checkpw(
-                        dbPassword.encode(),
-                        result[2].encode()
-                    )
-
-                    if passwordCorrect != True:
-                        return {"success":False,"message":"Hatalı şifre!"}
-                    else:
-
-                        return {"success":True,"message":"Giriş yapıldı.","data":{"dbName":dbName,"dbPassword":dbPassword}}
+            if passwordCorrect != True:
+                return {"success":False,"message":"Hatalı şifre!"}
+            
+            return {"success":True,"message":"Giriş yapıldı.","data":{"dbName":dbName,"dbPassword":dbPassword}}
         
         except Exception as e:
 
@@ -129,39 +114,29 @@ class Auth:
 
         try:
 
-            if userName == "" or password == "":
+            if userName.replace(" ","") == "" or password.replace(" ","") == "":
                 return {"success":False,"message":"Lütfen boş bırakmayın!"}
-            else:
-
-                self.cursor.execute(
-                    "SELECT id,userName,userPassword,userRole FROM users WHERE userName = %s",
-                    (userName,)
-                )
-
+            
+            self.cursor.execute("SELECT id,userName,userPassword,userRole FROM users WHERE userName = %s",(userName,))
             result = self.cursor.fetchone()
 
             if result is None:
                 return {"success":False,"message":"Hatalı kullanıcı adı!"}
-            else:
 
-                passwordCorrect = bcrypt.checkpw(
-                    password.encode(),
-                    result[2].encode()
-                )
+            passwordCorrect = bcrypt.checkpw(password.encode(),result[2].encode())
 
-                if passwordCorrect != True:
-                    return {"success":False,"message":"Hatalı şifre!"}
-                else:
-
-                    token = secrets.token_hex(32)
+            if passwordCorrect != True:
+                return {"success":False,"message":"Hatalı şifre!"}
+            
+            token = secrets.token_hex(32)
                     
-                    return {
-                        "success":True,
-                        "message":"Giriş yapıldı.",
-                        "token":token,
-                        "userName":result[1],
-                        "role":result[3]
-                    }
+            return {
+                "success":True,
+                "message":"Giriş yapıldı.",
+                "token":token,
+                "userName":result[1],
+                "role":result[3]
+            }
 
         except Exception as e:
 
@@ -178,9 +153,8 @@ class Auth:
                 config[token]["dbValues"]["conn"].close()
                 del config.session[token]
                 return {"success":True,"message":"Çıkış yapıldı."}
-            else:
-
-                return {"success":False,"message":"Lütfen boş bırakmayın!"}
+    
+            return {"success":False,"message":"Hatalı kullanıcı verisi!"}
         
         except Exception as e:
 
@@ -193,7 +167,6 @@ class Auth:
 
             self.cursor.execute("UPDATE importantvalues SET valueStatus = %s WHERE id = 1",(True,))
             self.conn.commit()
-            writeCriticalWarning(config.AUTH_LOG_PATH,"403 Forbidden","A user attempted to breach the system using a tool similar to Postman.")
 
         except Exception as e:
 
@@ -205,10 +178,9 @@ class Auth:
         try: 
 
             if token not in config.session:
-                return {"success":False,"message":"401 Unauthorized!"}
-            else:
-
-                return {"success":True}
+                return {"success":False,"realMessage":"401 Unauthorized!","message":"Oturumunuz zaman aşımına uğradı. Lütfen tekrar giriş yapın."}
+        
+            return {"success":True}
 
         except Exception as e:
 
@@ -220,11 +192,11 @@ class Auth:
         try:
 
             if appToken != config.APP_KEY:
-                if withLock == True:
+                if withLock:
                     self.lockTheApp()
-                return {"success":False,"message":"403 Forbidden!"}
-            else:
-                return {"success":True}
+                return {"success":False,"realMessage":"403 Forbidden!","message":"Hatalı uygulama anahtarı!"}
+            
+            return {"success":True}
         
         except Exception as e:
 
@@ -239,10 +211,9 @@ class Auth:
             self.cursor.execute("SELECT * FROM importantvalues WHERE id = 1")
             result = self.cursor.fetchone()
             if bool(result[2]) == True:
-                return {"success":False,"message":"The app is locked!"}
-            else:
-
-                return {"success":True}
+                return {"success":False,"message":"Bu ktütüphane kilitli. Lütfen yönetici ile iletişime geçin."}
+            
+            return {"success":True}
         
         except Exception as e:
 

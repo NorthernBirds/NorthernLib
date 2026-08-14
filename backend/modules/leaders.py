@@ -30,12 +30,9 @@ class Leader:
                     studentIDs.append(r[0])
                     readBooks.append(r[1])
                 
-                
-                return {"success": True, "message": f"{totalLeaders} lider kaydından yalnızca {offset + 1} - {(offset + limit) + 1} arası liderler listeleniyor.", "data": {"studentIDs": studentIDs, "readBooks": readBooks, "pageCount": pageCount}}
+                return {"success": True, "message": "Liderler listelendi.", "data": {"studentIDs": studentIDs, "readBooks": readBooks, "pageCount": pageCount,"totalLeaders": totalLeaders}}
 
-            else:
-
-                return {"success": False, "message": "Sonuç bulunamadı!"}
+            return {"success": False, "message": "Sonuç bulunamadı!"}
             
         except Exception as e:
 
