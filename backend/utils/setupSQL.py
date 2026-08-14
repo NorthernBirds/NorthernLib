@@ -3,7 +3,7 @@ import config
 from utils.writeLog import writeLog
 
 
-def setup(name, password, conn, cursor, adminPassword):
+def setup(name:str, password:str, conn, cursor, adminPassword:str):
 
     try:
 

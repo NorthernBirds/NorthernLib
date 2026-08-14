@@ -43,35 +43,30 @@ def checkRoleAndToken(token,appToken,allowedRoles):
     
     if result["success"] != True:
         return result
-    else:
+    
+    result = config.session[token]["classes"]["auth"].verifyAppToken(appToken=appToken,withLock=True)
 
-        result = config.session[token]["classes"]["auth"].verifyAppToken(appToken=appToken,withLock=True)
+    if result["success"] != True:
+        return result
 
-        if result["success"] != True:
-            return result
-        else:
+    result = config.session[token]["classes"]["auth"].verifyLock()
 
-            result = config.session[token]["classes"]["auth"].verifyLock()
+    if result["success"] != True:
+        return result
 
-            if result["success"] != True:
-                return result
-            else:
-
-                if config.session[token]["role"] not in allowedRoles:
-                    return {
-                        "success":False,
-                        "message":"Yetkiniz yok!"
-                    }
+    if config.session[token]["role"] not in allowedRoles:
+        return {
+            "success":False,
+            "message":"Yetkiniz yok!"
+        }
                 
-                else:
+    modules.auth.resetDuration(token=token)
 
-                    modules.auth.resetDuration(token=token)
-
-                    pause.set()
+    pause.set()
                     
-                    return {
-                        "success":True
-                    }
+    return {
+        "success":True
+    }
 
 @app.route('/backend/getSession',methods=['POST'])
 def getSession():
@@ -81,23 +76,22 @@ def getSession():
 
     if result["success"] != True:
         return jsonify(result)
-    else:
 
-        if config.developer_password != data.get("developerPassword",""):
-            return jsonify({
-                "success":False,
-                "message":"Yanlış şifre!"
-            })
-        else:
+    if config.developer_password != data.get("developerPassword",""):
+        return jsonify({
+            "success":False,
+            "message":"Yanlış şifre!"
+        })
 
-            if developingMode == True:
-                return jsonify(config.session)
-            else:
 
-                return jsonify({
-                    "success":False,
-                    "message":"Bu işlem sadece geliştirme modunda kullanılabilir!"
-                })
+    if developingMode == True:
+        return jsonify(config.session)
+
+
+    return jsonify({
+        "success":False,
+        "message":"Bu işlem sadece geliştirme modunda kullanılabilir!"
+    })
 
 @app.route('/backend/signUp',methods=['POST'])
 def signUp():
@@ -110,9 +104,8 @@ def signUp():
 
         if result["success"] != True:
             return jsonify(result)
-        else:
-
-            return jsonify(auth.signUp(dbName=data.get("dbName",""),developerPassword=data.get("developerPassword","")))
+        
+        return jsonify(auth.signUp(dbName=data.get("dbName",""),developerPassword=data.get("developerPassword","")))
     
     except Exception as e:
 
@@ -134,44 +127,39 @@ def signIn():
 
             if result["success"] != True:
                 return jsonify(result)
-            else:
 
-                result2 = auth.signInDB(dbName=data.get("dbName",""),dbPassword=data.get("dbPassword",""))
+            result2 = auth.signInDB(dbName=data.get("dbName",""),dbPassword=data.get("dbPassword",""))
 
-                if result2["success"] != True:
-                    return jsonify(result2)
-                else:
+            if result2["success"] != True:
+                return jsonify(result2)
 
-                    resultDB = db.connection.getDB(dbName=data.get("dbName",""),password=data.get("dbPassword",""),dbUser="admin"+"_"+data.get("dbName",""))
+            resultDB = db.connection.getDB(dbName=data.get("dbName",""),password=data.get("dbPassword",""),dbUser="admin"+"_"+data.get("dbName",""))
 
-                    if resultDB["success"] != True:
-                        return jsonify(resultDB)
-                    else:
+            if resultDB["success"] != True:
+                return jsonify(resultDB)
+            
+            conn = resultDB["data"]["conn"]
+            cursor = resultDB["data"]["cursor"]
 
-                        conn = resultDB["data"]["conn"]
-                        cursor = resultDB["data"]["cursor"]
+            authUser = modules.auth.Auth(conn=conn,cursor=cursor)
+            book = modules.books.Book(conn=conn,cursor=cursor)
+            category = modules.categories.Category(conn=conn,cursor=cursor)
+            loan = modules.loans.Loan(conn=conn,cursor=cursor)
+            user = modules.users.User(conn=conn,cursor=cursor)
+            reset = modules.reset.Reset(conn=conn,cursor=cursor)
+            leader = modules.leaders.Leader(conn=conn,cursor=cursor)
 
-                        authUser = modules.auth.Auth(conn=conn,cursor=cursor)
-                        book = modules.books.Book(conn=conn,cursor=cursor)
-                        category = modules.categories.Category(conn=conn,cursor=cursor)
-                        loan = modules.loans.Loan(conn=conn,cursor=cursor)
-                        user = modules.users.User(conn=conn,cursor=cursor)
-                        reset = modules.reset.Reset(conn=conn,cursor=cursor)
-                        leader = modules.leaders.Leader(conn=conn,cursor=cursor)
+            resultLock = authUser.verifyLock()
+            if resultLock["success"] != True:
+                return jsonify(resultLock)
 
-                        resultLock = authUser.verifyLock()
-                        if resultLock["success"] != True:
-                            return jsonify(resultLock)
-                        else:
+            result3 = authUser.signIn(userName=data.get("userName",""),password=data.get("password",""))
 
-                            result3 = authUser.signIn(userName=data.get("userName",""),password=data.get("password",""))
-
-                            if result3["success"] != True:
-                                return jsonify(result3)
-                            else:
-
-                                config.session[result3["token"]] = {"userName":result3["userName"],"role":result3["role"],"duration":0,"classes":{"auth":authUser,"book":book,"category":category,"loan":loan,"user":user,"reset":reset,"leader":leader},"dbValues":{"conn":conn,"cursor":cursor}}
-                                return jsonify(result3)
+            if result3["success"] != True:
+                return jsonify(result3)
+            
+            config.session[result3["token"]] = {"userName":result3["userName"],"role":result3["role"],"duration":0,"classes":{"auth":authUser,"book":book,"category":category,"loan":loan,"user":user,"reset":reset,"leader":leader},"dbValues":{"conn":conn,"cursor":cursor}}
+            return jsonify(result3)
    
     except Exception as e:
 
@@ -194,9 +182,8 @@ def addBook():
 
         if result["success"] != True:
             return jsonify(result)
-        else:
 
-            return jsonify(config.session[token]["classes"]["book"].addBook(bookName=data.get("bookName",""), writer=data.get("writer",""), category=data.get("category",""), publisher=data.get("publisher",""), pageCount=data.get("pageCount",0),activeUserName=config.session[token]["userName"]))
+        return jsonify(config.session[token]["classes"]["book"].addBook(bookName=data.get("bookName",""), writer=data.get("writer",""), category=data.get("category",""), publisher=data.get("publisher",""), pageCount=data.get("pageCount",0),activeUserName=config.session[token]["userName"]))
             
 
     except Exception as e:
@@ -221,8 +208,8 @@ def deleteBook():
 
         if result["success"] != True:
             return jsonify(result)
-        else:
-            return jsonify(config.session[token]["classes"]["book"].deleteBook(id=data.get("id",0)))
+
+        return jsonify(config.session[token]["classes"]["book"].deleteBook(id=data.get("id",0)))
 
     except Exception as e:
 
@@ -246,8 +233,8 @@ def listBooks():
 
         if result["success"] != True:
             return jsonify(result)
-        else:
-            return jsonify(config.session[token]["classes"]["book"].listBooks(filterType=data.get("filterType",""), filterValue=data.get("filterValue",""), isWithFilter=data.get("isWithFilter",""), pageNumber=data.get("pageNumber",1), limit=data.get("limit",20)))
+
+        return jsonify(config.session[token]["classes"]["book"].listBooks(filterType=data.get("filterType",""), filterValue=data.get("filterValue",""), isWithFilter=data.get("isWithFilter",""), pageNumber=data.get("pageNumber",1), limit=data.get("limit",20)))
 
     except Exception as e:
 
@@ -270,9 +257,8 @@ def updateBook():
 
         if result["success"] != True:
             return jsonify(result)
-        else:
 
-            return jsonify(config.session[token]["classes"]["book"].updateBook(id=data.get("id",0), bookName=data.get("bookName",""), writer=data.get("writer",""), category=data.get("category",""), publisher=data.get("publisher",""), pageCount=data.get("pageCount",0),activeUserName=config.session[token]["userName"]))
+        return jsonify(config.session[token]["classes"]["book"].updateBook(id=data.get("id",0), bookName=data.get("bookName",""), writer=data.get("writer",""), category=data.get("category",""), publisher=data.get("publisher",""), pageCount=data.get("pageCount",0),activeUserName=config.session[token]["userName"]))
             
 
     except Exception as e:
@@ -296,8 +282,8 @@ def addCategory():
 
         if result["success"] != True:
             return jsonify(result)
-        else:
-            return jsonify(config.session[token]["classes"]["category"].addCategory(categoryName=data.get("categoryName",""),activeUserName=config.session[token]["userName"]))
+
+        return jsonify(config.session[token]["classes"]["category"].addCategory(categoryName=data.get("categoryName",""),activeUserName=config.session[token]["userName"]))
 
     except Exception as e:
 
@@ -321,8 +307,8 @@ def deleteCategory():
 
         if result["success"] != True:
             return jsonify(result)
-        else:
-            return jsonify(config.session[token]["classes"]["category"].deleteCategory(id=data.get("id",0)))
+        
+        return jsonify(config.session[token]["classes"]["category"].deleteCategory(id=data.get("id",0)))
 
     except Exception as e:
 
@@ -346,8 +332,8 @@ def listCategories():
 
         if result["success"] != True:
             return jsonify(result)
-        else:
-            return jsonify(config.session[token]["classes"]["category"].listCategories(filterType=data.get("filterType",""), filterValue=data.get("filterValue",""), isWithFilter=data.get("isWithFilter",""), pageNumber=data.get("pageNumber",1), limit=data.get("limit",20)))
+
+        return jsonify(config.session[token]["classes"]["category"].listCategories(filterType=data.get("filterType",""), filterValue=data.get("filterValue",""), isWithFilter=data.get("isWithFilter",""), pageNumber=data.get("pageNumber",1), limit=data.get("limit",20)))
 
     except Exception as e:
 
@@ -370,8 +356,8 @@ def updateCategory():
 
         if result["success"] != True:
             return jsonify(result)
-        else:
-            return jsonify(config.session[token]["classes"]["category"].updateCategory(id=data.get("id",0), categoryName=data.get("categoryName",""), activeUserName=config.session[token]["userName"]))
+
+        return jsonify(config.session[token]["classes"]["category"].updateCategory(id=data.get("id",0), categoryName=data.get("categoryName",""), activeUserName=config.session[token]["userName"]))
 
     except Exception as e:
 
@@ -394,8 +380,8 @@ def borrowBook():
 
         if result["success"] != True:
             return jsonify(result)
-        else:
-            return jsonify(config.session[token]["classes"]["loan"].borrowBook(bookID=data.get("bookID",0), studentID=data.get("studentID",0), returnDate=data.get("returnDate",""),activeUserName=config.session[token]["userName"]))
+
+        return jsonify(config.session[token]["classes"]["loan"].borrowBook(bookID=data.get("bookID",0), studentID=data.get("studentID",0), returnDate=data.get("returnDate",""),activeUserName=config.session[token]["userName"]))
 
     except Exception as e:
 
@@ -419,8 +405,8 @@ def returnBook():
 
         if result["success"] != True:
             return jsonify(result)
-        else:
-            return jsonify(config.session[token]["classes"]["loan"].returnBook(bookID=data.get("bookID",0)))
+        
+        return jsonify(config.session[token]["classes"]["loan"].returnBook(bookID=data.get("bookID",0)))
 
     except Exception as e:
 
@@ -444,8 +430,8 @@ def listLoans():
 
         if result["success"] != True:
             return jsonify(result)
-        else:
-            return jsonify(config.session[token]["classes"]["loan"].listLoans(filterType=data.get("filterType",""), filterValue=data.get("filterValue",""), isWithFilter=data.get("isWithFilter",""), pageNumber=data.get("pageNumber",1), limit=data.get("limit",20)))
+
+        return jsonify(config.session[token]["classes"]["loan"].listLoans(filterType=data.get("filterType",""), filterValue=data.get("filterValue",""), isWithFilter=data.get("isWithFilter",""), pageNumber=data.get("pageNumber",1), limit=data.get("limit",20)))
 
     except Exception as e:
 
@@ -468,8 +454,8 @@ def updateLoan():
 
         if result["success"] != True:
             return jsonify(result)
-        else:
-            return jsonify(config.session[token]["classes"]["loan"].updateLoan(id=data.get("id",0), bookID=data.get("bookID",0), studentID=data.get("studentID",0), returnDate=data.get("returnDate",""), activeUserName=config.session[token]["userName"]))
+
+        return jsonify(config.session[token]["classes"]["loan"].updateLoan(id=data.get("id",0), bookID=data.get("bookID",0), studentID=data.get("studentID",0), returnDate=data.get("returnDate",""), activeUserName=config.session[token]["userName"]))
 
     except Exception as e:
 
@@ -493,8 +479,8 @@ def listLeaders():
 
         if result["success"] != True:
             return jsonify(result)
-        else:
-            return jsonify(config.session[token]["classes"]["leader"].listLeaders(pageNumber=data.get("pageNumber",1), limit=data.get("limit",10)))
+
+        return jsonify(config.session[token]["classes"]["leader"].listLeaders(pageNumber=data.get("pageNumber",1), limit=data.get("limit",10)))
 
     except Exception as e:
 
@@ -518,8 +504,8 @@ def addUser():
 
         if result["success"] != True:
             return jsonify(result)
-        else:
-            return jsonify(config.session[token]["classes"]["user"].addUser(userName=data.get("userName",""), password=data.get("password",""), role=data.get("role","")))
+
+        return jsonify(config.session[token]["classes"]["user"].addUser(userName=data.get("userName",""), password=data.get("password",""), role=data.get("role","")))
 
     except Exception as e:
 
@@ -543,8 +529,8 @@ def deleteUser():
 
         if result["success"] != True:
             return jsonify(result)
-        else:
-            return jsonify(config.session[token]["classes"]["user"].deleteUser(id=data.get("id",0)))
+
+        return jsonify(config.session[token]["classes"]["user"].deleteUser(id=data.get("id",0)))
 
     except Exception as e:
 
@@ -568,8 +554,8 @@ def changeRole():
 
         if result["success"] != True:
             return jsonify(result)
-        else:
-            return jsonify(config.session[token]["classes"]["user"].changeRole(id=data.get("id",0), newRole=data.get("newRole","")))
+
+        return jsonify(config.session[token]["classes"]["user"].changeRole(id=data.get("id",0), newRole=data.get("newRole","")))
 
     except Exception as e:
 
@@ -592,8 +578,8 @@ def listUsers():
 
         if result["success"] != True:
             return jsonify(result)
-        else:
-            return jsonify(config.session[token]["classes"]["user"].listUsers(filterType=data.get("filterType",""), filterValue=data.get("filterValue",""), isWithFilter=data.get("isWithFilter",""), pageNumber=data.get("pageNumber",1), limit=data.get("limit",20)))
+
+        return jsonify(config.session[token]["classes"]["user"].listUsers(filterType=data.get("filterType",""), filterValue=data.get("filterValue",""), isWithFilter=data.get("isWithFilter",""), pageNumber=data.get("pageNumber",1), limit=data.get("limit",20)))
 
     except Exception as e:
 
@@ -616,8 +602,8 @@ def updateUser():
 
         if result["success"] != True:
             return jsonify(result)
-        else:
-            return jsonify(config.session[token]["classes"]["user"].updateUser(id=data.get("id",0), userName=data.get("userName",""), password=data.get("password",""), role=data.get("role","")))
+
+        return jsonify(config.session[token]["classes"]["user"].updateUser(id=data.get("id",0), userName=data.get("userName",""), password=data.get("password",""), role=data.get("role","")))
 
     except Exception as e:
 
@@ -640,8 +626,8 @@ def reset():
 
         if result["success"] != True:
             return jsonify(result)
-        else:
-            return jsonify(config.session[token]["classes"]["reset"].reset(books=data.get("books",""), categories=data.get("categories",""), loans=data.get("loans",""), users=data.get("users",""), processes=data.get("processes","")))
+
+        return jsonify(config.session[token]["classes"]["reset"].reset(books=data.get("books",""), categories=data.get("categories",""), loans=data.get("loans",""), users=data.get("users",""), processes=data.get("processes","")))
 
     except Exception as e:
 
@@ -665,8 +651,8 @@ def signOut():
 
         if result["success"] != True:
             return jsonify(result)
-        else:
-            return jsonify(auth.signOut(token=token))
+
+        return jsonify(auth.signOut(token=token))
 
     except Exception as e:
 
