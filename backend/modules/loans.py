@@ -93,7 +93,7 @@ class Loan:
 
             filterList = ["id","bookID","studentID","borrowDate","returnDate","returnedAt","loanStatus","whoAdded"]
 
-            if limit == 0:
+            if limit == 0 or limit < 0 or pageNumber == 0 or pageNumber < 0:
                 return {"success":False,"message":"Lutfen boş bırakmayın!"}
             
 
@@ -106,8 +106,8 @@ class Loan:
             totalLoans = self.cursor.fetchone()[0]
             if totalLoans is not None:
                 pageCount = totalLoans // limit
-            if totalLoans % limit != 0:
-                pageCount += 1
+                if totalLoans % limit != 0:
+                    pageCount += 1
             offset = ((pageNumber - 1) * limit)
 
             def add(rV):

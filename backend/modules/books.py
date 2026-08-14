@@ -80,7 +80,7 @@ class Book:
 
             filterList = ["id","bookName","writer","category","publisher","pageCount","isTaken","whoAdded"]
 
-            if limit == 0:
+            if limit == 0 or limit < 0 or pageNumber == 0 or pageNumber < 0:
                 return {"success":False,"message":"Lutfen boş bırakmayın!"}
             
             if limit > 50:
@@ -93,8 +93,8 @@ class Book:
             totalBooks = self.cursor.fetchone()[0]
             if totalBooks is not None:
                 pageCount = totalBooks // limit
-            if totalBooks % limit != 0:
-                pageCount += 1
+                if totalBooks % limit != 0:
+                    pageCount += 1
 
             def add(rV):
                 IDs.append(rV[0])

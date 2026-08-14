@@ -11,6 +11,9 @@ class Leader:
     def listLeaders(self, pageNumber:int, limit:int):
 
         try:
+
+            if limit == 0 or limit < 0 or pageNumber == 0 or pageNumber < 0:
+                return {"success":False,"message":"Lütfen boş bırakmayın!"}
             
             self.cursor.execute("SELECT COUNT(DISTINCT studentID) FROM loans WHERE loanStatus = 'returned';")
             totalLeaders = self.cursor.fetchone()[0]

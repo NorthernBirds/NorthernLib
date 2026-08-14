@@ -64,7 +64,7 @@ class Category:
 
             filterList = ["id","categoryName","whoAdded"]
 
-            if limit == 0:
+            if limit == 0 or limit < 0 or pageNumber == 0 or pageNumber < 0:
                 return {"success":False,"message":"Lutfen boş bırakmayın!"}
             
             if limit > 50:
@@ -75,8 +75,8 @@ class Category:
             totalCategories = self.cursor.fetchone()[0]
             if totalCategories is not None:
                 pageCount = totalCategories // limit
-            if totalCategories % limit != 0:
-                pageCount += 1
+                if totalCategories % limit != 0:
+                    pageCount += 1
             offset = ((pageNumber - 1) * limit)
 
             def add(rV):
