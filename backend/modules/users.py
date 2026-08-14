@@ -197,7 +197,7 @@ class User:
     def updateUser(self,id:int,userName:str,password:str,role:str):
 
         try:
-            if password == "" or userName == "" or role == "" or id == 0:
+            if password.replace(" ", "") == "" or userName.replace(" ", "") == "" or role.replace(" ", "") == "" or id == 0 or id < 0:
                 return {"success": False, "message": "Lütfen boş bırakmayınız!"}
             
             self.cursor.execute("SELECT * FROM users WHERE id = %s",(id,))
