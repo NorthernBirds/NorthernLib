@@ -49,6 +49,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.9"
+  data_table_2:
+    dependency: "direct main"
+    description:
+      name: data_table_2
+      sha256: cec4010dd756bd7d0cc3eb8a30932b8109608132c6c8d643e80ea412d3e51a9c
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.5.10"
   dio:
     dependency: "direct main"
     description:
@@ -99,14 +107,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.1.2"
-  isolate_flutter:
-    dependency: "direct main"
-    description:
-      name: isolate_flutter
-      sha256: "6c7a020a7a44205e1755c4096fd09b05fd36a24caa2c22ed81888b8b6958f12e"
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.0.0"
   leak_tracker:
     dependency: transitive
     description:

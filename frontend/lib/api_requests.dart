@@ -17,7 +17,9 @@ final Dio dio = Dio(options)
     InterceptorsWrapper(
       onResponse: (response, handler) {
         if (response.data != null &&
-            response.data["message"]?.toString().contains("401 Unauthorized") ==
+            response.data["message"]?.toString().contains(
+                  "Oturumunuz zaman aşımına uğradı. Lütfen tekrar giriş yapın.",
+                ) ==
                 true) {
           session.clear();
 
@@ -25,9 +27,6 @@ final Dio dio = Dio(options)
             MaterialPageRoute(builder: (context) => const LoginDashboard()),
             (route) => false,
           );
-        }
-        if (response.data?["success"] == true) {
-          session["duration"] = 0;
         }
         return handler.next(response);
       },

@@ -1,10 +1,10 @@
 import config
-from utils.writeLog import writeLog,writeCriticalWarning
-from utils.setupSQL import setup
+from utils.writeLog import writeLog
 import bcrypt
 import secrets
 import random
 import time
+from utils.setupSQL import setup
 
 def durationHeartbeat():
 
