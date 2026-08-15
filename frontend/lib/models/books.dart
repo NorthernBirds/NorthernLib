@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:frontend/api_requests.dart';
 import 'package:frontend/config.dart';
+import 'package:number_pagination/number_pagination.dart';
 
 class AddBookWidget extends StatefulWidget {
   final VoidCallback onCancel;
@@ -82,7 +83,7 @@ class _AddBookWidgetState extends State<AddBookWidget> {
                 child: TextField(
                   onChanged: (value) => publisher = value,
                   decoration: InputDecoration(
-                    hintText: "Yayımcı Adı",
+                    hintText: "Yayınevi Adı",
                     hintStyle: const TextStyle(color: color2),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(20.0),
@@ -300,75 +301,78 @@ class ListBooksWidget extends StatefulWidget {
 }
 
 class _ListBooksWidgetState extends State<ListBooksWidget> {
+  int currentPageNumber = 1;
+  int totalPages = 1;
+  int totalBooks = 0;
+  String limit = "20";
   bool isWithFilter = false;
   String BfilterType = "id";
   String filterValue = "";
-  String limit = "20";
-  int currentPageNumber = 1;
-  int itemsPerPage = 10;
+
+  bool isData = false;
+  List<Book> bookList = [];
 
   Map<String, String> filterTypeMap = {
     "Kitap ID": "id",
     "Kitap Adı": "bookName",
     "Yazar Adı": "writer",
-    "Yayımcı Adı": "publisher",
+    "Yayınevi Adı": "publisher",
     "Kategori Adı": "category",
     "Sayfa Sayısı": "pageCount",
     "Alındı mı?": "isTaken",
     "Kim ekledi?": "whoAdded",
   };
-
-  List<int> IDs = [];
-  List<String> bookNames = [];
-  List<String> writers = [];
-  List<String> publishers = [];
-  List<String> categories = [];
-  List<int> pageCounts = [];
-  List<String> isTakens = [];
-  List<String> whoAddeds = [];
-
-  Future<void> _fetchData() async {
-    int parsedLimit = int.tryParse(limit) ?? 20;
+  Future<void> _fetchData({required bool isFirst}) async {
     var response = await listBooks(
       isWithFilter: isWithFilter,
       filterType: BfilterType,
       filterValue: filterValue,
-      limit: parsedLimit,
+      limit: int.tryParse(limit) ?? 20,
       pageNumber: currentPageNumber,
     );
 
-    if (response?["success"] == false) {
-      if (context.mounted) {
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: const Text("Hata"),
-              content: Text(
-                response?["message"] ?? "Bilinmeyen bir hata oluştu.",
-              ),
-              actions: <Widget>[
-                ElevatedButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: const Text("Tamam"),
-                ),
-              ],
-            );
-          },
-        );
-      }
-    } else {
+    if (response?["success"] == true) {
       var data = response?["data"];
       setState(() {
-        IDs = List<int>.from(data?["ids"] ?? []);
-        bookNames = List<String>.from(data?["names"] ?? []);
-        writers = List<String>.from(data?["writers"] ?? []);
-        publishers = List<String>.from(data?["publishers"] ?? []);
-        categories = List<String>.from(data?["categories"] ?? []);
-        pageCounts = List<int>.from(data?["pageCounts"] ?? []);
-        isTakens = List<String>.from(data?["isTakens"] ?? []);
-        whoAddeds = List<String>.from(data?["whoAddeds"] ?? []);
-        itemsPerPage = IDs.length;
+        isData = true;
+        bookList = Book.fromLists(
+          IDs: List<int>.from(data["ids"] ?? []),
+          names: List<String>.from(data["names"] ?? []),
+          writers: List<String>.from(data["writers"] ?? []),
+          publishers: List<String>.from(data["publishers"] ?? []),
+          categories: List<String>.from(data["categories"] ?? []),
+          pageCounts: List<int>.from(data["pageCounts"] ?? []),
+          isTakens: List<String>.from(data["isTakens"] ?? []),
+          whoAddeds: List<String>.from(data["whoAddeds"] ?? []),
+        );
+
+        if (isFirst == true) {
+          totalPages = data["pageCount"] ?? 1;
+          totalBooks = data["totalBooks"] ?? 0;
+        }
+      });
+    } else {
+      setState(() {
+        isData = false;
+        if (context.mounted) {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: const Text("Hata"),
+                content: Text(
+                  response?["message"] ?? "Bilinmeyen bir hata oluştu.",
+                ),
+                actions: <Widget>[
+                  ElevatedButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: const Text("Tamam"),
+                  ),
+                ],
+              );
+            },
+          );
+        }
       });
     }
   }
@@ -376,221 +380,262 @@ class _ListBooksWidgetState extends State<ListBooksWidget> {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Container(
-        width: 1200,
-        height: 1200,
-        color: color,
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: 20.0),
-                child: Text(
-                  "Kitap Listeleme",
-                  style: TextStyle(
-                    fontFamily: "Inter",
-                    color: Colors.black,
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          Container(
+            width: 400,
+            height: 600,
+            decoration: BoxDecoration(
+              color: color,
+              borderRadius: BorderRadius.circular(30.0),
+              border: Border.all(color: Colors.black, width: 2.0),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 20.0),
+                  child: Text(
+                    "Kitap Listeleme",
+                    style: TextStyle(
+                      fontFamily: "Inter",
+                      color: Colors.black,
+                      fontSize: 36,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
-              ),
-              SwitchListTile(
-                controlAffinity: ListTileControlAffinity.leading,
-                contentPadding: const EdgeInsets.symmetric(horizontal: 430.0),
-                title: const Text(
-                  "Filtreli arama",
-                  style: TextStyle(
-                    fontFamily: "Inter",
-                    color: Colors.black,
-                    fontSize: 16,
-                    fontWeight: FontWeight.normal,
+                SwitchListTile(
+                  controlAffinity: ListTileControlAffinity.leading,
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 45.0),
+                  title: const Text(
+                    "Filtreli arama",
+                    style: TextStyle(
+                      fontFamily: "Inter",
+                      color: Colors.black,
+                      fontSize: 16,
+                      fontWeight: FontWeight.normal,
+                    ),
                   ),
+                  value: isWithFilter,
+                  activeThumbColor: Colors.teal,
+                  activeTrackColor: Colors.tealAccent,
+                  inactiveThumbColor: Colors.grey,
+                  inactiveTrackColor: Colors.grey.shade400,
+                  onChanged: (bool value) {
+                    setState(() {
+                      isWithFilter = value;
+                    });
+                  },
                 ),
-                value: isWithFilter,
-                activeThumbColor: Colors.teal,
-                activeTrackColor: Colors.tealAccent,
-                inactiveThumbColor: Colors.grey,
-                inactiveTrackColor: Colors.grey.shade400,
-                onChanged: (bool value) {
-                  setState(() {
-                    isWithFilter = value;
-                  });
-                },
-              ),
-              DropdownButton<String>(
-                value: BfilterType,
-                items: filterTypeMap.entries
-                    .map(
-                      (e) => DropdownMenuItem(
-                        value: e.value,
-                        child: Text(
-                          e.key,
-                          style: const TextStyle(color: Colors.black),
+                DropdownButton<String>(
+                  value: BfilterType,
+                  items: filterTypeMap.entries
+                      .map(
+                        (e) => DropdownMenuItem(
+                          value: e.value,
+                          child: Text(
+                            e.key,
+                            style: const TextStyle(color: Colors.black),
+                          ),
+                        ),
+                      )
+                      .toList(),
+                  onChanged: (String? value) {
+                    setState(() {
+                      BfilterType = value!;
+                    });
+                  },
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: SizedBox(
+                    width: 300.0,
+                    child: TextField(
+                      onChanged: (value) => filterValue = value,
+                      decoration: InputDecoration(
+                        hintText: "Filtre Değişkeni",
+                        hintStyle: const TextStyle(color: color2),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(20.0),
                         ),
                       ),
-                    )
-                    .toList(),
-                onChanged: (String? value) {
-                  setState(() {
-                    BfilterType = value!;
-                  });
-                },
-              ),
-              Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: SizedBox(
-                  width: 300.0,
-                  child: TextField(
-                    onChanged: (value) => filterValue = value,
-                    decoration: InputDecoration(
-                      hintText: "Filtre Değişkeni",
-                      hintStyle: const TextStyle(color: color2),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20.0),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: SizedBox(
+                    width: 300.0,
+                    child: TextField(
+                      onChanged: (value) => limit = value,
+                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(
+                        hintText: "Sayfaya Düşen Satır Sayısı",
+                        hintStyle: const TextStyle(color: color2),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(20.0),
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: SizedBox(
-                  width: 300.0,
-                  child: TextField(
-                    onChanged: (value) => limit = value,
-                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      hintText: "Sayfaya Düşen Satır Sayısı",
-                      hintStyle: const TextStyle(color: color2),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20.0),
-                      ),
-                    ),
+                ElevatedButton(
+                  onPressed: () {
+                    _fetchData(isFirst: true);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    side: const BorderSide(color: Color(0xFF3A8772)),
+                    padding: const EdgeInsets.all(20.0),
+                    backgroundColor: color,
+                  ),
+                  child: const Text(
+                    "Listele",
+                    style: TextStyle(color: Colors.black),
                   ),
                 ),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    currentPageNumber = 1;
-                  });
-                  _fetchData();
-                },
-                style: ElevatedButton.styleFrom(
-                  side: const BorderSide(color: Color(0xFF3A8772)),
-                  padding: const EdgeInsets.all(20.0),
-                  backgroundColor: color,
+                const SizedBox(height: 10),
+                ElevatedButton(
+                  onPressed: widget.onCancel,
+                  style: ElevatedButton.styleFrom(
+                    side: const BorderSide(color: Color(0xFF3A8772)),
+                    backgroundColor: color,
+                  ),
+                  child: const Text(
+                    "İptal",
+                    style: TextStyle(fontSize: 14, color: Colors.black),
+                  ),
                 ),
-                child: const Text(
-                  "Listele",
-                  style: TextStyle(color: Colors.black),
-                ),
-              ),
-              const SizedBox(height: 10),
-              ElevatedButton(
-                onPressed: widget.onCancel,
-                style: ElevatedButton.styleFrom(
-                  side: const BorderSide(color: Color(0xFF3A8772)),
-                  backgroundColor: color,
-                ),
-                child: const Text(
-                  "İptal",
-                  style: TextStyle(fontSize: 14, color: Colors.black),
-                ),
-              ),
-              const SizedBox(height: 20),
-              IDs.isEmpty
-                  ? const Text("Gösterilecek veri yok. Önce listeleyin.")
-                  : PaginatedDataTable(
-                      header: const Text("Kitap Listesi"),
-                      rowsPerPage: itemsPerPage,
-                      onPageChanged: (int firstRowIndex) {
-                        int parsedLimit = int.tryParse(limit) ?? 20;
-                        setState(() {
-                          currentPageNumber =
-                              (firstRowIndex / parsedLimit).floor() + 1;
-                        });
-                        _fetchData();
-                      },
-                      columns: const [
-                        DataColumn(label: Text("ID")),
-                        DataColumn(label: Text("Kitap Adı")),
-                        DataColumn(label: Text("Yazar")),
-                        DataColumn(label: Text("Yayımcı")),
-                        DataColumn(label: Text("Kategori")),
-                        DataColumn(label: Text("Sayfa")),
-                        DataColumn(label: Text("Durum")),
-                        DataColumn(label: Text("Ekleyen")),
-                      ],
-                      source: BookDataSource(
-                        ids: IDs,
-                        names: bookNames,
-                        writers: writers,
-                        publishers: publishers,
-                        categories: categories,
-                        pageCounts: pageCounts,
-                        isTakens: isTakens,
-                        whoAddeds: whoAddeds,
-                      ),
-                    ),
-            ],
+              ],
+            ),
           ),
-        ),
+          Container(
+            width: 900,
+            height: 700,
+            decoration: BoxDecoration(
+              color: color,
+              borderRadius: BorderRadius.circular(30.0),
+              border: Border.all(color: Colors.black, width: 2.0),
+            ),
+            child: isData
+                ? Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      SingleChildScrollView(
+                        child: DataTable(
+                          columns: const [
+                            DataColumn(label: Text("Kitap ID")),
+                            DataColumn(label: Text("Kitap Adı")),
+                            DataColumn(label: Text("Yazar")),
+                            DataColumn(label: Text("Yayınevi")),
+                            DataColumn(label: Text("Kategori")),
+                            DataColumn(label: Text("Sayfa Sayısı")),
+                            DataColumn(label: Text("Durum")),
+                            DataColumn(label: Text("Ekleyen")),
+                          ],
+                          rows: List.generate(bookList.length, (i) {
+                            Book currentBook = bookList[i];
+                            return DataRow(
+                              cells: [
+                                DataCell(Text(currentBook.ID.toString())),
+                                DataCell(Text(currentBook.name)),
+                                DataCell(Text(currentBook.writer)),
+                                DataCell(Text(currentBook.publisher)),
+                                DataCell(Text(currentBook.category)),
+                                DataCell(
+                                  Text(currentBook.pageCount.toString()),
+                                ),
+                                DataCell(Text(currentBook.isTaken)),
+                                DataCell(Text(currentBook.whoAdded)),
+                              ],
+                            );
+                          }),
+                        ),
+                      ),
+                      NumberPagination(
+                        totalPages: totalPages,
+                        onPageChanged: (int index) {
+                          setState(() {
+                            currentPageNumber = index;
+                          });
+                          _fetchData(isFirst: false);
+                        },
+                        currentPage: currentPageNumber,
+                      ),
+                    ],
+                  )
+                : Center(
+                    child: Text(
+                      "Gösterilecek veri yok.\nÖnce listeleyin.",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 24.0,
+                        fontFamily: "Inter",
+                        color: Colors.black,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+          ),
+        ],
       ),
     );
   }
 }
 
-class BookDataSource extends DataTableSource {
-  final List<int> ids;
-  final List<String> names;
-  final List<String> writers;
-  final List<String> publishers;
-  final List<String> categories;
-  final List<int> pageCounts;
-  final List<String> isTakens;
-  final List<String> whoAddeds;
+class Book {
+  final int ID;
+  final String name;
+  final String writer;
+  final String publisher;
+  final String category;
+  final int pageCount;
+  final String isTaken;
+  final String whoAdded;
 
-  BookDataSource({
-    required this.ids,
-    required this.names,
-    required this.writers,
-    required this.publishers,
-    required this.categories,
-    required this.pageCounts,
-    required this.isTakens,
-    required this.whoAddeds,
+  Book({
+    required this.ID,
+    required this.name,
+    required this.writer,
+    required this.publisher,
+    required this.category,
+    required this.pageCount,
+    required this.isTaken,
+    required this.whoAdded,
   });
 
-  @override
-  DataRow? getRow(int index) {
-    if (index >= ids.length) return null;
-    return DataRow(
-      cells: [
-        DataCell(Text(ids[index].toString())),
-        DataCell(Text(names[index])),
-        DataCell(Text(writers[index])),
-        DataCell(Text(publishers[index])),
-        DataCell(Text(categories[index])),
-        DataCell(Text(pageCounts[index].toString())),
-        DataCell(Text(isTakens[index])),
-        DataCell(Text(whoAddeds[index])),
-      ],
-    );
+  static List<Book> fromLists({
+    required List<int> IDs,
+    required List<String> names,
+    required List<String> writers,
+    required List<String> publishers,
+    required List<String> categories,
+    required List<int> pageCounts,
+    required List<String> isTakens,
+    required List<String> whoAddeds,
+  }) {
+    List<Book> books = [];
+    for (int i = 0; i < IDs.length; i++) {
+      books.add(
+        Book(
+          ID: IDs[i],
+          name: i < names.length ? names[i] : "-",
+          writer: i < writers.length ? writers[i] : "-",
+          publisher: i < publishers.length ? publishers[i] : "-",
+          category: i < categories.length ? categories[i] : "-",
+          pageCount: i < pageCounts.length ? pageCounts[i] : 0,
+          isTaken: i < isTakens.length ? isTakens[i] : "-",
+          whoAdded: i < whoAddeds.length ? whoAddeds[i] : "-",
+        ),
+      );
+    }
+    return books;
   }
-
-  @override
-  bool get isRowCountApproximate => false;
-
-  @override
-  int get rowCount => ids.length;
-
-  @override
-  int get selectedRowCount => 0;
 }
 
 class UpdateBookWidget extends StatefulWidget {
@@ -745,7 +790,7 @@ class _UpdateBookWidgetState extends State<UpdateBookWidget> {
                 child: TextField(
                   controller: publisherController,
                   decoration: InputDecoration(
-                    hintText: "Yayımcı Adı",
+                    hintText: "Yayınevi Adı",
                     hintStyle: const TextStyle(color: color2),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(20.0),
