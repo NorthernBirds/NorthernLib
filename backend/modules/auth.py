@@ -150,7 +150,7 @@ class Auth:
 
             if token in config.session.keys():
                 
-                config[token]["dbValues"]["conn"].close()
+                config.session[token]["dbValues"]["conn"].close()
                 del config.session[token]
                 return {"success":True,"message":"Çıkış yapıldı."}
     
