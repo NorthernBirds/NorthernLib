@@ -14,5 +14,8 @@ frontend/build/
 frontend/*.iml
 frontend/lib/config.dart
 
+management-cli/server-side/.env
+management-cli/remote-desktop/.env
+
 .DS_Store
 Thumbs.db

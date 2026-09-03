@@ -1,7 +1,7 @@
 GNU AFFERO GENERAL PUBLIC LICENSE
 Version 3, 19 November 2007
 
-Copyright (C) 2026 Bird Softwares Inc. <https://github.com/bird-softwares>
+Copyright © 2026 Yusuf Enes Kuş <https://github.com/NorthernBirds>
 Everyone is permitted to copy and distribute verbatim copies of this license document, but changing it is not allowed.
 
 Preamble
@@ -25,6 +25,6 @@ TERMS AND CONDITIONS (Summary of Section 13 & Attribution)
 If you modify this software or use it as part of a network service (SaaS, Web Application, API, Backend Service), you MUST prominently offer all users interacting with it through a network the opportunity to receive the Corresponding Source of your version at no charge. The source code must be disclosed under the terms of this AGPLv3 license.
 
 2. ORIGINAL DEVELOPER ATTRIBUTION (Section 7 - Additional Terms):
-In accordance with Section 7 of the GNU AGPLv3, you must preserve the original developer name, branding, copyright notices, and specific attributions of "Bird Softwares" and "Bird Softwares Inc.". These notices MUST remain visible, unaltered, and clearly displayed in the source code, user interfaces (such as application splash screens), and deployment configurations. Removal or obfuscation of this attribution is a direct violation of this license.
+In accordance with Section 7 of the GNU AGPLv3, you must preserve the original developer name, branding, copyright notices, and specific attributions of "Yusuf Enes Kuş" and "NorthernBirds". These notices MUST remain visible, unaltered, and clearly displayed in the source code, user interfaces (such as application splash screens), and deployment configurations. Removal or obfuscation of this attribution is a direct violation of this license.
 
 [For the full, unmodified text of the GNU Affero General Public License, see <https://www.gnu.org/licenses/agpl-3.0.txt>]
