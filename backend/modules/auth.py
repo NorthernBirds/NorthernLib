@@ -41,7 +41,7 @@ class Auth:
         self.conn = conn
         self.cursor = cursor
     
-    def signUp(self,dbName:str,developerPassword:str):
+    def signUp(self,dbName:str,license:str):
 
         try:
 
@@ -55,17 +55,33 @@ class Auth:
             ]
 
 
-            if dbName.replace(" ","") == "":
+            if not dbName.strip() or not license.strip():
                 return {"success":False,"message":"Lütfen boş bırakmayın!"}
-            
-            self.cursor.execute("SELECT * FROM libraries WHERE libName = %s",(dbName,))
+
+            for i in ["'",'"',"*","/","\\","?","<",">","|",":"]:
+                if i in dbName.strip():
+                    return {"success":False,"message":"Kütüphane adı geçersiz karakter içeriyor!"}
+                
+            self.cursor.execute("SELECT * FROM libraries WHERE libName = %s",(dbName.strip(),))
             result = self.cursor.fetchone()
 
-            if result is not None or dbName == "library":
+            if result is not None or dbName == config.db_name:
                 return {"success":False,"message":"Bu kütüphane adı zaten var!"}
             
-            if developerPassword != config.developer_password:
-                return {"success":False,"message":"Hatalı yönetici şifresi!"}
+            self.cursor.execute("SELECT id,isActive FROM licenseKeys WHERE licenseKey = %s",(license.strip(),))
+            result = self.cursor.fetchone()
+
+            if result is None:
+                return {"success":False,"message":"Lisans anahtarı bulunamadı!"}
+
+            if bool(result[1]) == False:
+                return {"success":False,"message":"Lisans aktif değil veya süresi dolmuş!"}
+
+            self.cursor.execute("SELECT libName FROM libraries WHERE licenseID = %s",(result[0],))
+            result2 = self.cursor.fetchone()
+
+            if result2:
+                return {"success":False,"message":"Bu lisans anahtarı başka bir kütüphane tarafından kullanılıyor!"}
 
             dbPassword = ""
             adminPassword = ""
@@ -74,7 +90,7 @@ class Auth:
                 dbPassword = dbPassword + str(random.randint(0,9)) + str(random.choice(letters))
                 adminPassword = adminPassword + str(random.randint(0,9)) + str(random.choice(letters))
                             
-            setup(name=dbName,password=dbPassword,conn=self.conn,cursor=self.cursor,adminPassword=adminPassword)
+            setup(name=dbName.strip(),password=dbPassword,conn=self.conn,cursor=self.cursor,adminPassword=adminPassword,licenseID=result[0])
             return {"success":True,"message":"Kayıt olundu.","data":{"dbPassword":dbPassword,"adminPassword":adminPassword}}
         
         
@@ -88,21 +104,30 @@ class Auth:
         
         try:
 
-            if dbName.replace(" ","") == "" or dbPassword.replace(" ","") == "":
+            if not dbName.strip() or not dbPassword.strip():
                 return {"success":False,"message":"Lütfen boş bırakmayın!"}
             
-            self.cursor.execute("SELECT * FROM libraries WHERE libName = %s",(dbName,))
-            result = self.cursor.fetchone()
+            self.cursor.execute("SELECT * FROM libraries WHERE libName = %s",(dbName.strip(),))
+            result1 = self.cursor.fetchone()
 
-            if result is None or dbName == "library":
+            if result1 is None or dbName == config.db_name:
                 return {"success":False,"message":"Bu kütüphane adı bulunamadı!"}
 
-            passwordCorrect = bcrypt.checkpw(dbPassword.encode(),result[2].encode())
+            self.cursor.execute("SELECT isActive FROM licenseKeys WHERE id = %s",(result1[3],))
+            result = self.cursor.fetchone()
+
+            if result is None:
+                return {"success":False,"message":"Lisans anahtarı bulunamadı!"}
+
+            if bool(result[0]) == False:
+                return {"success":False,"message":"Lisans aktif değil veya süresi dolmuş!"}
+
+            passwordCorrect = bcrypt.checkpw(dbPassword.strip().encode(),result1[2].encode())
 
             if passwordCorrect != True:
                 return {"success":False,"message":"Hatalı şifre!"}
             
-            return {"success":True,"message":"Giriş yapıldı.","data":{"dbName":dbName,"dbPassword":dbPassword}}
+            return {"success":True,"message":"Giriş yapıldı.","data":{"dbName":dbName.strip(),"dbPassword":dbPassword.strip()}}
         
         except Exception as e:
 
@@ -114,16 +139,22 @@ class Auth:
 
         try:
 
-            if userName.replace(" ","") == "" or password.replace(" ","") == "":
+            rolesDict = {
+                "Öğretmen":"teacher",
+                "Öğrenci":"student_staff",
+                "admin":"admin"
+            }
+
+            if not userName.strip() or not password.strip():
                 return {"success":False,"message":"Lütfen boş bırakmayın!"}
             
-            self.cursor.execute("SELECT id,userName,userPassword,userRole FROM users WHERE userName = %s",(userName,))
+            self.cursor.execute("SELECT * FROM users WHERE userName = %s",(userName.strip(),))
             result = self.cursor.fetchone()
 
             if result is None:
                 return {"success":False,"message":"Hatalı kullanıcı adı!"}
 
-            passwordCorrect = bcrypt.checkpw(password.encode(),result[2].encode())
+            passwordCorrect = bcrypt.checkpw(password.strip().encode(),result[2].encode())
 
             if passwordCorrect != True:
                 return {"success":False,"message":"Hatalı şifre!"}
@@ -135,7 +166,7 @@ class Auth:
                 "message":"Giriş yapıldı.",
                 "token":token,
                 "userName":result[1],
-                "role":result[3]
+                "role":rolesDict[result[3]]
             }
 
         except Exception as e:
@@ -210,7 +241,7 @@ class Auth:
             self.conn.commit()
             self.cursor.execute("SELECT * FROM importantvalues WHERE id = 1")
             result = self.cursor.fetchone()
-            if bool(result[2]) == True:
+            if bool(result[2]):
                 return {"success":False,"message":"Bu ktütüphane kilitli. Lütfen yönetici ile iletişime geçin."}
             
             return {"success":True}

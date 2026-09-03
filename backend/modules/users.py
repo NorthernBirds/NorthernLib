@@ -2,7 +2,6 @@ import bcrypt
 from utils.writeLog import writeLog
 import config
 
-
 class User:
 
     def __init__(self,conn,cursor):
@@ -11,10 +10,10 @@ class User:
         self.cursor = cursor
     
 
-    def addUser(self,userName:str,password:str,role:str):
+    def addUser(self,userName:str,password:str,role:str,activeUserName:str):
 
         try:
-            if password.replace(" ","") == "" or userName.replace(" ","") == "" or role.replace(" ","") == "":
+            if not password.strip() or not userName.strip() or not role.strip():
                 return {"success": False, "message": "Lütfen boş bırakmayınız!"}
             
             if len(userName) > 20:
@@ -28,21 +27,22 @@ class User:
             if len(password) < 8 or len(password) > 15:
                 return {"success": False, "message": "Şifre 8 - 15 karakter arasında olmalıdır!"}
             
-            if role == "admin":
+            if role.strip() == "admin":
                 return {"success": False, "message": "Oluşturulan kullanıcı yönetici yetkisine sahip olamaz!"}
             
-            if role not in ["student_staff", "teacher"]:
+            if role.strip() not in ["student_staff", "teacher"]:
                 return {"success": False, "message": "Böyle bir yetki seviyesi bulunmamaktadır!"}
                         
-            password = password.encode()
+            password = password.strip().encode()
             hashed = bcrypt.hashpw(password, bcrypt.gensalt())
-            self.cursor.execute("INSERT INTO users (userName,userPassword,userRole) VALUES (%s,%s,%s)",(userName,hashed.decode(),role))
+            self.cursor.execute("INSERT INTO users (userName,userPassword,userRole,whoAdded) VALUES (%s,%s,%s,%s)",(userName.strip(),hashed.decode(),"Öğretmen" if role.strip() == "teacher" else "Öğrenci",activeUserName))
             self.conn.commit()
                                     
             return {"success": True, "message": "Kullanıcı oluşturuldu"}
             
         except Exception as e:
 
+            self.conn.rollback()
             writeLog(config.USERS_LOG_PATH,type(e).__name__,str(e))
             return {"success": False, "message": "Bir hata oluştu!"}
     
@@ -50,7 +50,7 @@ class User:
     def deleteUser(self,id:int):
 
         try:
-            if id == 0 or id < 0:
+            if id <= 0:
                 return {"success": False, "message": "Lütfen boş bırakmayın!"}
             
             self.cursor.execute("SELECT * FROM users WHERE id = %s",(id,))
@@ -68,6 +68,7 @@ class User:
             
         except Exception as e:
 
+            self.conn.rollback()
             writeLog(config.USERS_LOG_PATH,type(e).__name__,str(e))
             return {"success": False, "message": "Bir hata oluştu!"}
     
@@ -75,30 +76,34 @@ class User:
     def changeRole(self,id:int,newRole:str):
 
         try:
-            if id == 0 or newRole.replace(" ","") == "" or id < 0:
+            if id <= 0 or not newRole.strip():
                 return {"success": False, "message": "Lütfen boş bırakmayın!"}
             
             self.cursor.execute("SELECT * FROM users WHERE id = %s",(id,))
             result = self.cursor.fetchone()
             if result is None:
                 return {"success": False, "message": "Kullanıcı bulunamadı!"}
+
+            if result[3] == "admin" and newRole != "admin":
+                return {"success":False,"message":"Yönetici yetkisine sahip kullanıcının rolü değiştirilemez!"}
             
-            if newRole == "admin":
+            if newRole.strip() == "admin":
                 return {"success": False, "message": "Oluşturulan kullanıcı yönetici yetkisine sahip olamaz!"}
         
-            if newRole not in ["student_staff", "teacher"]:
+            if newRole.strip() not in ["student_staff", "teacher"]:
                 return {"success": False, "message": "Böyle bir yetki seviyesi bulunmamaktadır!"}
          
             if result[3] == newRole:
                 return {"success": False, "message": "Bu kullanıcı zaten bu role sahip!"}
             
-            self.cursor.execute("UPDATE users SET userRole = %s WHERE id = %s",(newRole,id))
+            self.cursor.execute("UPDATE users SET userRole = %s WHERE id = %s",(newRole.strip(),id))
             self.conn.commit()
                                 
             return {"success": True, "message": "Rol güncellendi."}
                             
         except Exception as e:
 
+            self.conn.rollback()
             writeLog(config.USERS_LOG_PATH,type(e).__name__,str(e))
             return {"success": False, "message": "Bir hata oluştu!"}
     
@@ -107,31 +112,32 @@ class User:
 
         try:
 
-            filterList = ["id","userName","userRole"]
+            filterList = ["id","userName","userRole","whoAdded"]
 
-            if limit == 0 or limit < 0 or pageNumber == 0 or pageNumber < 0:
+            if limit <= 0 or pageNumber <= 0:
                 return {"success":False,"message":"Lutfen boş bırakmayın!"}
             
-            if limit > 50:
-                return {"success":False,"message":"Limit en fazla 50 olabilir!"}
+            if limit > 10:
+                return {"success":False,"message":"Sayfaya düşen satır sayısı en fazla 10 olabilir!"}
             
-            IDs,userNames,roles = [],[],[]
-            self.cursor.execute("SELECT COUNT(*) FROM users")
+            users = []
+            self.cursor.execute("SELECT COUNT(*) FROM users WHERE userRole != 'admin'")
             totalUsers = self.cursor.fetchone()[0]
+
             if totalUsers is not None:
                 pageCount = totalUsers // limit
                 if totalUsers % limit != 0:
                     pageCount += 1
+                    
             offset = ((pageNumber - 1) * limit)
 
             def add(rV):
-                IDs.append(rV[0])
-                userNames.append(rV[1])
-                roles.append(rV[3])
+                users.append({"ID":rV[0],"userName":rV[1],"role":rV[3],"whoAdded":rV[4]})
+
                     
             if isWithFilter:
 
-                if filterValue == "" or filterType == "":
+                if not filterValue.strip() or not filterType.strip():
                     return {"success":False,"message":"Lütfen boş bırakmayın!"}
                        
                 if filterType != "id":
@@ -143,38 +149,41 @@ class User:
                             
                 if filterType != "id":
                     newFilterValue = f"%{filterValue}%"
-                    self.cursor.execute(f"SELECT COUNT(*) FROM users WHERE {filterType} LIKE %s", (newFilterValue,))
+                    self.cursor.execute(f"SELECT COUNT(*) FROM users WHERE {filterType} LIKE %s AND userRole != 'admin'", (newFilterValue,))
                     totalUsers = self.cursor.fetchone()[0]
-                    pageCount = totalUsers // limit
-                    if totalUsers % limit != 0:
-                        pageCount += 1
 
-                self.cursor.execute(f"SELECT * FROM users WHERE {filterType} LIKE %s LIMIT %s OFFSET %s", (newFilterValue,limit, offset))
-                result = self.cursor.fetchall()
+                    if totalUsers is not None:
+                        pageCount = totalUsers // limit
+                        if totalUsers % limit != 0:
+                            pageCount += 1
+
+                    self.cursor.execute(f"SELECT * FROM users WHERE {filterType} LIKE %s AND userRole != 'admin' LIMIT %s OFFSET %s", (newFilterValue,limit, offset))
+                    result = self.cursor.fetchall()
+
+                else:
                    
-                self.cursor.execute(f"SELECT COUNT(*) FROM users WHERE {filterType} = %s", (int(filterValue),))
-                totalUsers = self.cursor.fetchone()[0]
-                pageCount = totalUsers // limit
-                if totalUsers % limit != 0:
-                    pageCount += 1
+                    self.cursor.execute(f"SELECT COUNT(*) FROM users WHERE {filterType} = %s AND userRole != 'admin'", (int(filterValue),))
+                    totalUsers = self.cursor.fetchone()[0]
 
-                self.cursor.execute(f"SELECT * FROM users WHERE {filterType} = %s LIMIT %s OFFSET %s", (int(filterValue),limit, offset))
+                    if totalUsers is not None:
+                        pageCount = totalUsers // limit
+                        if totalUsers % limit != 0:
+                            pageCount += 1
+
+                    self.cursor.execute(f"SELECT * FROM users WHERE {filterType} = %s AND userRole != 'admin' LIMIT %s OFFSET %s", (int(filterValue),limit, offset))
+                    result = self.cursor.fetchall()
+                    
+            else:
+
+                self.cursor.execute("SELECT * FROM users WHERE userRole != 'admin' LIMIT %s OFFSET %s", (limit, offset))
                 result = self.cursor.fetchall()
-       
-                for r in result:
-                    add(rV=r)
+
+            if result:
+
+                for r2 in result:
+                    add(rV=r2)
                     
-            elif isWithFilter == False:
-
-                self.cursor.execute("SELECT * FROM users LIMIT %s OFFSET %s", (limit, offset))
-                result2 = self.cursor.fetchall()
-
-                if result2:
-
-                    for r2 in result2:
-                        add(rV=r2)
-                    
-            if len(IDs) == 0:
+            if len(users) == 0:
                 return {"success":False,"message":"Sonuç bulunamadı!"}
     
             return {
@@ -182,9 +191,7 @@ class User:
                 "message":"Kullanıcılar listelendi.",
                 "data":{
                     "totalUsers":totalUsers,
-                    "ids":IDs,
-                    "userNames":userNames,
-                    "roles":roles,
+                    "users":users,
                     "pageCount":pageCount
                 }
             }
@@ -194,10 +201,10 @@ class User:
             writeLog(config.USERS_LOG_PATH,type(e).__name__,str(e))
             return {"success":False,"message":"Bir hata oluştu!"}
 
-    def updateUser(self,id:int,userName:str,password:str,role:str):
+    def updateUser(self,id:int,userName:str,role:str):
 
         try:
-            if password.replace(" ", "") == "" or userName.replace(" ", "") == "" or role.replace(" ", "") == "" or id == 0 or id < 0:
+            if not userName.strip() or not role.strip() or id <= 0:
                 return {"success": False, "message": "Lütfen boş bırakmayınız!"}
             
             self.cursor.execute("SELECT * FROM users WHERE id = %s",(id,))
@@ -205,6 +212,9 @@ class User:
 
             if result is None:
                 return {"success": False, "message": "Kullanıcı bulunamadı!"}
+
+            if result[3] == "admin" and role.strip() != "admin":
+                return {"success":False,"message":"Yönetici yetkisine sahip kullanıcının rolü değiştirilemez!"}
                 
             if len(userName) > 20:
                 return {"success": False, "message": "Kullanıcı ismi 20 karakterden fazla olamaz!"}
@@ -213,24 +223,20 @@ class User:
             result = self.cursor.fetchone()
             if result is not None:
                 return {"success": False, "message": "Bu kullanıcı adı zaten mevcut!"}
-            
-            if len(password) < 8 or len(password) > 15:
-                return {"success": False, "message": "Şifre 8 - 15 karakter arasında olmalıdır!"}
                    
-            if role == "admin":
-                return {"success": False, "message": "Oluşturulan kullanıcı yönetici yetkisine sahip olamaz!"}
+            if role.strip() == "admin":
+                return {"success": False, "message": "Güncellenen kullanıcı yönetici yetkisine sahip olamaz!"}
             
-            if role not in ["student_staff", "teacher"]:
+            if role.strip() not in ["student_staff", "teacher"]:
                 return {"success": False, "message": "Böyle bir yetki seviyesi bulunmamaktadır!"}
             
-            password = password.encode()
-            hashed = bcrypt.hashpw(password, bcrypt.gensalt())
-            self.cursor.execute("UPDATE users SET userName = %s, userPassword = %s, userRole = %s WHERE id = %s",(userName,hashed.decode(),role,id))
+            self.cursor.execute("UPDATE users SET userName = %s, userRole = %s WHERE id = %s",(userName,"Öğretmen" if role.strip() == "teacher" else "Öğrenci",id))
             self.conn.commit()
                                         
             return {"success": True, "message": "Kullanıcı güncellendi"}
             
         except Exception as e:
 
+            self.conn.rollback()
             writeLog(config.USERS_LOG_PATH,type(e).__name__,str(e))
             return {"success": False, "message": "Bir hata oluştu!"}

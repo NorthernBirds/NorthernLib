@@ -2,8 +2,6 @@ from utils.writeLog import writeLog
 import config
 from datetime import datetime
 
-daysPerMonth = {"01": 31, "02": 28, "03": 31, "04": 30, "05": 31, "06": 30, "07": 31, "08": 31, "09": 30, "10": 31, "11": 30, "12": 31}
-
 class Loan:
 
     def __init__(self,conn,cursor):
@@ -15,44 +13,38 @@ class Loan:
 
         try:
 
-            if bookID == 0 or bookID < 0 or studentID == 0 or studentID < 0 or returnDate.replace(" ", "") == "":
+            if bookID <= 0 or studentID <= 0 or not returnDate.strip():
                 return {"success":False,"message":"Lütfen boş bırakmayın!"}
             
             self.cursor.execute("SELECT * FROM books WHERE id = %s",(bookID,))
             result = self.cursor.fetchone()
+
+            returnDate = returnDate.strip()
+
+            try:
+                parsed_date = datetime.strptime(returnDate, "%d/%m/%Y").date()
+            except ValueError:
+                return {"success": False, "message": "Lütfen geçerli bir tarih giriniz (GG/AA/YYYY)!"}
                 
             if result is None:
                 return {"success":False,"message":"Kitap bulunamadı!"}
             
-            if result[6] == "Alindi":
+            if result[6] == "Alındı":
                 return {"success":False,"message":"Bu kitap zaten alınmış!"}
             
-            if datetime.strptime(returnDate, "%d/%m/%Y").date() < datetime.now().date():
+            if parsed_date < datetime.now().date():
                 return {"success":False,"message":"Teslim tarihi geçmişe dönük olamaz, cihazın saatini ayarlayın!"}
-            
-            list = returnDate.split("/")
-
-            if list[1] not in daysPerMonth.keys():
-                return {"success":False,"message":"Lütfen geçerli bir ay giriniz!"}
-            
-                              
-            if list[2] % 4 == 0 and list[1] == "2":
-                if int(list[0]) > 29:
-                    return {"success":False,"message":"Lütfen geçerli bir gün giriniz!"}
-            else:
-                if int(list[0]) > daysPerMonth[list[1]]:
-                    return {"success":False,"message":"Lütfen geçerli bir gün giriniz!"}
                                     
 
             self.cursor.execute("INSERT INTO loans (studentID,bookID,returnDate,whoAdded) VALUES (%s,%s,%s,%s)",(studentID,bookID,returnDate,activeUserName))
-            self.conn.commit()
-            self.cursor.execute("UPDATE books SET isTaken = %s WHERE id = %s",("Alindi",bookID))
+            self.cursor.execute("UPDATE books SET isTaken = %s WHERE id = %s",("Alındı",bookID))
             self.conn.commit()
                                     
             return {"success":True,"message":"Kitap ödünç alındı."}
         
         except Exception as e:
 
+            self.conn.rollback()
             writeLog(config.LOANS_LOG_PATH,type(e).__name__,str(e))
             return {"success":False,"message":"Bir hata oluştu!"}
     
@@ -61,7 +53,7 @@ class Loan:
 
         try:
 
-            if bookID == 0 or bookID < 0:
+            if bookID <= 0:
                 return {"success":False,"message":"Lütfen boş bırakmayın!"}
             
             self.cursor.execute("SELECT * FROM books WHERE id = %s",(bookID,))
@@ -70,19 +62,19 @@ class Loan:
             if result is None:
                 return {"success":False,"message":"Kitap bulunamadı!"}
             
-            if result[6] == "Alinmadi":
+            if result[6] == "Alınmadı":
                 return {"success":False,"message":"Bu kitap zaten ödünç alınmamış!"}
                     
             now = datetime.now().strftime("%d/%m/%Y")
-            self.cursor.execute("UPDATE loans SET loanStatus = %s,returnedAt = %s WHERE bookID = %s",("returned",now,bookID))
-            self.conn.commit()
-            self.cursor.execute("UPDATE books SET isTaken = %s WHERE id = %s",("Alinmadi",bookID))
+            self.cursor.execute("UPDATE loans SET loanStatus = %s,returnedAt = %s WHERE bookID = %s",("Geri Getirildi",now,bookID))
+            self.cursor.execute("UPDATE books SET isTaken = %s WHERE id = %s",("Alınmadı",bookID))
             self.conn.commit()
                         
             return {"success":True,"message":"Kitap geri verildi."}
         
         except Exception as e:
 
+            self.conn.rollback()
             writeLog(config.LOANS_LOG_PATH,type(e).__name__,str(e))
             return {"success":False,"message":"Bir hata oluştu!"}
     
@@ -93,113 +85,89 @@ class Loan:
 
             filterList = ["id","bookID","studentID","borrowDate","returnDate","returnedAt","loanStatus","whoAdded"]
 
-            if limit == 0 or limit < 0 or pageNumber == 0 or pageNumber < 0:
+            if limit <= 0 or pageNumber <= 0:
                 return {"success":False,"message":"Lutfen boş bırakmayın!"}
             
 
-            if limit > 50:
-                return {"success":False,"message":"Limit en fazla 50 olabilir!"}
+            if limit > 10:
+                return {"success":False,"message":"Sayfaya düşen satır sayısı en fazla 10 olabilir!"}
                 
             
-            IDs,studentIDs,bookNames,borrowDates,returnDates,returnedAts,statuses,whoAddeds,bookIDs = [],[],[],[],[],[],[],[],[]
+            loans = []
             self.cursor.execute("SELECT COUNT(*) FROM loans")
             totalLoans = self.cursor.fetchone()[0]
+
             if totalLoans is not None:
                 pageCount = totalLoans // limit
                 if totalLoans % limit != 0:
                     pageCount += 1
+
             offset = ((pageNumber - 1) * limit)
 
             def add(rV):
-                IDs.append(rV[0])
-                studentIDs.append(rV[1])
-
-                self.cursor.execute("SELECT bookName FROM books WHERE id = %s",(rV[2],))
-                result = self.cursor.fetchone()
+                loans.append({"ID":rV[0],"studentID":rV[1],"bookID":rV[2],"borrowDate":rV[3],"returnDate":rV[4],"returnedAt":rV[5],"status":rV[6],"whoAdded":rV[7]})
                             
-                if result:
-                    bookNames.append(result[0])
+            if isWithFilter == True:
+
+                if not filterValue.strip() or not filterType.strip():
+                    return {"success":False,"message":"Lütfen boş bırakmayın!"}
+                    
+                if filterType != "id" and filterType != "studentID" and filterType != "bookID":
+                    if len(filterValue.strip()) < 2:
+                        return {"success":False,"message":"Arama en az 2 karakter olmalıdır!"}
+
+                if filterType not in filterList:
+                    return {"success":False,"message":"Lütfen geçerli parametre giriniz!"}
+                        
+                                    
+                if filterType != "id" and filterType != "studentID" and filterType != "bookID":
+                    newFilterValue = f"%{filterValue.strip()}%"
+                    self.cursor.execute(f"SELECT COUNT(*) FROM loans WHERE {filterType} LIKE %s", (newFilterValue,))
+                    totalLoans = self.cursor.fetchone()[0]
+
+                    if totalLoans is not None:
+                        pageCount = totalLoans // limit
+                        if totalLoans % limit != 0:
+                            pageCount += 1
+
+                    self.cursor.execute(f"SELECT * FROM loans WHERE {filterType} LIKE %s LIMIT %s OFFSET %s", (newFilterValue,limit, offset))
+                    result = self.cursor.fetchall()
+                                    
                 else:
-                    bookNames.append("Bilinmeyen Kitap")
 
-                borrowDates.append(rV[3])
-                returnDates.append(rV[4])
-                returnedAts.append(rV[5])
-                statuses.append(rV[6])
-                whoAddeds.append(rV[7])
-                bookIDs.append(rV[2])
-                            
-                if isWithFilter == True:
+                    self.cursor.execute(f"SELECT COUNT(*) FROM loans WHERE {filterType} = %s", (int(filterValue),))
+                    totalLoans = self.cursor.fetchone()[0]
 
-                    if filterValue.replace(" ", "") == "" or filterType.replace(" ", "") == "":
-                        return {"success":False,"message":"Lütfen boş bırakmayın!"}
-                    
-
-                    if filterType != "id" and filterType != "studentID" and filterType != "bookID":
-                        if len(filterValue.strip()) < 2:
-                            return {"success":False,"message":"Arama en az 2 karakter olmalıdır!"}
-
-                    if filterType not in filterList:
-                        return {"success":False,"message":"Lütfen geçerli parametre giriniz!"}
-                        
-                                    
-                    if filterType != "id" and filterType != "studentID" and filterType != "bookID":
-                        newFilterValue = f"%{filterValue}%"
-                        self.cursor.execute(f"SELECT COUNT(*) FROM loans WHERE {filterType} LIKE %s", (newFilterValue,))
-                        totalLoans = self.cursor.fetchone()[0]
+                    if totalLoans is not None:
                         pageCount = totalLoans // limit
                         if totalLoans % limit != 0:
                             pageCount += 1
 
-                        self.cursor.execute(f"SELECT * FROM loans WHERE {filterType} LIKE %s LIMIT %s OFFSET %s", (newFilterValue,limit, offset))
-                        result = self.cursor.fetchall()
-                                    
-                                    
-                        self.cursor.execute(f"SELECT COUNT(*) FROM loans WHERE {filterType} = %s", (int(filterValue),))
-                        totalLoans = self.cursor.fetchone()[0]
-                        pageCount = totalLoans // limit
-                        if totalLoans % limit != 0:
-                            pageCount += 1
+                    self.cursor.execute(f"SELECT * FROM loans WHERE {filterType} = %s LIMIT %s OFFSET %s", (int(filterValue),limit, offset))
+                    result = self.cursor.fetchall()
+                                                                          
+            else:
 
-                        self.cursor.execute(f"SELECT * FROM loans WHERE {filterType} = %s LIMIT %s OFFSET %s", (int(filterValue),limit, offset))
-                        result = self.cursor.fetchall()
+                self.cursor.execute("SELECT * FROM loans LIMIT %s OFFSET %s", (limit, offset))
+                result = self.cursor.fetchall()
 
-                        if result:
+            if result:
 
-                            for r in result:
-                                add(rV=r)
-                                                        
-                                            
-                elif isWithFilter == False:
-
-                    self.cursor.execute("SELECT * FROM loans LIMIT %s OFFSET %s", (limit, offset))
-                    result2 = self.cursor.fetchall()
-
-                    if result2:
-
-                        for r2 in result2:
-                            add(rV=r2)
+                for r2 in result:
+                    add(rV=r2)
                         
-                    if len(IDs) == 0:
-                        return {"success":False,"message":"Sonuç bulunamadı!"}
+            if len(loans) == 0:
+                return {"success":False,"message":"Sonuç bulunamadı!"}
                     
-                    return {
-                        "success":True,
-                        "message":f"Ödünç alım kayıtları listelendi.",
-                        "data":{
-                            "totalLoans":totalLoans,
-                            "ids":IDs,
-                            "studentIDs":studentIDs,
-                            "bookIDs":bookIDs,
-                            "bookNames":bookNames,
-                            "borrowDates":borrowDates,
-                            "returnDates":returnDates,
-                            "returnedAts":returnedAts,
-                            "statuses":statuses,
-                            "whoAddeds":whoAddeds,
-                            "pageCount":pageCount
-                        }
-                    }
+            return {
+                "success":True,
+                "message":f"Ödünç alım kayıtları listelendi.",
+                "data":{
+                    "totalLoans":totalLoans,
+                    "loans":loans,
+                    "pageCount":pageCount
+                }
+            }
 
                     
 
@@ -212,7 +180,7 @@ class Loan:
 
         try:
 
-            if bookID == 0  or bookID < 0 or studentID == 0 or studentID < 0 or returnDate.replace(" ", "") == "" or id == 0 or id < 0:
+            if bookID <= 0 or studentID <= 0 or not returnDate.strip() or id <= 0:
                 return {"success":False,"message":"Lütfen boş bırakmayın!"}
             
             self.cursor.execute("SELECT * FROM loans WHERE id = %s",(id,))
@@ -223,34 +191,29 @@ class Loan:
             
             self.cursor.execute("SELECT * FROM books WHERE id = %s",(bookID,))
             result = self.cursor.fetchone()
+
+            returnDate = returnDate.strip()
+
+            try:
+                parsed_date = datetime.strptime(returnDate, "%d/%m/%Y").date()
+            except ValueError:
+                return {"success": False, "message": "Lütfen geçerli bir tarih giriniz (GG/AA/YYYY)!"}
                     
             if result is None:
                 return {"success":False,"message":"Kitap bulunamadı!"}
             
-            if result[6] == "Alindi":
+            if result[6] == "Alındı":
                 return {"success":False,"message":"Bu kitap zaten alınmış!"}
                         
-            if datetime.strptime(returnDate, "%d/%m/%Y").date() < datetime.now().date():
+            if parsed_date < datetime.now().date():
                 return {"success":False,"message":"Teslim tarihi geçmişe dönük olamaz, cihazın saatini ayarlayın!"}
-                    
-            list = returnDate.split("/")
-
-            if list[1] not in daysPerMonth.keys():
-                return {"success":False,"message":"Lütfen geçerli bir ay giriniz!"}
-                
-            if list[2] % 4 == 0 and list[1] == "2":
-                if int(list[0]) > 29:
-                    return {"success":False,"message":"Lütfen geçerli bir gün giriniz!"}
-            else:
-                if int(list[0]) > daysPerMonth[int(list[1])]:
-                    return {"success":False,"message":"Lütfen geçerli bir gün giriniz!"}
                                         
             self.cursor.execute("SELECT * FROM loans WHERE id = %s",(id,))
             result = self.cursor.fetchone()
 
             if result1[2] != bookID:
-                self.cursor.execute("UPDATE books SET isTaken = %s WHERE id = %s",("Alinmadi",result1[2]))
-                self.cursor.execute("UPDATE books SET isTaken = %s WHERE id = %s",("Alindi",bookID))
+                self.cursor.execute("UPDATE books SET isTaken = %s WHERE id = %s",("Alınmadı",result1[2]))
+                self.cursor.execute("UPDATE books SET isTaken = %s WHERE id = %s",("Alındı",bookID))
                 self.conn.commit()
 
             self.cursor.execute("UPDATE loans SET studentID = %s, bookID = %s, returnDate = %s, whoAdded = %s WHERE id = %s",(studentID,bookID,returnDate,activeUserName,id))
@@ -260,5 +223,6 @@ class Loan:
         
         except Exception as e:
 
+            self.conn.rollback()
             writeLog(config.LOANS_LOG_PATH,type(e).__name__,str(e))
             return {"success":False,"message":"Bir hata oluştu!"}

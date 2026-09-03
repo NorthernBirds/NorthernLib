@@ -15,24 +15,23 @@ class Reset:
 
             if books == True:
                 self.cursor.execute("TRUNCATE TABLE books")
-                self.conn.commit()
             
             if categories == True:
                 self.cursor.execute("TRUNCATE TABLE categories")
-                self.conn.commit()
             
             if loans == True:
                 self.cursor.execute("TRUNCATE TABLE loans")
-                self.conn.commit()
             
             if users == True:
                 self.cursor.execute("DELETE FROM users WHERE userRole = 'student_staff' OR userRole = 'teacher'")
-                self.conn.commit()
+
+            self.conn.commit()
             
             return {"success":True,"message":"Sıfırlandı."}
         
         except Exception as e:
 
+            self.conn.rollback()
             writeLog(config.RESET_LOG_PATH,type(e).__name__,str(e))
             return {"success":False,"message":"Bir hata oluştu!"}
 

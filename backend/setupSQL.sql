@@ -11,8 +11,23 @@ SET SQL_SAFE_UPDATES = 0;
 
 CREATE TABLE libraries(id INT AUTO_INCREMENT PRIMARY KEY,
 libName VARCHAR(20),
-libPassword VARCHAR(255));
+libPassword VARCHAR(255),
+licenseID INT NOT NULL);
 
+CREATE TABLE licenseKeys(id INT AUTO_INCREMENT PRIMARY KEY,
+licenseKey VARCHAR(32) NOT NULL UNIQUE,
+isActive BOOLEAN DEFAULT FALSE);
 
+CREATE TABLE users(id INT AUTO_INCREMENT PRIMARY KEY,
+userName VARCHAR(20) NOT NULL UNIQUE,
+userPassword VARCHAR(60) NOT NULL,
+userRole ENUM("admin","user"));
+
+INSERT INTO users (userName,userPassword,userRole) VALUES ('<your_admin_username>',"<your_admin_password>","admin");
+
+CREATE TABLE sessions(id INT AUTO_INCREMENT PRIMARY KEY,
+userID INT,
+token VARCHAR(64) NOT NULL UNIQUE,
+duration INT);
 
 

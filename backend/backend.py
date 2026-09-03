@@ -20,8 +20,6 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import os
 import ssl
-from flask import Flask, request, jsonify
-from flask_cors import CORS
 import threading
 
 
@@ -105,7 +103,7 @@ def signUp():
         if result["success"] != True:
             return jsonify(result)
         
-        return jsonify(auth.signUp(dbName=data.get("dbName",""),developerPassword=data.get("developerPassword","")))
+        return jsonify(auth.signUp(dbName=data.get("dbName",""),license=data.get("license","")))
     
     except Exception as e:
 
@@ -234,7 +232,7 @@ def listBooks():
         if result["success"] != True:
             return jsonify(result)
 
-        return jsonify(config.session[token]["classes"]["book"].listBooks(filterType=data.get("filterType",""), filterValue=data.get("filterValue",""), isWithFilter=data.get("isWithFilter",""), pageNumber=data.get("pageNumber",1), limit=data.get("limit",20)))
+        return jsonify(config.session[token]["classes"]["book"].listBooks(filterType=data.get("filterType",""), filterValue=data.get("filterValue",""), isWithFilter=data.get("isWithFilter",""), pageNumber=data.get("pageNumber",1), limit=data.get("limit",10)))
 
     except Exception as e:
 
@@ -333,7 +331,7 @@ def listCategories():
         if result["success"] != True:
             return jsonify(result)
 
-        return jsonify(config.session[token]["classes"]["category"].listCategories(filterType=data.get("filterType",""), filterValue=data.get("filterValue",""), isWithFilter=data.get("isWithFilter",""), pageNumber=data.get("pageNumber",1), limit=data.get("limit",20)))
+        return jsonify(config.session[token]["classes"]["category"].listCategories(filterType=data.get("filterType",""), filterValue=data.get("filterValue",""), isWithFilter=data.get("isWithFilter",""), pageNumber=data.get("pageNumber",1), limit=data.get("limit",10)))
 
     except Exception as e:
 
@@ -431,7 +429,7 @@ def listLoans():
         if result["success"] != True:
             return jsonify(result)
 
-        return jsonify(config.session[token]["classes"]["loan"].listLoans(filterType=data.get("filterType",""), filterValue=data.get("filterValue",""), isWithFilter=data.get("isWithFilter",""), pageNumber=data.get("pageNumber",1), limit=data.get("limit",20)))
+        return jsonify(config.session[token]["classes"]["loan"].listLoans(filterType=data.get("filterType",""), filterValue=data.get("filterValue",""), isWithFilter=data.get("isWithFilter",""), pageNumber=data.get("pageNumber",1), limit=data.get("limit",10)))
 
     except Exception as e:
 
@@ -505,7 +503,7 @@ def addUser():
         if result["success"] != True:
             return jsonify(result)
 
-        return jsonify(config.session[token]["classes"]["user"].addUser(userName=data.get("userName",""), password=data.get("password",""), role=data.get("role","")))
+        return jsonify(config.session[token]["classes"]["user"].addUser(userName=data.get("userName",""), password=data.get("password",""), role=data.get("role",""), activeUserName=config.session[token]["userName"]))
 
     except Exception as e:
 
@@ -579,7 +577,7 @@ def listUsers():
         if result["success"] != True:
             return jsonify(result)
 
-        return jsonify(config.session[token]["classes"]["user"].listUsers(filterType=data.get("filterType",""), filterValue=data.get("filterValue",""), isWithFilter=data.get("isWithFilter",""), pageNumber=data.get("pageNumber",1), limit=data.get("limit",20)))
+        return jsonify(config.session[token]["classes"]["user"].listUsers(filterType=data.get("filterType",""), filterValue=data.get("filterValue",""), isWithFilter=data.get("isWithFilter",""), pageNumber=data.get("pageNumber",1), limit=data.get("limit",10)))
 
     except Exception as e:
 
@@ -627,7 +625,7 @@ def reset():
         if result["success"] != True:
             return jsonify(result)
 
-        return jsonify(config.session[token]["classes"]["reset"].reset(books=data.get("books",""), categories=data.get("categories",""), loans=data.get("loans",""), users=data.get("users",""), processes=data.get("processes","")))
+        return jsonify(config.session[token]["classes"]["reset"].reset(books=data.get("books",""), categories=data.get("categories",""), loans=data.get("loans",""), users=data.get("users","")))
 
     except Exception as e:
 

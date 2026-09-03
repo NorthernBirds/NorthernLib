@@ -3,13 +3,13 @@ import config
 from utils.writeLog import writeLog
 
 
-def setup(name:str, password:str, conn, cursor, adminPassword:str):
+def setup(name:str, password:str, conn, cursor, adminPassword:str, licenseID:int):
 
     try:
 
         tablespace = f"tablespace_{name}"
         hashed_db_pass = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode("utf-8")
-        cursor.execute("INSERT INTO libraries (libName,libPassword) VALUES (%s,%s)", (name, hashed_db_pass))
+        cursor.execute("INSERT INTO libraries (libName,libPassword,licenseID) VALUES (%s,%s,%s)", (name, hashed_db_pass, licenseID))
 
         cursor.execute("CREATE TABLESPACE `" + tablespace + "` ADD DATAFILE '" + name + "_datafile.ibd' MAX_SIZE 10G ENGINE = InnoDB;")
 
@@ -19,10 +19,10 @@ def setup(name:str, password:str, conn, cursor, adminPassword:str):
 
         cursor.execute("SET SQL_SAFE_UPDATES = 0")
 
-        cursor.execute("CREATE TABLE users(id INT AUTO_INCREMENT PRIMARY KEY, userName VARCHAR(20) NOT NULL UNIQUE, userPassword VARCHAR(60) NOT NULL, userRole ENUM('admin','teacher','student_staff') NOT NULL) TABLESPACE `" + tablespace + "`")
-        cursor.execute("CREATE TABLE books(id INT AUTO_INCREMENT PRIMARY KEY,bookName VARCHAR(50) NOT NULL, writer VARCHAR(50) NOT NULL, publisher VARCHAR(20) NOT NULL, pageCount INT NOT NULL CHECK(pageCount <= 99999), category VARCHAR(20) NOT NULL,isTaken ENUM('Alindi','Alinmadi') DEFAULT 'Alinmadi',whoAdded VARCHAR(20) NOT NULL) TABLESPACE `" + tablespace + "`")
+        cursor.execute("CREATE TABLE users(id INT AUTO_INCREMENT PRIMARY KEY, userName VARCHAR(20) NOT NULL UNIQUE, userPassword VARCHAR(60) NOT NULL, userRole ENUM('admin','Öğretmen','Öğrenci') NOT NULL, whoAdded VARCHAR(20)) TABLESPACE `" + tablespace + "`")
+        cursor.execute("CREATE TABLE books(id INT AUTO_INCREMENT PRIMARY KEY,bookName VARCHAR(50) NOT NULL, writer VARCHAR(50) NOT NULL, publisher VARCHAR(20) NOT NULL, pageCount INT NOT NULL CHECK(pageCount <= 99999), category VARCHAR(20) NOT NULL,isTaken ENUM('Alındı','Alınmadı') DEFAULT 'Alınmadı',whoAdded VARCHAR(20) NOT NULL) TABLESPACE `" + tablespace + "`")
         cursor.execute("CREATE TABLE categories(id INT AUTO_INCREMENT PRIMARY KEY,categoryName VARCHAR(20) NOT NULL,whoAdded VARCHAR(20) NOT NULL) TABLESPACE `" + tablespace + "`")
-        cursor.execute("CREATE TABLE loans(id INT AUTO_INCREMENT PRIMARY KEY,studentID INT NOT NULL,bookID INT NOT NULL,borrowDate DATE DEFAULT (CURRENT_DATE),returnDate VARCHAR(20) NOT NULL,returnedAt VARCHAR(20) DEFAULT 'Kitap Geri Gelmedi',loanStatus ENUM('returned','not returned') DEFAULT 'not returned',whoAdded VARCHAR(20) NOT NULL) TABLESPACE `" + tablespace + "`")
+        cursor.execute("CREATE TABLE loans(id INT AUTO_INCREMENT PRIMARY KEY,studentID INT NOT NULL,bookID INT NOT NULL,borrowDate DATE DEFAULT (CURRENT_DATE),returnDate VARCHAR(20) NOT NULL,returnedAt VARCHAR(20) DEFAULT 'Kitap Geri Gelmedi',loanStatus ENUM('Geri Getirildi','Geri Getirilmedi') DEFAULT 'Geri Getirilmedi',whoAdded VARCHAR(20) NOT NULL) TABLESPACE `" + tablespace + "`")
         cursor.execute("CREATE TABLE importantValues(id INT AUTO_INCREMENT PRIMARY KEY,situationValue TEXT NOT NULL, valueStatus BOOLEAN NOT NULL) TABLESPACE `" + tablespace + "`")
 
         hashed_admin_pass = bcrypt.hashpw(adminPassword.encode(), bcrypt.gensalt()).decode("utf-8")
@@ -39,7 +39,7 @@ def setup(name:str, password:str, conn, cursor, adminPassword:str):
 
         cursor.execute("FLUSH PRIVILEGES")
 
-        cursor.execute("USE library")
+        cursor.execute("USE kerneldb")
 
         conn.commit()
 

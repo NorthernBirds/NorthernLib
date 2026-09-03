@@ -14,7 +14,7 @@ class Category:
 
         try:
                 
-            if categoryName not in config.BOOK_CATEGORIES:
+            if categoryName.strip() not in config.BOOK_CATEGORIES:
                 return {"success":False,"message":"Bu kategori mevcut değil!"}
             
             self.cursor.execute("SELECT * FROM categories WHERE categoryName = %s",(categoryName,))
@@ -23,13 +23,14 @@ class Category:
             if result is not None:
                 return {"success":False,"message":"Bu kategori zaten mevcut!"}
                 
-            self.cursor.execute("INSERT INTO categories (categoryName,whoAdded) VALUES (%s,%s)",(categoryName,activeUserName))
+            self.cursor.execute("INSERT INTO categories (categoryName,whoAdded) VALUES (%s,%s)",(categoryName.strip(),activeUserName))
             self.conn.commit()
                     
             return {"success":True,"message":"Kategori eklendi."}
                 
         except Exception as e:
 
+            self.conn.rollback()
             writeLog(config.CATEGORIES_LOG_PATH,type(e).__name__,str(e))
             return {"success":False,"message":"Bir hata oluştu!"}
     
@@ -38,15 +39,21 @@ class Category:
 
         try:
 
-            if id == 0 or id < 0:
+            if id <= 0:
                 return {"success":False,"message":"Lütfen boş bırakmayın!"}
             
-            self.cursor.execute("SELECT * FROM categories WHERE id = %s",(id,))
+            self.cursor.execute("SELECT categoryName FROM categories WHERE id = %s",(id,))
             result = self.cursor.fetchone()
 
             if result is None:
                 return {"success":False,"message":"Kategori bulunamadı!"}
-                
+
+            self.cursor.execute("SELECT * FROM books WHERE category = %s",(result[0],))
+            result = self.cursor.fetchone()
+
+            if result is not None:
+                return {"success":False,"message":"Kategoriye ait kitaplar olduğu için silinemez!"}
+
             self.cursor.execute("DELETE FROM categories WHERE id = %s",(id,))
             self.conn.commit()
                     
@@ -54,6 +61,7 @@ class Category:
 
         except Exception as e:
 
+            self.conn.rollback()
             writeLog(config.CATEGORIES_LOG_PATH,type(e).__name__,str(e))
             return {"success":False,"message":"Bir hata oluştu!"}
     
@@ -64,29 +72,29 @@ class Category:
 
             filterList = ["id","categoryName","whoAdded"]
 
-            if limit == 0 or limit < 0 or pageNumber == 0 or pageNumber < 0:
+            if limit <= 0 or pageNumber <= 0:
                 return {"success":False,"message":"Lutfen boş bırakmayın!"}
             
-            if limit > 50:
-                return {"success":False,"message":"Limit en fazla 50 olabilir!"}
+            if limit > 10:
+                return {"success":False,"message":"Sayfaya düşen satır sayısı en fazla 10 olabilir!"}
                 
-            IDs,categoryNames,whoAddeds = [],[],[]
+            categories = []
             self.cursor.execute("SELECT COUNT(*) FROM categories")
             totalCategories = self.cursor.fetchone()[0]
+
             if totalCategories is not None:
                 pageCount = totalCategories // limit
                 if totalCategories % limit != 0:
                     pageCount += 1
+                    
             offset = ((pageNumber - 1) * limit)
 
             def add(rV):
-                IDs.append(rV[0])
-                categoryNames.append(rV[1])
-                whoAddeds.append(rV[2])
+                categories.append({"ID":rV[0],"name":rV[1],"whoAdded":rV[2]})
 
             if isWithFilter:
 
-                if filterValue.replace(" ","") == "" or filterType.replace(" ","") == "":
+                if not filterValue.strip() or not filterType.strip():
                     return {"success":False,"message":"Lütfen boş bırakmayın!"}
                         
                 if filterType != "id":
@@ -97,12 +105,14 @@ class Category:
                     return {"success":False,"message":"Lütfen geçerli parametre giriniz!"}
                          
                 if filterType != "id":
-                    newFilterValue = f"%{filterValue}%"
+                    newFilterValue = f"%{filterValue.strip()}%"
                     self.cursor.execute(f"SELECT COUNT(*) FROM categories WHERE {filterType} LIKE %s", (newFilterValue,))
                     totalCategories = self.cursor.fetchone()[0]
-                    pageCount = totalCategories // limit
-                    if totalCategories % limit != 0:
-                        pageCount += 1
+
+                    if totalCategories is not None:
+                        pageCount = totalCategories // limit
+                        if totalCategories % limit != 0:
+                            pageCount += 1
 
                     self.cursor.execute(f"SELECT * FROM categories WHERE {filterType} LIKE %s LIMIT %s OFFSET %s", (newFilterValue,limit, offset))
                     result = self.cursor.fetchall()
@@ -111,42 +121,38 @@ class Category:
                                 
                     self.cursor.execute(f"SELECT COUNT(*) FROM categories WHERE {filterType} = %s", (int(filterValue),))
                     totalCategories = self.cursor.fetchone()[0]
-                    pageCount = totalCategories // limit
-                    if totalCategories % limit != 0:
-                        pageCount += 1
+
+                    if totalCategories is not None:
+                        pageCount = totalCategories // limit
+                        if totalCategories % limit != 0:
+                            pageCount += 1
 
                     self.cursor.execute(f"SELECT * FROM categories WHERE {filterType} = %s LIMIT %s OFFSET %s", (int(filterValue),limit, offset))
                     result = self.cursor.fetchall()
-
-                    if result:
-   
-                        for r in result:
-                            add(rV=r)
                     
-            elif isWithFilter == False:
+            else:
 
                 self.cursor.execute("SELECT * FROM categories LIMIT %s OFFSET %s", (limit, offset))
-                result2 = self.cursor.fetchall()
-                if result2:
+                result = self.cursor.fetchall()
+
+            if result:
                         
-                    for r2 in result2:
-                        add(rV=r2)
+                for r2 in result:
+                    add(rV=r2)
                         
-                    if len(IDs) == 0:
-                        return {"success":False,"message":"Sonuç bulunamadı!"}
-                    else:
+            if len(categories) == 0:
+                     return {"success":False,"message":"Sonuç bulunamadı!"}
+            
                         
-                        return {
-                            "success":True,
-                            "message":"Kategoriler listelendi.",
-                            "data":{
-                                "totalCategories":totalCategories,
-                                "ids":IDs,
-                                "categoryNames":categoryNames,
-                                "whoAddeds":whoAddeds,
-                                "pageCount":pageCount
-                            }
-                        }
+            return {
+                "success":True,
+                "message":"Kategoriler listelendi.",
+                "data":{
+                    "totalCategories":totalCategories,
+                    "categories":categories,
+                    "pageCount":pageCount
+                }
+            }
 
 
         except Exception as e:
@@ -158,7 +164,7 @@ class Category:
 
         try:
 
-            if id == 0 or id < 0:
+            if id <= 0:
                 return {"success":False,"message":"Lütfen boş bırakmayın!"}
 
             self.cursor.execute("SELECT * FROM categories WHERE id = %s",(id,))
@@ -167,21 +173,27 @@ class Category:
             if result is None:
                 return {"success":False,"message":"Kategori bulunamadı!"}
                 
-            if categoryName not in config.BOOK_CATEGORIES:
+            if categoryName.strip() not in config.BOOK_CATEGORIES:
                 return {"success":False,"message":"Bu kategori mevcut değil!"}
             
-            self.cursor.execute("SELECT * FROM categories WHERE categoryName = %s",(categoryName,))
+            self.cursor.execute("SELECT categoryName FROM categories WHERE id = %s",(id,))
             result = self.cursor.fetchone()
 
-            if result is not None:
-                return {"success":False,"message":"Bu kategori zaten mevcut!"}
-                
-            self.cursor.execute("UPDATE categories SET categoryName = %s, whoAdded = %s WHERE id = %s",(categoryName,activeUserName,id))
+            if result[0] != categoryName.strip():
+
+                self.cursor.execute("SELECT * FROM books WHERE category = %s",(result[0],))
+                result = self.cursor.fetchone()
+
+                if result is not None:
+                    return {"success":False,"message":"Kategoriye ait kitaplar olduğu için değiştirilemez!"}
+
+            self.cursor.execute("UPDATE categories SET categoryName = %s, whoAdded = %s WHERE id = %s",(categoryName.strip(),activeUserName,id))
             self.conn.commit()
                             
             return {"success":True,"message":"Kategori güncellendi."}
                 
         except Exception as e:
-
+            
+            self.conn.rollback()
             writeLog(config.CATEGORIES_LOG_PATH,type(e).__name__,str(e))
             return {"success":False,"message":"Bir hata oluştu!"}

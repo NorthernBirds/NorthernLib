@@ -12,28 +12,30 @@ class Leader:
 
         try:
 
-            if limit == 0 or limit < 0 or pageNumber == 0 or pageNumber < 0:
+            if limit <= 0 or pageNumber <= 0:
                 return {"success":False,"message":"Lütfen boş bırakmayın!"}
+
+            if limit > 10:
+                return {"success":False,"message":"Sayfaya düşen satır sayısı en fazla 10 olabilir!"}
             
-            self.cursor.execute("SELECT COUNT(DISTINCT studentID) FROM loans WHERE loanStatus = 'returned';")
+            self.cursor.execute("SELECT COUNT(DISTINCT studentID) FROM loans WHERE loanStatus = 'Geri Getirildi';")
             totalLeaders = self.cursor.fetchone()[0]
             
             if totalLeaders is not None:
                 pageCount = totalLeaders // limit
                 if totalLeaders % limit != 0:
                     pageCount += 1
-                offset = ((pageNumber - 1) * limit)
+            offset = ((pageNumber - 1) * limit)
 
-            self.cursor.execute("SELECT studentID, COUNT(*) AS readBooks FROM loans WHERE loanStatus = 'returned' GROUP BY studentID ORDER BY readBooks DESC LIMIT %s OFFSET %s;", (limit, offset))
+            self.cursor.execute("SELECT studentID, COUNT(*) AS readBooks FROM loans WHERE loanStatus = 'Geri Getirildi' GROUP BY studentID ORDER BY readBooks DESC LIMIT %s OFFSET %s;", (limit, offset))
             result = self.cursor.fetchall()
                 
             if result:
-                studentIDs, readBooks = [], []
+                leaders = []
                 for r in result:
-                    studentIDs.append(r[0])
-                    readBooks.append(r[1])
+                    leaders.append({"studentID":r[0],"readBooks":r[1]})
                 
-                return {"success": True, "message": "Liderler listelendi.", "data": {"studentIDs": studentIDs, "readBooks": readBooks, "pageCount": pageCount,"totalLeaders": totalLeaders}}
+                return {"success": True, "message": "Liderler listelendi.", "data": {"leaders":leaders,"pageCount": pageCount,"totalLeaders": totalLeaders}}
 
             return {"success": False, "message": "Sonuç bulunamadı!"}
             
