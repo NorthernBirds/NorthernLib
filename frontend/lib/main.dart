@@ -19,10 +19,34 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(
           seedColor: const Color.fromARGB(255, 44, 119, 81),
         ),
+        pageTransitionsTheme: const PageTransitionsTheme(
+          builders: {
+            TargetPlatform.android: NoAnimationPageTransitionsBuilder(),
+            TargetPlatform.iOS: NoAnimationPageTransitionsBuilder(),
+            TargetPlatform.linux: NoAnimationPageTransitionsBuilder(),
+            TargetPlatform.macOS: NoAnimationPageTransitionsBuilder(),
+            TargetPlatform.windows: NoAnimationPageTransitionsBuilder(),
+          },
+        ),
       ),
       navigatorKey: navigatorKey,
       home: const MyHomePage(),
     );
+  }
+}
+
+class NoAnimationPageTransitionsBuilder extends PageTransitionsBuilder {
+  const NoAnimationPageTransitionsBuilder();
+
+  @override
+  Widget buildTransitions<T>(
+    PageRoute<T> route,
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+    Widget child,
+  ) {
+    return child;
   }
 }
 
