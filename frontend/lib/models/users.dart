@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:frontend/api_requests.dart';
 import 'package:frontend/config.dart';
+import 'package:number_pagination/number_pagination.dart';
 
 class AddUserWidget extends StatefulWidget {
   final VoidCallback onCancel;
@@ -296,6 +297,7 @@ class _ChangeRoleWidgetState extends State<ChangeRoleWidget> {
           children: <Widget>[
             const Text(
               "Kullanıcı Rolü Değiştirme",
+              textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 36,
                 fontFamily: "Inter",
@@ -403,60 +405,67 @@ class ListUsersWidget extends StatefulWidget {
 }
 
 class _ListUsersWidgetState extends State<ListUsersWidget> {
+  int currentPageNumber = 1;
+  int totalPages = 1;
+  int totalUsers = 0;
+  String limit = "10";
   bool isWithFilter = false;
   String BfilterType = "id";
   String filterValue = "";
-  String limit = "20";
-  int currentPageNumber = 1;
-  int itemsPerPage = 10;
+
+  bool isData = false;
+  List<User> userList = [];
 
   Map<String, String> filterTypeMap = {
-    "Kullanıcı ID": "id",
-    "Kullanıcı adı": "userName",
-    "Rol": "role",
+    "ID": "id",
+    "Kullanıcı Adı": "userName",
+    "Rol": "userRole",
+    "Kim Ekledi?": "whoAdded",
   };
-
-  List<int> IDs = [];
-  List<String> userNames = [];
-  List<String> roles = [];
-
-  Future<void> _fetchData() async {
-    int parsedLimit = int.tryParse(limit) ?? 20;
+  Future<void> _fetchData({required bool isFirst}) async {
     var response = await listUsers(
       isWithFilter: isWithFilter,
       filterType: BfilterType,
       filterValue: filterValue,
-      limit: parsedLimit,
+      limit: int.tryParse(limit) ?? 10,
       pageNumber: currentPageNumber,
     );
 
-    if (response?["success"] == false) {
-      if (context.mounted) {
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: const Text("Hata"),
-              content: Text(
-                response?["message"] ?? "Bilinmeyen bir hata oluştu.",
-              ),
-              actions: <Widget>[
-                ElevatedButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: const Text("Tamam"),
-                ),
-              ],
-            );
-          },
-        );
-      }
-    } else {
+    if (response?["success"] == true) {
       var data = response?["data"];
       setState(() {
-        IDs = List<int>.from(data?["ids"] ?? []);
-        userNames = List<String>.from(data?["userNames"] ?? []);
-        roles = List<String>.from(data?["roles"] ?? []);
-        itemsPerPage = IDs.length;
+        isData = true;
+        userList = User.fromLists(
+          userListFromBE: List<Map<String, dynamic>>.from(data["users"] ?? []),
+        );
+
+        if (isFirst) {
+          totalPages = data["pageCount"] ?? 1;
+          totalUsers = data["totalUsers"] ?? 0;
+        }
+      });
+    } else {
+      setState(() {
+        isData = false;
+        if (context.mounted) {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: const Text("Hata"),
+                content: Text(
+                  response?["message"] ?? "Bilinmeyen bir hata oluştu.",
+                ),
+                actions: <Widget>[
+                  ElevatedButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: const Text("Tamam"),
+                  ),
+                ],
+              );
+            },
+          );
+        }
       });
     }
   }
@@ -464,196 +473,253 @@ class _ListUsersWidgetState extends State<ListUsersWidget> {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Container(
-        width: 1200,
-        height: 1200,
-        color: color,
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: 20.0),
-                child: Text(
-                  "Kategori Listeleme",
-                  style: TextStyle(
-                    fontFamily: "Inter",
-                    color: Colors.black,
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            SizedBox(width: 100.0),
+            Container(
+              width: 400,
+              height: 600,
+              decoration: BoxDecoration(
+                color: color,
+                borderRadius: BorderRadius.circular(30.0),
+                border: Border.all(color: Colors.black, width: 2.0),
               ),
-              SwitchListTile(
-                controlAffinity: ListTileControlAffinity.leading,
-                contentPadding: const EdgeInsets.symmetric(horizontal: 430.0),
-                title: const Text(
-                  "Filtreli arama",
-                  style: TextStyle(
-                    fontFamily: "Inter",
-                    color: Colors.black,
-                    fontSize: 16,
-                    fontWeight: FontWeight.normal,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 20.0),
+                    child: Text(
+                      "Kullanıcı Listeleme",
+                      style: TextStyle(
+                        fontFamily: "Inter",
+                        color: Colors.black,
+                        fontSize: 36,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
-                ),
-                value: isWithFilter,
-                activeThumbColor: Colors.teal,
-                activeTrackColor: Colors.tealAccent,
-                inactiveThumbColor: Colors.grey,
-                inactiveTrackColor: Colors.grey.shade400,
-                onChanged: (bool value) {
-                  setState(() {
-                    isWithFilter = value;
-                  });
-                },
-              ),
-              DropdownButton<String>(
-                value: BfilterType,
-                items: filterTypeMap.entries
-                    .map(
-                      (e) => DropdownMenuItem(
-                        value: e.value,
-                        child: Text(
-                          e.key,
-                          style: const TextStyle(color: Colors.black),
+                  SwitchListTile(
+                    controlAffinity: ListTileControlAffinity.leading,
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 45.0,
+                    ),
+                    title: const Text(
+                      "Filtreli arama",
+                      style: TextStyle(
+                        fontFamily: "Inter",
+                        color: Colors.black,
+                        fontSize: 16,
+                        fontWeight: FontWeight.normal,
+                      ),
+                    ),
+                    value: isWithFilter,
+                    activeThumbColor: Colors.teal,
+                    activeTrackColor: Colors.tealAccent,
+                    inactiveThumbColor: Colors.grey,
+                    inactiveTrackColor: Colors.grey.shade400,
+                    onChanged: (bool value) {
+                      setState(() {
+                        isWithFilter = value;
+                      });
+                    },
+                  ),
+                  IgnorePointer(
+                    ignoring: isWithFilter ? false : true,
+                    child: DropdownButton<String>(
+                      value: BfilterType,
+
+                      items: filterTypeMap.entries
+                          .map(
+                            (e) => DropdownMenuItem(
+                              value: e.value,
+                              child: Text(
+                                e.key,
+                                style: const TextStyle(color: Colors.black),
+                              ),
+                            ),
+                          )
+                          .toList(),
+                      onChanged: (String? value) {
+                        setState(() {
+                          BfilterType = value!;
+                        });
+                      },
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: SizedBox(
+                      width: 300.0,
+                      child: TextField(
+                        onChanged: (value) => filterValue = value,
+                        readOnly: isWithFilter ? false : true,
+                        decoration: InputDecoration(
+                          hintText: "Filtre Değişkeni",
+                          hintStyle: const TextStyle(color: color2),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(20.0),
+                          ),
                         ),
                       ),
-                    )
-                    .toList(),
-                onChanged: (String? value) {
-                  setState(() {
-                    BfilterType = value!;
-                  });
-                },
-              ),
-              Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: SizedBox(
-                  width: 300.0,
-                  child: TextField(
-                    onChanged: (value) => filterValue = value,
-                    decoration: InputDecoration(
-                      hintText: "Filtre Değişkeni",
-                      hintStyle: const TextStyle(color: color2),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20.0),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: SizedBox(
+                      width: 300.0,
+                      child: TextField(
+                        onChanged: (value) => limit = value,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                        ],
+                        keyboardType: TextInputType.number,
+                        decoration: InputDecoration(
+                          hintText: "Sayfaya Düşen Satır Sayısı",
+                          hintStyle: const TextStyle(color: color2),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(20.0),
+                          ),
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: SizedBox(
-                  width: 300.0,
-                  child: TextField(
-                    onChanged: (value) => limit = value,
-                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      hintText: "Sayfaya Düşen Satır Sayısı",
-                      hintStyle: const TextStyle(color: color2),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20.0),
-                      ),
+                  ElevatedButton(
+                    onPressed: () {
+                      _fetchData(isFirst: true);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      side: const BorderSide(color: Color(0xFF3A8772)),
+                      padding: const EdgeInsets.all(20.0),
+                      backgroundColor: color,
+                    ),
+                    child: const Text(
+                      "Listele",
+                      style: TextStyle(color: Colors.black),
                     ),
                   ),
-                ),
+                  const SizedBox(height: 10),
+                  ElevatedButton(
+                    onPressed: widget.onCancel,
+                    style: ElevatedButton.styleFrom(
+                      side: const BorderSide(color: Color(0xFF3A8772)),
+                      backgroundColor: color,
+                    ),
+                    child: const Text(
+                      "İptal",
+                      style: TextStyle(fontSize: 14, color: Colors.black),
+                    ),
+                  ),
+                ],
               ),
-              ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    currentPageNumber = 1;
-                  });
-                  _fetchData();
-                },
-                style: ElevatedButton.styleFrom(
-                  side: const BorderSide(color: Color(0xFF3A8772)),
-                  padding: const EdgeInsets.all(20.0),
-                  backgroundColor: color,
-                ),
-                child: const Text(
-                  "Listele",
-                  style: TextStyle(color: Colors.black),
-                ),
+            ),
+            const SizedBox(width: 100.0),
+            Container(
+              width: 900,
+              height: 700,
+              decoration: BoxDecoration(
+                color: color,
+                borderRadius: BorderRadius.circular(30.0),
+                border: Border.all(color: Colors.black, width: 2.0),
               ),
-              const SizedBox(height: 10),
-              ElevatedButton(
-                onPressed: widget.onCancel,
-                style: ElevatedButton.styleFrom(
-                  side: const BorderSide(color: Color(0xFF3A8772)),
-                  backgroundColor: color,
-                ),
-                child: const Text(
-                  "İptal",
-                  style: TextStyle(fontSize: 14, color: Colors.black),
-                ),
-              ),
-              const SizedBox(height: 20),
-              IDs.isEmpty
-                  ? const Text("Gösterilecek veri yok. Önce listeleyin.")
-                  : PaginatedDataTable(
-                      header: const Text("Kullanıcı Listesi"),
-                      rowsPerPage: itemsPerPage,
-                      onPageChanged: (int firstRowIndex) {
-                        int parsedLimit = int.tryParse(limit) ?? 20;
-                        setState(() {
-                          currentPageNumber =
-                              (firstRowIndex / parsedLimit).floor() + 1;
-                        });
-                        _fetchData();
-                      },
-                      columns: const [
-                        DataColumn(label: Text("ID")),
-                        DataColumn(label: Text("Kullanıcı Adı")),
-                        DataColumn(label: Text("Rol")),
+              child: isData
+                  ? Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        SingleChildScrollView(
+                          child: SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: DataTable(
+                              columns: const [
+                                DataColumn(label: Text("Kullanıcı ID")),
+                                DataColumn(label: Text("Kullanıcı Adı")),
+                                DataColumn(label: Text("Rol")),
+                                DataColumn(label: Text("Ekleyen")),
+                              ],
+                              rows: List.generate(userList.length, (i) {
+                                User currentBook = userList[i];
+                                return DataRow(
+                                  cells: [
+                                    DataCell(Text(currentBook.ID.toString())),
+                                    DataCell(Text(currentBook.userName)),
+                                    DataCell(Text(currentBook.role)),
+                                    DataCell(Text(currentBook.whoAdded)),
+                                  ],
+                                );
+                              }),
+                            ),
+                          ),
+                        ),
+                        NumberPagination(
+                          totalPages: totalPages,
+                          onPageChanged: (int index) {
+                            setState(() {
+                              currentPageNumber = index;
+                            });
+                            _fetchData(isFirst: false);
+                          },
+                          currentPage: currentPageNumber,
+                        ),
                       ],
-                      source: UserDataSource(
-                        ids: IDs,
-                        userNames: userNames,
-                        roles: roles,
+                    )
+                  : Center(
+                      child: Text(
+                        "Gösterilecek veri yok.\nÖnce listeleyin.",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 24.0,
+                          fontFamily: "Inter",
+                          color: Colors.black,
+                        ),
+                        textAlign: TextAlign.center,
                       ),
                     ),
-            ],
-          ),
+            ),
+            const SizedBox(width: 100.0),
+          ],
         ),
       ),
     );
   }
 }
 
-class UserDataSource extends DataTableSource {
-  final List<int> ids;
-  final List<String> userNames;
-  final List<String> roles;
+class User {
+  final int ID;
+  final String userName;
+  final String role;
+  final String whoAdded;
 
-  UserDataSource({
-    required this.ids,
-    required this.userNames,
-    required this.roles,
+  User({
+    required this.ID,
+    required this.userName,
+    required this.role,
+    required this.whoAdded,
   });
 
-  @override
-  DataRow? getRow(int index) {
-    if (index >= ids.length) return null;
-    return DataRow(
-      cells: [
-        DataCell(Text(ids[index].toString())),
-        DataCell(Text(userNames[index])),
-        DataCell(Text(roles[index])),
-      ],
-    );
+  static List<User> fromLists({
+    required List<Map<String, dynamic>> userListFromBE,
+  }) {
+    List<User> users = [];
+    for (int i = 0; i < userListFromBE.length; i++) {
+      Map<String, dynamic> currentDict = userListFromBE[i];
+      users.add(
+        User(
+          ID: currentDict["ID"],
+          userName: currentDict["userName"],
+          role: currentDict["role"],
+          whoAdded: currentDict["whoAdded"],
+        ),
+      );
+    }
+    return users;
   }
-
-  @override
-  bool get isRowCountApproximate => false;
-
-  @override
-  int get rowCount => ids.length;
-
-  @override
-  int get selectedRowCount => 0;
 }
 
 class UpdateUserWidget extends StatefulWidget {
@@ -668,7 +734,6 @@ class UpdateUserWidget extends StatefulWidget {
 class _UpdateUserWidgetState extends State<UpdateUserWidget> {
   TextEditingController idController = TextEditingController();
   TextEditingController userNameController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
   String role = "teacher";
 
   Map<String, String> roleMap = {
@@ -681,7 +746,7 @@ class _UpdateUserWidgetState extends State<UpdateUserWidget> {
     return Center(
       child: Container(
         width: 400,
-        height: 700,
+        height: 600,
         decoration: BoxDecoration(
           color: color,
           borderRadius: BorderRadius.circular(30.0),
@@ -704,7 +769,7 @@ class _UpdateUserWidgetState extends State<UpdateUserWidget> {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                const SizedBox(width: 125.0),
+                const SizedBox(width: 100.0),
                 Padding(
                   padding: const EdgeInsets.all(10.0),
                   child: SizedBox(
@@ -739,20 +804,18 @@ class _UpdateUserWidgetState extends State<UpdateUserWidget> {
                     setState(() {
                       if (response?["success"] == true &&
                           response?["data"]["ids"].isNotEmpty) {
-                        userNameController.text =
-                            response?["data"]["names"][0] ?? "";
-                        passwordController.text =
-                            response?["data"]["passwords"][0] ?? "";
-                        role = response?["data"]["roles"][0] ?? "teacher";
+                        Map<String, dynamic> currentUser =
+                            response?["data"]["users"][0];
+                        userNameController.text = currentUser["userName"];
+                        role = currentUser["role"];
                       } else {
                         userNameController.clear();
-                        passwordController.clear();
                         role = "teacher";
                       }
                     });
                   },
                 ),
-                const SizedBox(width: 125.0),
+                const SizedBox(width: 100.0),
               ],
             ),
             Padding(
@@ -790,28 +853,11 @@ class _UpdateUserWidgetState extends State<UpdateUserWidget> {
                 });
               },
             ),
-            Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: SizedBox(
-                width: 300.0,
-                child: TextField(
-                  controller: passwordController,
-                  decoration: InputDecoration(
-                    hintText: "Şifre",
-                    hintStyle: const TextStyle(color: color2),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(20.0),
-                    ),
-                  ),
-                ),
-              ),
-            ),
             ElevatedButton(
               onPressed: () async {
                 var response = await updateUser(
                   id: int.tryParse(idController.text) ?? 0,
                   userName: userNameController.text,
-                  password: passwordController.text,
                   role: role,
                 );
 

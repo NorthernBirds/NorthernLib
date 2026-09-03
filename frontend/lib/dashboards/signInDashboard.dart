@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/api_requests.dart';
 import 'package:frontend/main.dart';
-import 'adminDashboard.dart';
-import 'student_staffDashboard.dart';
-import 'teacherDashboard.dart';
+import 'dashboard.dart';
 import 'package:frontend/config.dart';
 
 class LoginDashboard extends StatefulWidget {
@@ -22,6 +20,7 @@ class _LoginDashboardState extends State<LoginDashboard> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       body: Container(
         width: double.infinity,
         height: double.infinity,
@@ -31,198 +30,207 @@ class _LoginDashboardState extends State<LoginDashboard> {
             fit: BoxFit.cover,
           ),
         ),
-        child: Center(
-          child: Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(30.0),
-              color: color,
-            ),
-            width: 400.0,
-            height: 600.0,
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  const Text(
-                    "Hoşgeldiniz!",
-                    style: TextStyle(
-                      fontSize: 36,
-                      fontFamily: "Inter",
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-
-                  Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: SizedBox(
-                      width: 300.0,
-                      child: TextField(
-                        onChanged: (value) {
-                          dbName = value;
-                        },
-                        decoration: InputDecoration(
-                          hintText: "Kütüphane adı",
-                          hintStyle: const TextStyle(
-                            color: Color.fromARGB(255, 151, 144, 144),
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20.0),
-                          ),
-                        ),
+        child: SafeArea(
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                  child: Center(
+                    child: Container(
+                      margin: const EdgeInsets.symmetric(
+                        vertical: 24.0,
+                        horizontal: 16.0,
                       ),
-                    ),
-                  ),
-
-                  Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: SizedBox(
-                      width: 300.0,
-                      child: TextField(
-                        onChanged: (value) {
-                          dbPassword = value;
-                        },
-                        obscureText: true,
-                        obscuringCharacter: "*",
-                        decoration: InputDecoration(
-                          hintText: "Kütüphane şifresi",
-                          hintStyle: const TextStyle(
-                            color: Color.fromARGB(255, 151, 144, 144),
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20.0),
-                          ),
-                        ),
+                      padding: const EdgeInsets.all(20.0),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(30.0),
+                        color: color,
                       ),
-                    ),
-                  ),
-
-                  Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: SizedBox(
-                      width: 300.0,
-                      child: TextField(
-                        onChanged: (value) {
-                          userName = value;
-                        },
-                        decoration: InputDecoration(
-                          hintText: "Kullanıcı adı",
-                          hintStyle: const TextStyle(
-                            color: Color.fromARGB(255, 151, 144, 144),
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20.0),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: SizedBox(
-                      width: 300.0,
-                      child: TextField(
-                        onChanged: (value) {
-                          password = value;
-                        },
-                        obscureText: true,
-                        obscuringCharacter: "*",
-                        decoration: InputDecoration(
-                          hintText: "Kullanıcı şifresi",
-                          hintStyle: const TextStyle(
-                            color: Color.fromARGB(255, 151, 144, 144),
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20.0),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  ElevatedButton(
-                    onPressed: () async {
-                      var response = await signIn(
-                        dbName: dbName,
-                        dbPassword: dbPassword,
-                        userName: userName,
-                        password: password,
-                      );
-                      if (response!["success"] == true) {
-                        if (response["role"] == "admin") {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => AdminDashboard(),
+                      width: 400.0,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
+                          const Text(
+                            "Hoşgeldiniz!",
+                            style: TextStyle(
+                              fontSize: 36,
+                              fontFamily: "Inter",
+                              fontWeight: FontWeight.bold,
                             ),
-                          );
-                        } else if (response["role"] == "teacher") {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => TeacherDashboard(),
-                            ),
-                          );
-                        } else {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => StudentStaffDashboard(),
-                            ),
-                          );
-                        }
-                      } else {
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              title: const Text("Hata"),
-                              content: Text(response["message"]),
-                              actions: <Widget>[
-                                ElevatedButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                  child: const Text("Tamam"),
+                          ),
+                          const SizedBox(height: 16.0),
+
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8.0),
+                            child: SizedBox(
+                              width: 300.0,
+                              child: TextField(
+                                onChanged: (value) {
+                                  dbName = value;
+                                },
+                                decoration: InputDecoration(
+                                  hintText: "Kütüphane adı",
+                                  hintStyle: const TextStyle(
+                                    color: Color.fromARGB(255, 151, 144, 144),
+                                  ),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(20.0),
+                                  ),
                                 ),
-                              ],
-                            );
-                          },
-                        );
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      side: const BorderSide(color: Color(0xFF3A8772)),
-                      backgroundColor: color,
-                    ),
-                    child: const Text(
-                      "Sign In",
-                      style: TextStyle(fontSize: 14, color: Colors.black),
+                              ),
+                            ),
+                          ),
+
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8.0),
+                            child: SizedBox(
+                              width: 300.0,
+                              child: TextField(
+                                onChanged: (value) {
+                                  dbPassword = value;
+                                },
+                                obscureText: true,
+                                obscuringCharacter: "*",
+                                decoration: InputDecoration(
+                                  hintText: "Kütüphane şifresi",
+                                  hintStyle: const TextStyle(
+                                    color: Color.fromARGB(255, 151, 144, 144),
+                                  ),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(20.0),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8.0),
+                            child: SizedBox(
+                              width: 300.0,
+                              child: TextField(
+                                onChanged: (value) {
+                                  userName = value;
+                                },
+                                decoration: InputDecoration(
+                                  hintText: "Kullanıcı adı",
+                                  hintStyle: const TextStyle(
+                                    color: Color.fromARGB(255, 151, 144, 144),
+                                  ),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(20.0),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8.0),
+                            child: SizedBox(
+                              width: 300.0,
+                              child: TextField(
+                                onChanged: (value) {
+                                  password = value;
+                                },
+                                obscureText: true,
+                                obscuringCharacter: "*",
+                                decoration: InputDecoration(
+                                  hintText: "Kullanıcı şifresi",
+                                  hintStyle: const TextStyle(
+                                    color: Color.fromARGB(255, 151, 144, 144),
+                                  ),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(20.0),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 16.0),
+
+                          ElevatedButton(
+                            onPressed: () async {
+                              var response = await signIn(
+                                dbName: dbName,
+                                dbPassword: dbPassword,
+                                userName: userName,
+                                password: password,
+                              );
+                              if (response!["success"] == true) {
+                                Navigator.pushAndRemoveUntil(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const Dashboard(),
+                                  ),
+                                  (Route<dynamic> route) => false,
+                                );
+                              } else {
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: const Text("Hata"),
+                                      content: Text(response["message"]),
+                                      actions: <Widget>[
+                                        ElevatedButton(
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                          },
+                                          child: const Text("Tamam"),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
+                              }
+                            },
+                            style: ElevatedButton.styleFrom(
+                              side: const BorderSide(color: Color(0xFF3A8772)),
+                              backgroundColor: color,
+                            ),
+                            child: const Text(
+                              "Sign In",
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 8.0),
+                          ElevatedButton(
+                            onPressed: () async {
+                              Navigator.pushAndRemoveUntil(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const MyHomePage(),
+                                ),
+                                (Route<dynamic> route) => false,
+                              );
+                            },
+                            style: ElevatedButton.styleFrom(
+                              side: const BorderSide(color: Color(0xFF3A8772)),
+                              backgroundColor: color,
+                            ),
+                            child: const Text(
+                              "İptal",
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                  ElevatedButton(
-                    onPressed: () async {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              const MyHomePage(title: 'NorthernLib'),
-                        ),
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      side: const BorderSide(color: Color(0xFF3A8772)),
-                      backgroundColor: color,
-                    ),
-                    child: const Text(
-                      "İptal",
-                      style: TextStyle(fontSize: 14, color: Colors.black),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+                ),
+              );
+            },
           ),
         ),
       ),

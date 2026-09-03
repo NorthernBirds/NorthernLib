@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:frontend/api_requests.dart';
 import 'package:frontend/config.dart';
+import 'package:number_pagination/number_pagination.dart';
 
 class AddCategoryWidget extends StatefulWidget {
   final VoidCallback onCancel;
@@ -222,60 +223,68 @@ class ListCategoriesWidget extends StatefulWidget {
 }
 
 class _ListCategoriesWidgetState extends State<ListCategoriesWidget> {
+  int currentPageNumber = 1;
+  int totalPages = 1;
+  int totalCategories = 0;
+  String limit = "10";
   bool isWithFilter = false;
   String BfilterType = "id";
   String filterValue = "";
-  String limit = "20";
-  int currentPageNumber = 1;
-  int itemsPerPage = 10;
+
+  bool isData = false;
+  List<Category> categoryList = [];
 
   Map<String, String> filterTypeMap = {
     "Kategori ID": "id",
     "Kategori Adı": "categoryName",
-    "Kim ekledi?": "whoAdded",
+    "Kim Ekledi?": "whoAdded",
   };
-
-  List<int> IDs = [];
-  List<String> categoryNames = [];
-  List<String> whoAddeds = [];
-
-  Future<void> _fetchData() async {
-    int parsedLimit = int.tryParse(limit) ?? 20;
+  Future<void> _fetchData({required bool isFirst}) async {
     var response = await listCategories(
       isWithFilter: isWithFilter,
       filterType: BfilterType,
       filterValue: filterValue,
-      limit: parsedLimit,
+      limit: int.tryParse(limit) ?? 10,
       pageNumber: currentPageNumber,
     );
 
-    if (response?["success"] == false) {
-      if (context.mounted) {
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: const Text("Hata"),
-              content: Text(
-                response?["message"] ?? "Bilinmeyen bir hata oluştu.",
-              ),
-              actions: <Widget>[
-                ElevatedButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: const Text("Tamam"),
-                ),
-              ],
-            );
-          },
-        );
-      }
-    } else {
+    if (response?["success"] == true) {
       var data = response?["data"];
       setState(() {
-        IDs = List<int>.from(data?["ids"] ?? []);
-        categoryNames = List<String>.from(data?["categoryNames"] ?? []);
-        whoAddeds = List<String>.from(data?["whoAddeds"] ?? []);
-        itemsPerPage = IDs.length;
+        isData = true;
+        categoryList = Category.fromLists(
+          categoryListFromBE: List<Map<String, dynamic>>.from(
+            data["categories"] ?? [],
+          ),
+        );
+
+        if (isFirst) {
+          totalPages = data["pageCount"] ?? 1;
+          totalCategories = data["totalCategories"] ?? 0;
+        }
+      });
+    } else {
+      setState(() {
+        isData = false;
+        if (context.mounted) {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: const Text("Hata"),
+                content: Text(
+                  response?["message"] ?? "Bilinmeyen bir hata oluştu.",
+                ),
+                actions: <Widget>[
+                  ElevatedButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: const Text("Tamam"),
+                  ),
+                ],
+              );
+            },
+          );
+        }
       });
     }
   }
@@ -283,196 +292,246 @@ class _ListCategoriesWidgetState extends State<ListCategoriesWidget> {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Container(
-        width: 1200,
-        height: 1200,
-        color: color,
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: 20.0),
-                child: Text(
-                  "Kategori Listeleme",
-                  style: TextStyle(
-                    fontFamily: "Inter",
-                    color: Colors.black,
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            SizedBox(width: 100.0),
+            Container(
+              width: 400,
+              height: 600,
+              decoration: BoxDecoration(
+                color: color,
+                borderRadius: BorderRadius.circular(30.0),
+                border: Border.all(color: Colors.black, width: 2.0),
               ),
-              SwitchListTile(
-                controlAffinity: ListTileControlAffinity.leading,
-                contentPadding: const EdgeInsets.symmetric(horizontal: 430.0),
-                title: const Text(
-                  "Filtreli arama",
-                  style: TextStyle(
-                    fontFamily: "Inter",
-                    color: Colors.black,
-                    fontSize: 16,
-                    fontWeight: FontWeight.normal,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 20.0),
+                    child: Text(
+                      "Kategori Listeleme",
+                      style: TextStyle(
+                        fontFamily: "Inter",
+                        color: Colors.black,
+                        fontSize: 36,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
-                ),
-                value: isWithFilter,
-                activeThumbColor: Colors.teal,
-                activeTrackColor: Colors.tealAccent,
-                inactiveThumbColor: Colors.grey,
-                inactiveTrackColor: Colors.grey.shade400,
-                onChanged: (bool value) {
-                  setState(() {
-                    isWithFilter = value;
-                  });
-                },
-              ),
-              DropdownButton<String>(
-                value: BfilterType,
-                items: filterTypeMap.entries
-                    .map(
-                      (e) => DropdownMenuItem(
-                        value: e.value,
-                        child: Text(
-                          e.key,
-                          style: const TextStyle(color: Colors.black),
+                  SwitchListTile(
+                    controlAffinity: ListTileControlAffinity.leading,
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 45.0,
+                    ),
+                    title: const Text(
+                      "Filtreli arama",
+                      style: TextStyle(
+                        fontFamily: "Inter",
+                        color: Colors.black,
+                        fontSize: 16,
+                        fontWeight: FontWeight.normal,
+                      ),
+                    ),
+                    value: isWithFilter,
+                    activeThumbColor: Colors.teal,
+                    activeTrackColor: Colors.tealAccent,
+                    inactiveThumbColor: Colors.grey,
+                    inactiveTrackColor: Colors.grey.shade400,
+                    onChanged: (bool value) {
+                      setState(() {
+                        isWithFilter = value;
+                      });
+                    },
+                  ),
+                  IgnorePointer(
+                    ignoring: isWithFilter ? false : true,
+                    child: DropdownButton<String>(
+                      value: BfilterType,
+
+                      items: filterTypeMap.entries
+                          .map(
+                            (e) => DropdownMenuItem(
+                              value: e.value,
+                              child: Text(
+                                e.key,
+                                style: const TextStyle(color: Colors.black),
+                              ),
+                            ),
+                          )
+                          .toList(),
+                      onChanged: (String? value) {
+                        setState(() {
+                          BfilterType = value!;
+                        });
+                      },
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: SizedBox(
+                      width: 300.0,
+                      child: TextField(
+                        onChanged: (value) => filterValue = value,
+                        readOnly: isWithFilter ? false : true,
+                        decoration: InputDecoration(
+                          hintText: "Filtre Değişkeni",
+                          hintStyle: const TextStyle(color: color2),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(20.0),
+                          ),
                         ),
                       ),
-                    )
-                    .toList(),
-                onChanged: (String? value) {
-                  setState(() {
-                    BfilterType = value!;
-                  });
-                },
-              ),
-              Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: SizedBox(
-                  width: 300.0,
-                  child: TextField(
-                    onChanged: (value) => filterValue = value,
-                    decoration: InputDecoration(
-                      hintText: "Filtre Değişkeni",
-                      hintStyle: const TextStyle(color: color2),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20.0),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: SizedBox(
+                      width: 300.0,
+                      child: TextField(
+                        onChanged: (value) => limit = value,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                        ],
+                        keyboardType: TextInputType.number,
+                        decoration: InputDecoration(
+                          hintText: "Sayfaya Düşen Satır Sayısı",
+                          hintStyle: const TextStyle(color: color2),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(20.0),
+                          ),
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: SizedBox(
-                  width: 300.0,
-                  child: TextField(
-                    onChanged: (value) => limit = value,
-                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      hintText: "Sayfaya Düşen Satır Sayısı",
-                      hintStyle: const TextStyle(color: color2),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20.0),
-                      ),
+                  ElevatedButton(
+                    onPressed: () {
+                      _fetchData(isFirst: true);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      side: const BorderSide(color: Color(0xFF3A8772)),
+                      padding: const EdgeInsets.all(20.0),
+                      backgroundColor: color,
+                    ),
+                    child: const Text(
+                      "Listele",
+                      style: TextStyle(color: Colors.black),
                     ),
                   ),
-                ),
+                  const SizedBox(height: 10),
+                  ElevatedButton(
+                    onPressed: widget.onCancel,
+                    style: ElevatedButton.styleFrom(
+                      side: const BorderSide(color: Color(0xFF3A8772)),
+                      backgroundColor: color,
+                    ),
+                    child: const Text(
+                      "İptal",
+                      style: TextStyle(fontSize: 14, color: Colors.black),
+                    ),
+                  ),
+                ],
               ),
-              ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    currentPageNumber = 1;
-                  });
-                  _fetchData();
-                },
-                style: ElevatedButton.styleFrom(
-                  side: const BorderSide(color: Color(0xFF3A8772)),
-                  padding: const EdgeInsets.all(20.0),
-                  backgroundColor: color,
-                ),
-                child: const Text(
-                  "Listele",
-                  style: TextStyle(color: Colors.black),
-                ),
+            ),
+            SizedBox(width: 100.0),
+            Container(
+              width: 900,
+              height: 700,
+              decoration: BoxDecoration(
+                color: color,
+                borderRadius: BorderRadius.circular(30.0),
+                border: Border.all(color: Colors.black, width: 2.0),
               ),
-              const SizedBox(height: 10),
-              ElevatedButton(
-                onPressed: widget.onCancel,
-                style: ElevatedButton.styleFrom(
-                  side: const BorderSide(color: Color(0xFF3A8772)),
-                  backgroundColor: color,
-                ),
-                child: const Text(
-                  "İptal",
-                  style: TextStyle(fontSize: 14, color: Colors.black),
-                ),
-              ),
-              const SizedBox(height: 20),
-              IDs.isEmpty
-                  ? const Text("Gösterilecek veri yok. Önce listeleyin.")
-                  : PaginatedDataTable(
-                      header: const Text("Kategori Listesi"),
-                      rowsPerPage: itemsPerPage,
-                      onPageChanged: (int firstRowIndex) {
-                        int parsedLimit = int.tryParse(limit) ?? 20;
-                        setState(() {
-                          currentPageNumber =
-                              (firstRowIndex / parsedLimit).floor() + 1;
-                        });
-                        _fetchData();
-                      },
-                      columns: const [
-                        DataColumn(label: Text("ID")),
-                        DataColumn(label: Text("Kategori Adı")),
-                        DataColumn(label: Text("Ekleyen")),
+              child: isData
+                  ? Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        SingleChildScrollView(
+                          child: SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: DataTable(
+                              columns: const [
+                                DataColumn(label: Text("Kategori ID")),
+                                DataColumn(label: Text("Kategori Adı")),
+                                DataColumn(label: Text("Ekleyen")),
+                              ],
+                              rows: List.generate(categoryList.length, (i) {
+                                Category currentCategory = categoryList[i];
+                                return DataRow(
+                                  cells: [
+                                    DataCell(
+                                      Text(currentCategory.ID.toString()),
+                                    ),
+                                    DataCell(Text(currentCategory.name)),
+                                    DataCell(Text(currentCategory.whoAdded)),
+                                  ],
+                                );
+                              }),
+                            ),
+                          ),
+                        ),
+                        NumberPagination(
+                          totalPages: totalPages,
+                          onPageChanged: (int index) {
+                            setState(() {
+                              currentPageNumber = index;
+                            });
+                            _fetchData(isFirst: false);
+                          },
+                          currentPage: currentPageNumber,
+                        ),
                       ],
-                      source: CategoryDataSource(
-                        ids: IDs,
-                        names: categoryNames,
-                        whoAddeds: whoAddeds,
+                    )
+                  : Center(
+                      child: Text(
+                        "Gösterilecek veri yok.\nÖnce listeleyin.",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 24.0,
+                          fontFamily: "Inter",
+                          color: Colors.black,
+                        ),
+                        textAlign: TextAlign.center,
                       ),
                     ),
-            ],
-          ),
+            ),
+            SizedBox(width: 100.0),
+          ],
         ),
       ),
     );
   }
 }
 
-class CategoryDataSource extends DataTableSource {
-  final List<int> ids;
-  final List<String> names;
-  final List<String> whoAddeds;
+class Category {
+  final int ID;
+  final String name;
+  final String whoAdded;
 
-  CategoryDataSource({
-    required this.ids,
-    required this.names,
-    required this.whoAddeds,
-  });
+  Category({required this.ID, required this.name, required this.whoAdded});
 
-  @override
-  DataRow? getRow(int index) {
-    if (index >= ids.length) return null;
-    return DataRow(
-      cells: [
-        DataCell(Text(ids[index].toString())),
-        DataCell(Text(names[index])),
-        DataCell(Text(whoAddeds[index])),
-      ],
-    );
+  static List<Category> fromLists({
+    required List<Map<String, dynamic>> categoryListFromBE,
+  }) {
+    List<Category> categories = [];
+    for (int i = 0; i < categoryListFromBE.length; i++) {
+      Map<String, dynamic> currentDict = categoryListFromBE[i];
+      categories.add(
+        Category(
+          ID: currentDict["ID"],
+          name: currentDict["name"],
+          whoAdded: currentDict["whoAdded"],
+        ),
+      );
+    }
+    return categories;
   }
-
-  @override
-  bool get isRowCountApproximate => false;
-
-  @override
-  int get rowCount => ids.length;
-
-  @override
-  int get selectedRowCount => 0;
 }
 
 class UpdateCategoryWidget extends StatefulWidget {
@@ -550,9 +609,10 @@ class _UpdateCategoryWidgetState extends State<UpdateCategoryWidget> {
                     );
                     setState(() {
                       if (response?["success"] == true &&
-                          response?["data"]["ids"].isNotEmpty) {
-                        categoryName =
-                            response?["data"]["categoryNames"][0] ?? "Roman";
+                          response?["data"]["categories"].isNotEmpty) {
+                        Map<String, dynamic> currentCategory =
+                            response?["data"]["categories"][0];
+                        categoryName = currentCategory["name"] ?? "Roman";
                       } else {
                         categoryName = "Roman";
                       }

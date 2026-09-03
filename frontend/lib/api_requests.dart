@@ -48,15 +48,11 @@ final Dio dio = Dio(options)
 
 Future<Map<String, dynamic>?> signUp({
   required String dbName,
-  required String developerPassword,
+  required String license,
 }) async {
   var response = await dio.post(
     "/signUp",
-    data: {
-      "dbName": dbName,
-      "developerPassword": developerPassword,
-      "appToken": appKey,
-    },
+    data: {"dbName": dbName, "license": license, "appToken": appKey},
   );
   return response.data;
 }
@@ -81,7 +77,6 @@ Future<Map<String, dynamic>?> signIn({
     session["token"] = response.data["token"];
     session["userName"] = response.data["userName"];
     session["role"] = response.data["role"];
-    session["duration"] = 0;
   }
   return response.data;
 }
@@ -373,7 +368,6 @@ Future<Map<String, dynamic>?> listUsers({
 Future<Map<String, dynamic>?> updateUser({
   required int id,
   required String userName,
-  required String password,
   required String role,
 }) async {
   var response = await dio.post(
@@ -381,7 +375,6 @@ Future<Map<String, dynamic>?> updateUser({
     data: {
       "id": id,
       "userName": userName,
-      "password": password,
       "role": role,
       "appToken": appKey,
       "token": session["token"],

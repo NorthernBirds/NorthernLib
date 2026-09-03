@@ -21,18 +21,13 @@ class MyApp extends StatelessWidget {
         ),
       ),
       navigatorKey: navigatorKey,
-      home: const MyHomePage(title: 'NorthernLib'),
-      builder: (context, child) {
-        return child!;
-      },
+      home: const MyHomePage(),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
+  const MyHomePage({super.key});
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -43,7 +38,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color(0xFF123330),
+        backgroundColor: const Color(0xFF123330),
         title: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
@@ -52,7 +47,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
                   TextButton(
-                    child: Text(
+                    child: const Text(
                       "Hakkımda",
                       style: TextStyle(
                         fontFamily: "Public Sans",
@@ -151,7 +146,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         },
                       );
                     },
-                    child: Text(
+                    child: const Text(
                       "İletişim",
                       style: TextStyle(
                         fontSize: 15.0,
@@ -173,21 +168,22 @@ class _MyHomePageState extends State<MyHomePage> {
                     padding: const EdgeInsets.only(right: 35.0),
                     child: ElevatedButton(
                       onPressed: () {
-                        Navigator.push(
+                        Navigator.pushAndRemoveUntil(
                           context,
                           MaterialPageRoute(
                             builder: (context) => LoginDashboard(),
                           ),
+                          (Route<dynamic> route) => false,
                         );
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFFd9d9d9),
+                        backgroundColor: const Color(0xFFd9d9d9),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(15.0),
                         ),
                       ),
-                      child: Text(
-                        "Sign In",
+                      child: const Text(
+                        "Giriş Yap",
                         style: TextStyle(
                           fontFamily: "Inter",
                           fontSize: 16.0,
@@ -205,7 +201,9 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: LayoutBuilder(
         builder: (context, constraints) {
-          final double usableHeight = constraints.maxHeight;
+          final double usableHeight = constraints.maxHeight < 600
+              ? 600
+              : constraints.maxHeight;
 
           return SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
@@ -224,12 +222,11 @@ class _MyHomePageState extends State<MyHomePage> {
                       ),
                     ),
                   ),
-
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       const SizedBox(height: 57.0),
-                      Text(
+                      const Text(
                         'NorthernLib ile\nkütüphanelerinizin\ntakibini kolaylaştırın!',
                         textAlign: TextAlign.center,
                         style: TextStyle(
@@ -242,21 +239,22 @@ class _MyHomePageState extends State<MyHomePage> {
                       const SizedBox(height: 57.0),
                       ElevatedButton(
                         onPressed: () {
-                          Navigator.push(
+                          Navigator.pushAndRemoveUntil(
                             context,
                             MaterialPageRoute(
                               builder: (context) => signUpDash(),
                             ),
+                            (Route<dynamic> route) => false,
                           );
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Color(0xFFd9d9d9),
+                          backgroundColor: const Color(0xFFd9d9d9),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(15.0),
                           ),
                         ),
-                        child: Text(
-                          "Sign Up",
+                        child: const Text(
+                          "Kayıt Ol",
                           style: TextStyle(
                             fontFamily: "Inter",
                             fontSize: 16.0,
@@ -268,18 +266,17 @@ class _MyHomePageState extends State<MyHomePage> {
                     ],
                   ),
                 ),
-
                 Container(
                   width: double.infinity,
                   padding: const EdgeInsets.symmetric(vertical: 16),
-                  color: Color(0xFF123330),
+                  color: const Color(0xFF123330),
                   child: const Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       SizedBox(width: 20),
                       Text(
-                        'Copyright © 2026 Yusuf Enes Kuş. All rights reserved.',
+                        'Copyright © 2026 Yusuf Enes Kuş',
                         style: TextStyle(
                           color: Colors.white54,
                           fontSize: 12,

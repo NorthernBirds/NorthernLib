@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:frontend/api_requests.dart';
 import 'package:frontend/config.dart';
+import 'package:number_pagination/number_pagination.dart';
 
 class BorrowBookWidget extends StatefulWidget {
   final VoidCallback onCancel;
@@ -302,75 +303,71 @@ class ListLoansWidget extends StatefulWidget {
 }
 
 class _ListLoansWidgetState extends State<ListLoansWidget> {
+  int currentPageNumber = 1;
+  int totalPages = 1;
+  int totalLoans = 0;
+  String limit = "10";
   bool isWithFilter = false;
   String BfilterType = "id";
   String filterValue = "";
-  String limit = "20";
-  int currentPageNumber = 1;
-  int itemsPerPage = 10;
+
+  bool isData = false;
+  List<Loan> loanList = [];
 
   Map<String, String> filterTypeMap = {
-    "ID": "id",
-    "Öğrenci No": "studentID",
+    "Ödünç Alım ID": "id",
+    "Öğrenci ID": "studentID",
     "Kitap ID": "bookID",
-    "Ödünç Alma Tarihi": "borrowDate",
-    "Planlanan Geri Getirme Tarihi": "returnDate",
-    "Gerçek Geri Getirme Tarihi": "returnedAt",
-    "Durum": "loanStatus",
+    "Ödünç Alım Tarihi": "borrowDate",
+    "Geri Getirme Tarihi": "returnDate",
+    "Geri Getirilen Tarih": "returnAt",
+    "Durum": "isTaken",
     "Kim ekledi?": "whoAdded",
   };
-
-  List<int> IDs = [];
-  List<int> studentIDs = [];
-  List<String> bookNames = [];
-  List<String> borrowDates = [];
-  List<String> returnDates = [];
-  List<String> returnedAts = [];
-  List<String> loanStatuses = [];
-  List<String> whoAddeds = [];
-
-  Future<void> _fetchData() async {
-    int parsedLimit = int.tryParse(limit) ?? 20;
+  Future<void> _fetchData({required bool isFirst}) async {
     var response = await listLoans(
       isWithFilter: isWithFilter,
       filterType: BfilterType,
       filterValue: filterValue,
-      limit: parsedLimit,
+      limit: int.tryParse(limit) ?? 10,
       pageNumber: currentPageNumber,
     );
 
-    if (response?["success"] == false) {
-      if (context.mounted) {
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: const Text("Hata"),
-              content: Text(
-                response?["message"] ?? "Bilinmeyen bir hata oluştu.",
-              ),
-              actions: <Widget>[
-                ElevatedButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: const Text("Tamam"),
-                ),
-              ],
-            );
-          },
-        );
-      }
-    } else {
+    if (response?["success"] == true) {
       var data = response?["data"];
       setState(() {
-        IDs = List<int>.from(data?["ids"] ?? []);
-        studentIDs = List<int>.from(data?["studentIDs"] ?? []);
-        bookNames = List<String>.from(data?["bookNames"] ?? []);
-        borrowDates = List<String>.from(data?["borrowDates"] ?? []);
-        returnDates = List<String>.from(data?["returnDates"] ?? []);
-        returnedAts = List<String>.from(data?["returnedAts"] ?? []);
-        loanStatuses = List<String>.from(data?["loanStatuses"] ?? []);
-        whoAddeds = List<String>.from(data?["whoAddeds"] ?? []);
-        itemsPerPage = IDs.length;
+        isData = true;
+        loanList = Loan.fromLists(
+          loanListFromBE: List<Map<String, dynamic>>.from(data["loans"] ?? []),
+        );
+
+        if (isFirst) {
+          totalPages = data["pageCount"] ?? 1;
+          totalLoans = data["totalLoans"] ?? 0;
+        }
+      });
+    } else {
+      setState(() {
+        isData = false;
+        if (context.mounted) {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: const Text("Hata"),
+                content: Text(
+                  response?["message"] ?? "Bilinmeyen bir hata oluştu.",
+                ),
+                actions: <Widget>[
+                  ElevatedButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: const Text("Tamam"),
+                  ),
+                ],
+              );
+            },
+          );
+        }
       });
     }
   }
@@ -378,223 +375,278 @@ class _ListLoansWidgetState extends State<ListLoansWidget> {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Container(
-        width: 1200,
-        height: 1200,
-        color: color,
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: 20.0),
-                child: Text(
-                  "Kitap Listeleme",
-                  style: TextStyle(
-                    fontFamily: "Inter",
-                    color: Colors.black,
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            const SizedBox(width: 100.0),
+            Container(
+              width: 400,
+              height: 600,
+              decoration: BoxDecoration(
+                color: color,
+                borderRadius: BorderRadius.circular(30.0),
+                border: Border.all(color: Colors.black, width: 2.0),
               ),
-              SwitchListTile(
-                controlAffinity: ListTileControlAffinity.leading,
-                contentPadding: const EdgeInsets.symmetric(horizontal: 430.0),
-                title: const Text(
-                  "Filtreli arama",
-                  style: TextStyle(
-                    fontFamily: "Inter",
-                    color: Colors.black,
-                    fontSize: 16,
-                    fontWeight: FontWeight.normal,
-                  ),
-                ),
-                value: isWithFilter,
-                activeThumbColor: Colors.teal,
-                activeTrackColor: Colors.tealAccent,
-                inactiveThumbColor: Colors.grey,
-                inactiveTrackColor: Colors.grey.shade400,
-                onChanged: (bool value) {
-                  setState(() {
-                    isWithFilter = value;
-                  });
-                },
-              ),
-              DropdownButton<String>(
-                value: BfilterType,
-                items: filterTypeMap.entries
-                    .map(
-                      (e) => DropdownMenuItem(
-                        value: e.value,
-                        child: Text(
-                          e.key,
-                          style: const TextStyle(color: Colors.black),
-                        ),
-                      ),
-                    )
-                    .toList(),
-                onChanged: (String? value) {
-                  setState(() {
-                    BfilterType = value!;
-                  });
-                },
-              ),
-              Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: SizedBox(
-                  width: 300.0,
-                  child: TextField(
-                    onChanged: (value) => filterValue = value,
-                    decoration: InputDecoration(
-                      hintText: "Filtre Değişkeni",
-                      hintStyle: const TextStyle(color: color2),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 20.0),
+                    child: Text(
+                      "Ödünç Alım Listeleme",
+                      style: TextStyle(
+                        fontFamily: "Inter",
+                        color: Colors.black,
+                        fontSize: 36,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: SizedBox(
-                  width: 300.0,
-                  child: TextField(
-                    onChanged: (value) => limit = value,
-                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      hintText: "Sayfaya Düşen Satır Sayısı",
-                      hintStyle: const TextStyle(color: color2),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20.0),
+                  SwitchListTile(
+                    controlAffinity: ListTileControlAffinity.leading,
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 45.0,
+                    ),
+                    title: const Text(
+                      "Filtreli arama",
+                      style: TextStyle(
+                        fontFamily: "Inter",
+                        color: Colors.black,
+                        fontSize: 16,
+                        fontWeight: FontWeight.normal,
                       ),
                     ),
+                    value: isWithFilter,
+                    activeThumbColor: Colors.teal,
+                    activeTrackColor: Colors.tealAccent,
+                    inactiveThumbColor: Colors.grey,
+                    inactiveTrackColor: Colors.grey.shade400,
+                    onChanged: (bool value) {
+                      setState(() {
+                        isWithFilter = value;
+                      });
+                    },
                   ),
-                ),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    currentPageNumber = 1;
-                  });
-                  _fetchData();
-                },
-                style: ElevatedButton.styleFrom(
-                  side: const BorderSide(color: Color(0xFF3A8772)),
-                  padding: const EdgeInsets.all(20.0),
-                  backgroundColor: color,
-                ),
-                child: const Text(
-                  "Listele",
-                  style: TextStyle(color: Colors.black),
-                ),
-              ),
-              const SizedBox(height: 10),
-              ElevatedButton(
-                onPressed: widget.onCancel,
-                style: ElevatedButton.styleFrom(
-                  side: const BorderSide(color: Color(0xFF3A8772)),
-                  backgroundColor: color,
-                ),
-                child: const Text(
-                  "İptal",
-                  style: TextStyle(fontSize: 14, color: Colors.black),
-                ),
-              ),
-              const SizedBox(height: 20),
-              IDs.isEmpty
-                  ? const Text("Gösterilecek veri yok. Önce listeleyin.")
-                  : PaginatedDataTable(
-                      header: const Text("Kitap Listesi"),
-                      rowsPerPage: itemsPerPage,
-                      onPageChanged: (int firstRowIndex) {
-                        int parsedLimit = int.tryParse(limit) ?? 20;
+                  IgnorePointer(
+                    ignoring: isWithFilter ? false : true,
+                    child: DropdownButton<String>(
+                      value: BfilterType,
+
+                      items: filterTypeMap.entries
+                          .map(
+                            (e) => DropdownMenuItem(
+                              value: e.value,
+                              child: Text(
+                                e.key,
+                                style: const TextStyle(color: Colors.black),
+                              ),
+                            ),
+                          )
+                          .toList(),
+                      onChanged: (String? value) {
                         setState(() {
-                          currentPageNumber =
-                              (firstRowIndex / parsedLimit).floor() + 1;
+                          BfilterType = value!;
                         });
-                        _fetchData();
                       },
-                      columns: const [
-                        DataColumn(label: Text("ID")),
-                        DataColumn(label: Text("Öğrenci No")),
-                        DataColumn(label: Text("Kitap Adı")),
-                        DataColumn(label: Text("Ödünç Alma Tarihi")),
-                        DataColumn(
-                          label: Text("Planlanan Geri Getirme Tarihi"),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: SizedBox(
+                      width: 300.0,
+                      child: TextField(
+                        onChanged: (value) => filterValue = value,
+                        readOnly: isWithFilter ? false : true,
+                        decoration: InputDecoration(
+                          hintText: "Filtre Değişkeni",
+                          hintStyle: const TextStyle(color: color2),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(20.0),
+                          ),
                         ),
-                        DataColumn(label: Text("Gerçek Geri Getirilme Tarihi")),
-                        DataColumn(label: Text("Durum")),
-                        DataColumn(label: Text("Ekleyen")),
-                      ],
-                      source: LoanDataSource(
-                        ids: IDs,
-                        bookNames: bookNames,
-                        studentIDs: studentIDs,
-                        borrowDates: borrowDates,
-                        returnDates: returnDates,
-                        returnedAts: returnedAts,
-                        loanStatuses: loanStatuses,
-                        whoAddeds: whoAddeds,
                       ),
                     ),
-            ],
-          ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: SizedBox(
+                      width: 300.0,
+                      child: TextField(
+                        onChanged: (value) => limit = value,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                        ],
+                        keyboardType: TextInputType.number,
+                        decoration: InputDecoration(
+                          hintText: "Sayfaya Düşen Satır Sayısı",
+                          hintStyle: const TextStyle(color: color2),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(20.0),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      _fetchData(isFirst: true);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      side: const BorderSide(color: Color(0xFF3A8772)),
+                      padding: const EdgeInsets.all(20.0),
+                      backgroundColor: color,
+                    ),
+                    child: const Text(
+                      "Listele",
+                      style: TextStyle(color: Colors.black),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  ElevatedButton(
+                    onPressed: widget.onCancel,
+                    style: ElevatedButton.styleFrom(
+                      side: const BorderSide(color: Color(0xFF3A8772)),
+                      backgroundColor: color,
+                    ),
+                    child: const Text(
+                      "İptal",
+                      style: TextStyle(fontSize: 14, color: Colors.black),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(width: 100.0),
+            Container(
+              width: 900,
+              height: 700,
+              decoration: BoxDecoration(
+                color: color,
+                borderRadius: BorderRadius.circular(30.0),
+                border: Border.all(color: Colors.black, width: 2.0),
+              ),
+              child: isData
+                  ? Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        SingleChildScrollView(
+                          child: SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: DataTable(
+                              columns: const [
+                                DataColumn(label: Text("ID")),
+                                DataColumn(label: Text("Öğrenci ID")),
+                                DataColumn(label: Text("Kitap ID")),
+                                DataColumn(label: Text("Ödünç Alım Tarihi")),
+                                DataColumn(
+                                  label: Text("Planlanan Geri Getirme Tarihi"),
+                                ),
+                                DataColumn(label: Text("Geri Getirilen Tarih")),
+                                DataColumn(label: Text("Durum")),
+                                DataColumn(label: Text("Ekleyen")),
+                              ],
+                              rows: List.generate(loanList.length, (i) {
+                                Loan currentBook = loanList[i];
+                                return DataRow(
+                                  cells: [
+                                    DataCell(Text(currentBook.ID.toString())),
+                                    DataCell(
+                                      Text(currentBook.studentID.toString()),
+                                    ),
+                                    DataCell(
+                                      Text(currentBook.bookID.toString()),
+                                    ),
+                                    DataCell(Text(currentBook.borrowDate)),
+                                    DataCell(Text(currentBook.returnDate)),
+                                    DataCell(Text(currentBook.returnedAt)),
+                                    DataCell(Text(currentBook.status)),
+                                    DataCell(Text(currentBook.whoAdded)),
+                                  ],
+                                );
+                              }),
+                            ),
+                          ),
+                        ),
+                        NumberPagination(
+                          totalPages: totalPages,
+                          onPageChanged: (int index) {
+                            setState(() {
+                              currentPageNumber = index;
+                            });
+                            _fetchData(isFirst: false);
+                          },
+                          currentPage: currentPageNumber,
+                        ),
+                      ],
+                    )
+                  : Center(
+                      child: Text(
+                        "Gösterilecek veri yok.\nÖnce listeleyin.",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 24.0,
+                          fontFamily: "Inter",
+                          color: Colors.black,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+            ),
+            SizedBox(width: 100.0),
+          ],
         ),
       ),
     );
   }
 }
 
-class LoanDataSource extends DataTableSource {
-  final List<int> ids;
-  final List<String> bookNames;
-  final List<int> studentIDs;
-  final List<String> borrowDates;
-  final List<String> returnDates;
-  final List<String> returnedAts;
-  final List<String> loanStatuses;
-  final List<String> whoAddeds;
+class Loan {
+  final int ID;
+  final int studentID;
+  final int bookID;
+  final String borrowDate;
+  final String returnDate;
+  final String returnedAt;
+  final String status;
+  final String whoAdded;
 
-  LoanDataSource({
-    required this.ids,
-    required this.bookNames,
-    required this.studentIDs,
-    required this.borrowDates,
-    required this.returnDates,
-    required this.returnedAts,
-    required this.loanStatuses,
-    required this.whoAddeds,
+  Loan({
+    required this.ID,
+    required this.studentID,
+    required this.bookID,
+    required this.borrowDate,
+    required this.returnDate,
+    required this.returnedAt,
+    required this.status,
+    required this.whoAdded,
   });
 
-  @override
-  DataRow? getRow(int index) {
-    if (index >= ids.length) return null;
-    return DataRow(
-      cells: [
-        DataCell(Text(ids[index].toString())),
-        DataCell(Text(studentIDs[index].toString())),
-        DataCell(Text(bookNames[index])),
-        DataCell(Text(borrowDates[index])),
-        DataCell(Text(returnDates[index])),
-        DataCell(Text(returnedAts[index])),
-        DataCell(Text(loanStatuses[index])),
-        DataCell(Text(whoAddeds[index])),
-      ],
-    );
+  static List<Loan> fromLists({
+    required List<Map<String, dynamic>> loanListFromBE,
+  }) {
+    List<Loan> loans = [];
+    for (int i = 0; i < loanListFromBE.length; i++) {
+      Map<String, dynamic> currentDict = loanListFromBE[i];
+      loans.add(
+        Loan(
+          ID: currentDict["ID"],
+          studentID: currentDict["studentID"],
+          bookID: currentDict["bookID"],
+          borrowDate: currentDict["borrowDate"],
+          returnDate: currentDict["returnDate"],
+          returnedAt: currentDict["returnedAt"],
+          status: currentDict["status"],
+          whoAdded: currentDict["whoAdded"],
+        ),
+      );
+    }
+    return loans;
   }
-
-  @override
-  bool get isRowCountApproximate => false;
-
-  @override
-  int get rowCount => ids.length;
-
-  @override
-  int get selectedRowCount => 0;
 }
 
 class UpdateLoanWidget extends StatefulWidget {
@@ -629,6 +681,7 @@ class _UpdateLoanWidgetState extends State<UpdateLoanWidget> {
           children: <Widget>[
             const Text(
               "Kitap Ödünç Alım Güncelleme",
+              textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 36,
                 fontFamily: "Inter",
@@ -640,7 +693,7 @@ class _UpdateLoanWidgetState extends State<UpdateLoanWidget> {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                const SizedBox(width: 125.0),
+                const SizedBox(width: 100.0),
                 Padding(
                   padding: const EdgeInsets.all(10.0),
                   child: SizedBox(
@@ -657,7 +710,7 @@ class _UpdateLoanWidgetState extends State<UpdateLoanWidget> {
                     ),
                   ),
                 ),
-                const SizedBox(width: 20.0),
+                const SizedBox(width: 10.0),
                 IconButton(
                   icon: const Icon(
                     Icons.search,
@@ -674,13 +727,14 @@ class _UpdateLoanWidgetState extends State<UpdateLoanWidget> {
                     );
                     setState(() {
                       if (response?["success"] == true &&
-                          response?["data"]["ids"].isNotEmpty) {
-                        bookIDController.text =
-                            response?["data"]["bookIDs"][0].toString() ?? "";
-                        stdIDController.text =
-                            response?["data"]["studentIDs"][0].toString() ?? "";
-                        _returnDateController.text =
-                            response?["data"]["publishers"][0] ?? "";
+                          response?["data"]["loans"] != []) {
+                        Map<String, dynamic> currentLoan =
+                            response?["data"]["loans"][0];
+                        bookIDController.text = currentLoan["bookID"]
+                            .toString();
+                        stdIDController.text = currentLoan["studentID"]
+                            .toString();
+                        _returnDateController.text = currentLoan["returnDate"];
                       } else {
                         bookIDController.clear();
                         stdIDController.clear();
@@ -689,7 +743,7 @@ class _UpdateLoanWidgetState extends State<UpdateLoanWidget> {
                     });
                   },
                 ),
-                const SizedBox(width: 125.0),
+                const SizedBox(width: 100.0),
               ],
             ),
             Padding(
@@ -825,7 +879,10 @@ class _UpdateLoanWidgetState extends State<UpdateLoanWidget> {
                 padding: const EdgeInsets.all(20.0),
                 backgroundColor: color,
               ),
-              child: const Text("Ekle", style: TextStyle(color: Colors.black)),
+              child: const Text(
+                "Güncelle",
+                style: TextStyle(color: Colors.black),
+              ),
             ),
             ElevatedButton(
               onPressed: widget.onCancel,
