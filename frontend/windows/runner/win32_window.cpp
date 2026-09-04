@@ -11,7 +11,7 @@ namespace {
 ///
 /// Redefined in case the developer's machine has a Windows SDK older than
 /// version 10.0.22000.0.
-/// See: https://docs.microsoft.com/windows/win32/api/dwmapi/ne-dwmapi-dwmwindowattribute
+/// See: https://docs.microsoft.com/windows/win32/api/dwmapi/ne-dwmwindowattribute
 #ifndef DWMWA_USE_IMMERSIVE_DARK_MODE
 #define DWMWA_USE_IMMERSIVE_DARK_MODE 20
 #endif
@@ -23,7 +23,7 @@ constexpr const wchar_t kWindowClassName[] = L"FLUTTER_RUNNER_WIN32_WINDOW";
 /// A value of 0 indicates apps should use dark mode. A non-zero or missing
 /// value indicates apps should use light mode.
 constexpr const wchar_t kGetPreferredBrightnessRegKey[] =
-  L"Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize";
+    L"Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize";
 constexpr const wchar_t kGetPreferredBrightnessRegValue[] = L"AppsUseLightTheme";
 
 // The number of Win32Window objects that currently exist.
@@ -179,6 +179,17 @@ Win32Window::MessageHandler(HWND hwnd,
                             WPARAM const wparam,
                             LPARAM const lparam) noexcept {
   switch (message) {
+    case WM_GETMINMAXINFO: {
+      LPMINMAXINFO mmi = reinterpret_cast<LPMINMAXINFO>(lparam);
+      
+      UINT dpi = GetDpiForWindow(hwnd);
+      double scale_factor = dpi > 0 ? (dpi / 96.0) : 1.0;
+
+      mmi->ptMinTrackSize.x = static_cast<LONG>(800 * scale_factor);
+      mmi->ptMinTrackSize.y = static_cast<LONG>(600 * scale_factor);
+      return 0;
+    }
+
     case WM_DESTROY:
       window_handle_ = nullptr;
       Destroy();

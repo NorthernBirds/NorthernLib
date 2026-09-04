@@ -67,157 +67,169 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             Expanded(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: <Widget>[
-                  TextButton(
-                    child: const Text(
-                      "Hakkımda",
-                      style: TextStyle(
-                        fontFamily: "Public Sans",
-                        fontSize: 15.0,
-                        fontWeight: FontWeight.normal,
-                        color: Colors.white,
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: <Widget>[
+                    TextButton(
+                      style: TextButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(horizontal: 75.0),
                       ),
-                    ),
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                            backgroundColor: const Color(0xFF123330),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            title: const Text(
-                              'Hakkımda',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 24.0,
+                      child: const Text(
+                        "Hakkımda",
+                        style: TextStyle(
+                          fontFamily: "Public Sans",
+                          fontSize: 15.0,
+                          fontWeight: FontWeight.normal,
+                          color: Colors.white,
+                        ),
+                      ),
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              backgroundColor: const Color(0xFF123330),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
                               ),
-                            ),
-                            content: const SingleChildScrollView(
-                              child: Text(
-                                aboutMeText,
+                              title: const Text(
+                                'Hakkımda',
                                 style: TextStyle(
-                                  color: Colors.white70,
-                                  fontSize: 14.0,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 24.0,
                                 ),
                               ),
-                            ),
-                            actions: [
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                                child: const Text(
-                                  'Kapat',
+                              content: const SingleChildScrollView(
+                                child: Text(
+                                  aboutMeText,
                                   style: TextStyle(
-                                    color: Colors.grey,
-                                    fontSize: 15.0,
+                                    color: Colors.white70,
+                                    fontSize: 14.0,
                                   ),
                                 ),
                               ),
-                            ],
-                          );
-                        },
-                      );
-                    },
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                            backgroundColor: const Color(0xFF123330),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            title: const Text(
-                              'İletişim Bilgileri',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 24.0,
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: const Text(
+                                    'Kapat',
+                                    style: TextStyle(
+                                      color: Colors.grey,
+                                      fontSize: 15.0,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      },
+                    ),
+                    TextButton(
+                      style: TextButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(horizontal: 75.0),
+                      ),
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              backgroundColor: const Color(0xFF123330),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
                               ),
-                            ),
-                            content: const SingleChildScrollView(
-                              child: Text(
-                                communicationInfos,
+                              title: const Text(
+                                'İletişim Bilgileri',
                                 style: TextStyle(
-                                  color: Colors.white70,
-                                  fontSize: 14.0,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 24.0,
                                 ),
                               ),
-                            ),
-                            actions: [
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                                child: const Text(
-                                  'Kapat',
+                              content: const SingleChildScrollView(
+                                child: Text(
+                                  communicationInfos,
                                   style: TextStyle(
-                                    color: Colors.grey,
-                                    fontSize: 15.0,
+                                    color: Colors.white70,
+                                    fontSize: 14.0,
                                   ),
                                 ),
                               ),
-                            ],
-                          );
-                        },
-                      );
-                    },
-                    child: const Text(
-                      "İletişim",
-                      style: TextStyle(
-                        fontSize: 15.0,
-                        fontFamily: "Public Sans",
-                        fontWeight: FontWeight.normal,
-                        color: Colors.white,
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: const Text(
+                                    'Kapat',
+                                    style: TextStyle(
+                                      color: Colors.grey,
+                                      fontSize: 15.0,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      },
+                      child: const Text(
+                        "İletişim",
+                        style: TextStyle(
+                          fontSize: 15.0,
+                          fontFamily: "Public Sans",
+                          fontWeight: FontWeight.normal,
+                          color: Colors.white,
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
             Expanded(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.only(right: 35.0),
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => LoginDashboard(),
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.only(right: 40.0, left: 600.0),
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => LoginDashboard(),
+                            ),
+                            (Route<dynamic> route) => false,
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFFd9d9d9),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15.0),
                           ),
-                          (Route<dynamic> route) => false,
-                        );
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFd9d9d9),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15.0),
                         ),
-                      ),
-                      child: const Text(
-                        "Giriş Yap",
-                        style: TextStyle(
-                          fontFamily: "Inter",
-                          fontSize: 16.0,
-                          fontWeight: FontWeight.normal,
-                          color: Colors.black,
+                        child: const Text(
+                          "Giriş Yap",
+                          style: TextStyle(
+                            fontFamily: "Inter",
+                            fontSize: 16.0,
+                            fontWeight: FontWeight.normal,
+                            color: Colors.black,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ],
@@ -230,7 +242,6 @@ class _MyHomePageState extends State<MyHomePage> {
               : constraints.maxHeight;
 
           return SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
             child: Column(
               children: [
                 Container(
@@ -294,20 +305,23 @@ class _MyHomePageState extends State<MyHomePage> {
                   width: double.infinity,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   color: const Color(0xFF123330),
-                  child: const Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      SizedBox(width: 20),
-                      Text(
-                        'Copyright © 2026 Yusuf Enes Kuş',
-                        style: TextStyle(
-                          color: Colors.white54,
-                          fontSize: 12,
-                          fontFamily: "Roboto",
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        SizedBox(width: 20),
+                        Text(
+                          'Copyright © 2026 Yusuf Enes Kuş',
+                          style: TextStyle(
+                            color: Colors.white54,
+                            fontSize: 12,
+                            fontFamily: "Roboto",
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ],

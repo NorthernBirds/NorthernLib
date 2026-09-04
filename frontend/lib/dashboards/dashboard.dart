@@ -85,7 +85,6 @@ class _DashboardState extends State<Dashboard> {
                 color: Color(0xFF3A8772),
               ),
               child: SingleChildScrollView(
-                physics: const BouncingScrollPhysics(),
                 child: Container(
                   color: const Color(0xFF3A8772),
                   padding: const EdgeInsets.symmetric(vertical: 20.0),

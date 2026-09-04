@@ -34,7 +34,6 @@ class _LoginDashboardState extends State<LoginDashboard> {
           child: LayoutBuilder(
             builder: (context, constraints) {
               return SingleChildScrollView(
-                physics: const BouncingScrollPhysics(),
                 child: ConstrainedBox(
                   constraints: BoxConstraints(minHeight: constraints.maxHeight),
                   child: Center(

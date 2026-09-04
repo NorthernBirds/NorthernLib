@@ -308,9 +308,8 @@ class _ListCategoriesWidgetState extends State<ListCategoriesWidget> {
                 border: Border.all(color: Colors.black, width: 2.0),
               ),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
                   const Padding(
                     padding: EdgeInsets.symmetric(vertical: 20.0),
