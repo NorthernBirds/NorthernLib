@@ -663,12 +663,5 @@ def signOut():
 
 
 if __name__ == "__main__":
-    if developingMode == True:
-        app.run(host="127.0.0.1",port=5000,debug=True)
-    else:
-            
-        if os.path.exists(config.CERTIFICATE) and os.path.exists(config.KEY):
-            context = ssl.SSLContext(protocol=ssl.PROTOCOL_TLS_SERVER)
-            context.load_cert_chain(certfile=config.CERTIFICATE,keyfile=config.KEY)
-            app.run(host="0.0.0.0",port=5000,ssl_context=context,debug=False)
+    app.run(host="127.0.0.1",port=5000,debug=True if developingMode else False)
 
