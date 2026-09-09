@@ -19,8 +19,8 @@ LEADERS_LOG_PATH = os.path.join(BASE_DIR,"logs", "leaders.log")
 
 BOOK_CATEGORIES = ["Roman","Hikaye","Şiir","Biyografi","Otobiyografi","Tarih","Bilim","Kişisel Gelişim","Ders Kitabı","Ansiklopedi","Çizgi Roman"]
 
-CERTIFICATE_FILE = os.path.join(BASE_DIR,"cert.pem")
-KEY_FILE = os.path.join(BASE_DIR,"cert.key")
+CERTIFICATE= os.path.join(BASE_DIR,"cert.pem")
+KEY = os.path.join(BASE_DIR,"cert.key")
 
 session = {}
 db_name = "kerneldb"
