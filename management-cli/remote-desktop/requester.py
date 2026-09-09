@@ -15,13 +15,23 @@ class Request:
             request = requests.post(f"{self.baseUrl}/signIn",json={"userName":userName,"password":password,"appToken":self.appToken})
 
             if request.status_code == 200:
-                return request.json()
+
+                info = request.json()
+
+                if info["success"]:
+                    config.session["token"] = info["data"]["token"]
+
+                    info = request.json()
+                    del info["data"]
+
+                return info
             
+                
             return {"success":False,"message":str(request.status_code)}
 
         except Exception as e:
 
-            return {"success":False,"message":"Bir hata oluştu!"}
+            return {"success":False,"message":f"Bir hata oluştu: {e}"}
 
     def listLibs(self):
 
@@ -36,9 +46,9 @@ class Request:
 
         except Exception as e:
 
-            return {"success":False,"message":"Bir hata oluştu!"}
+            return {"success":False,"message":f"Bir hata oluştu: {e}"}
 
-    def deleteLib(self,lid:int):
+    def terminateLib(self,lid:int):
 
         try:
 
@@ -51,13 +61,13 @@ class Request:
 
         except Exception as e:
 
-            return {"success":False,"message":"Bir hata oluştu!"}
+            return {"success":False,"message":f"Bir hata oluştu: {e}"}
 
     def addLicense(self,count:int):
 
         try:
 
-            request = requests.post(f"{self.baseUrl}/addLicense",json={"userName":count,"appToken":self.appToken,"userToken":config.session["token"]})
+            request = requests.post(f"{self.baseUrl}/addLicense",json={"count":count,"appToken":self.appToken,"userToken":config.session["token"]})
 
             if request.status_code == 200:
                 return request.json()
@@ -66,7 +76,7 @@ class Request:
 
         except Exception as e:
 
-            return {"success":False,"message":"Bir hata oluştu!"}
+            return {"success":False,"message":f"Bir hata oluştu: {e}"}
 
     def activateLicense(self,lcid:int):
 
@@ -81,7 +91,7 @@ class Request:
             _
         except Exception as e:
 
-            return {"success":False,"message":"Bir hata oluştu!"}
+            return {"success":False,"message":f"Bir hata oluştu: {e}"}
 
     def disableLicense(self,lcid:int):
 
@@ -96,7 +106,7 @@ class Request:
             _
         except Exception as e:
 
-            return {"success":False,"message":"Bir hata oluştu!"}
+            return {"success":False,"message":f"Bir hata oluştu: {e}"}
 
     def listLicenses(self):
 
@@ -111,7 +121,37 @@ class Request:
 
         except Exception as e:
 
-            return {"success":False,"message":"Bir hata oluştu!"}
+            return {"success":False,"message":f"Bir hata oluştu: {e}"}
+
+    def listProcesses(self):
+
+        try:
+
+            request = requests.post(f"{self.baseUrl}/listProcesses",json={"appToken":self.appToken,"userToken":config.session["token"]})
+
+            if request.status_code == 200:
+                return request.json()
+            
+            return {"success":False,"message":str(request.status_code)}
+            _
+        except Exception as e:
+
+            return {"success":False,"message":f"Bir hata oluştu: {e}"}
+
+    def killProcess(self,pid):
+
+        try:
+
+            request = requests.post(f"{self.baseUrl}/killProcess",json={"pid":pid,"appToken":self.appToken,"userToken":config.session["token"]})
+
+            if request.status_code == 200:
+                return request.json()
+            
+            return {"success":False,"message":str(request.status_code)}
+
+        except Exception as e:
+
+            return {"success":False,"message":f"Bir hata oluştu: {e}"}
 
     def signOut(self):
 
@@ -126,4 +166,4 @@ class Request:
 
         except Exception as e:
 
-            return {"success":False,"message":"Bir hata oluştu!"}
+            return {"success":False,"message":f"Bir hata oluştu: {e}"}

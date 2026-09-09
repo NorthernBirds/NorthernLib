@@ -1,17 +1,19 @@
 import pymysql
 import config
 import random
+from writeLog import writeLog
 
 def connect():
 
     try:
 
-        conn = pymysql.connect(host="127.0.0.1",password=config.password,database=config.db,user=config.user)
+        conn = pymysql.connect(host="127.0.0.1",password=config.password,database=config.dbName,user=config.userName)
 
         return {"success":True,"data":{"conn":conn}}
 
     except Exception as e:
 
+        writeLog(config.dbProcessesLogPath,error=type(e).__name__,message=e)
         return {"success":False,"message":"Bir hata oluştu!"}
     
 class Process:
@@ -39,7 +41,7 @@ class Process:
             return {"success":True,"data":libraries}
 
         except Exception as e:
-
+            writeLog(config.dbProcessesLogPath,error=type(e).__name__,message=e)
             return {"success":False,"message":"Bir hata oluştu!"}
 
     def terminateLib(self,lid:int):
@@ -55,14 +57,26 @@ class Process:
             if result is None:
                 return {"success":False,"message":"Kütüphane bulunamadı!"}
 
+            userName = "admin_" + result[0]
+
             self.cursor.execute("DELETE FROM libraries WHERE id = %s",(lid,))
-            self.cursor.execute(f"DROP DATABASE IF EXISTS '{result[0]}'")
+            self.cursor.execute("SELECT id FROM information_schema.processlist WHERE USER = %s",(userName,))
+            result = self.cursor.fetchall()
+
+            if result:
+                for r in result:
+                    self.cursor.execute(f"KILL {r[0]}")
+
+            self.cursor.execute(f"DROP DATABASE IF EXISTS {result[0]}")
+            self.cursor.execute(f"DROP USER IF EXISTS {userName}@'127.0.0.1'")
+
             self.cursor.execute("UPDATE licenseKeys SET isActive = %s WHERE id = %s",(False,result[1]))
             self.conn.commit()
 
             return {"success":True}
 
         except Exception as e:
+            writeLog(config.dbProcessesLogPath,error=type(e).__name__,message=e)
             self.conn.rollback()
             return {"success":False,"message":"Bir hata oluştu!"}
 
@@ -72,8 +86,6 @@ class Process:
 
             if count <= 0:
                 return {"success":False,"message":"Lütfen boş bırakmayın!"}
-
-            licenseKeys = []
 
             for c in range(count):
                 newLicenseKey = ""
@@ -85,15 +97,15 @@ class Process:
                     elif r == "lowerCaseLetter":
                         newLicenseKey = newLicenseKey + chr(random.randint(97,122))
                     else:
-                        newLicenseKey = newLicenseKey + random.randint(0,9)
+                        newLicenseKey = newLicenseKey + str(random.randint(0,9))
                 
-                self.cursor.execute("INSERT INTO licenseKeys (licenseKey) VALUES %s",(newLicenseKey,))
+                self.cursor.execute("INSERT INTO licenseKeys (licenseKey) VALUES (%s)",(newLicenseKey,))
                 self.conn.commit()
 
             return {"success":True}
 
         except Exception as e:
-
+            writeLog(config.dbProcessesLogPath,error=type(e).__name__,message=e)
             self.conn.rollback()
             return {"success":False,"message":"Bir hata oluştu!"}
 
@@ -119,7 +131,7 @@ class Process:
             return {"success":True}
 
         except Exception as e:
-
+            writeLog(config.dbProcessesLogPath,error=type(e).__name__,message=e)
             self.conn.rollback()
             return {"success":False,"message":"Bir hata oluştu!"}
 
@@ -145,7 +157,7 @@ class Process:
             return {"success":True}
 
         except Exception as e:
-
+            writeLog(config.dbProcessesLogPath,error=type(e).__name__,message=e)
             self.conn.rollback()
             return {"success":False,"message":"Bir hata oluştu!"}
 
@@ -167,14 +179,14 @@ class Process:
             return {"success":True,"data":licenses}
 
         except Exception as e:
-
+            writeLog(config.dbProcessesLogPath,error=type(e).__name__,message=e)
             return {"success":False,"message":"Bir hata oluştu!"}
     
     def giveUserData(self,userName:str):
 
         try:
 
-            self.cursor.execute("SELECT id,password FROM users WHERE userName = %s",(userName,))
+            self.cursor.execute("SELECT id,userPassword FROM users WHERE userName = %s",(userName,))
             result = self.cursor.fetchone()
 
             if result is None:
@@ -183,20 +195,20 @@ class Process:
             return {"success":True,"data":result}
 
         except Exception as e:
-
+            writeLog(config.dbProcessesLogPath,error=type(e).__name__,message=e)
             return {"success":False,"message":"Bir hata oluştu!"}
 
     def addSession(self,userID:int,token:str):
 
         try:
 
-            self.cursor.execute("INSERT INTO sessions (userID,token,duration) VALUES (%s,%s,%s)",(userID,token,0))
+            self.cursor.execute("INSERT INTO sessions (userID,token) VALUES (%s,%s)",(userID,token))
             self.conn.commit()
 
             return {"success":True}
 
         except Exception as e:
-
+            writeLog(config.dbProcessesLogPath,error=type(e).__name__,message=e)
             self.conn.rollback()
             return {"success":False,"message":"Bir hata oluştu!"}
 
@@ -207,7 +219,7 @@ class Process:
             if token.replace(" ","") == "":
                 return {"success":False,"message":"401 Unauthorized!"}
 
-            self.cursor.execute("SELECT id FROM session WHERE id = %s",(token,))
+            self.cursor.execute("SELECT id FROM sessions WHERE token = %s",(token,))
             result = self.cursor.fetchone()
 
             if result is None:
@@ -216,7 +228,7 @@ class Process:
             return {"success":True}
 
         except Exception as e:
-
+            writeLog(config.dbProcessesLogPath,error=type(e).__name__,message=e)
             return {"success":False,"message":"Bir hata oluştu!"}
 
     def giveUserRoleByToken(self,token:str):
@@ -232,7 +244,7 @@ class Process:
             return {"success":True,"data":{"role":result[0]}}
 
         except Exception as e:
-
+            writeLog(config.dbProcessesLogPath,error=type(e).__name__,message=e)
             return {"success":False,"message":"Bir hata oluştu!"}
 
     def deleteSession(self,token):
@@ -251,40 +263,49 @@ class Process:
             return {"success":True}
 
         except Exception as e:
-
+            writeLog(config.dbProcessesLogPath,error=type(e).__name__,message=e)
             self.conn.rollback()
             return {"success":False,"message":"Bir hata oluştu!"}
 
-    def durationHeartbeat(self):
-
-        while True:
-
-            try:
-
-                self.cursor.execute("SELECT * FROM sessions")
-                result = self.cursor.fetchall()
-
-                for r in result:
-
-                    if (r[2] + 1) == 3600:
-                        self.deleteSession(token=r[1])
-                    else:
-                        self.cursor.execute("UPDATE sessions SET duration = %s WHERE id = %s",(r[2] + 1,r[0]))
-                        self.conn.commit()
-
-            except Exception as e:
-
-                self.conn.rollback()
-
-    def resetDuration(self,token:str):
+    def listProcesses(self):
 
         try:
 
-            self.cursor.execute("UPDATE sessions SET duration = 0 WHERE token = %s",(token,))
-            self.conn.commit()
+            processes = []
+
+            self.cursor.execute("SELECT * FROM information_schema.processlist WHERE USER != 'event_scheduler'")
+            result = self.cursor.fetchall()
+
+            if not result:
+                return {"success":False,"message":"Sonuç bulunamadı!"}
+
+            for r in result:
+                processes.append({"id":r[0],"userName":r[1],"host":r[2],"db":r[3],"command":r[4],"time":r[5],"state":r[6],"info":r[7]})
+
+            return {"success":True,"data":processes}
 
         except Exception as e:
+            writeLog(config.dbProcessesLogPath,error=type(e).__name__,message=e)
+            self.conn.rollback()
+            return {"success":False,"message":"Bir hata oluştu!"}
 
+    def killProcess(self,pid):
+
+        try:
+
+            self.cursor.execute("SELECT ID FROM information_schema.processlist WHERE ID = %s and WHERE USER != 'event_scheduler'",(pid,))
+            result = self.cursor.fetchone()
+
+            if result is None:
+                return {"success":False,"message":"Bu PID'ye ait işlem bulunamadı!"}
+
+            self.cursor.execute(f"KILL {pid}")
+            self.conn.commit()
+
+            return {"success":True}
+
+        except Exception as e:
+            writeLog(config.dbProcessesLogPath,error=type(e).__name__,message=e)
             self.conn.rollback()
             return {"success":False,"message":"Bir hata oluştu!"}
 
@@ -295,8 +316,10 @@ class Process:
             self.cursor.execute("DELETE FROM sessions WHERE token = %s",(token,))
             self.conn.commit()
 
-        except Exception as e:
+            return {"success":True}
 
+        except Exception as e:
+            writeLog(config.dbProcessesLogPath,error=type(e).__name__,message=e)
             self.conn.rollback()
             return {"success":False,"message":"Bir hata oluştu!"}
                     
