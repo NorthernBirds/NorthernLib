@@ -8,7 +8,7 @@ import sys
 from writeLog import writeLog
 import os
 
-developingMode = True
+developingMode = False
 
 app = Flask(__name__)
 CORS(app)

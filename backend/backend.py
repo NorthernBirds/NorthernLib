@@ -1,7 +1,7 @@
 import config
 import db.connection
 
-developingMode = True
+developingMode = False
 
 resultDB1 = db.connection.getDB(dbName=config.db_name,password=config.db_password,dbUser=config.db_user)
 
