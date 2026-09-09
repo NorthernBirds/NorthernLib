@@ -15,8 +15,11 @@ frontend/lib/config.dart
 
 management-cli/server-side/.env
 management-cli/remote-desktop/.env
+management-cli/server-side/cert.key
+management-cli/server-side/cert.pem
+management-cli/server-side/logs/
 
 .DS_Store
 Thumbs.db
 
-venv/*.*
+venv/
