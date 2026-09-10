@@ -225,6 +225,7 @@ if __name__ == "__main__":
     if developingMode:
         app.run(host="127.0.0.1",port=8000,debug=True)
     else:
-        context = ssl.SSLContext(protocol=ssl.PROTOCOL_TLS_SERVER)
-        context.load_cert_chain(keyfile=config.KEY,certfile=config.CERTIFICATE)
-        app.run(host="10.156.231.11",port=8000,ssl_context=context,debug=False)
+        if os.path.exists(path=config.KEY) and os.path.exists(path=config.CERTIFICATE):
+            context = ssl.SSLContext(protocol=ssl.PROTOCOL_TLS_SERVER)
+            context.load_cert_chain(keyfile=config.KEY,certfile=config.CERTIFICATE)
+            app.run(host="10.156.231.11",port=8000,ssl_context=context,debug=False)

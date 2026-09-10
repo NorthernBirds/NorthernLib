@@ -18,8 +18,6 @@ import modules.leaders
 from utils.writeLog import writeLog
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-import os
-import ssl
 import threading
 
 
