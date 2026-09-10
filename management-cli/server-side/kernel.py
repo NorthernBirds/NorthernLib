@@ -222,4 +222,9 @@ def signOut():
         return {"success":False,"message":"Bir hata oluştu!"}
 
 if __name__ == "__main__":
-    app.run(host="127.0.0.1",port=8000,debug=True if developingMode else False)
+    if developingMode:
+        app.run(host="127.0.0.1",port=8000,debug=True)
+    else:
+        context = ssl.SSLContext(protocol=ssl.PROTOCOL_TLS_SERVER)
+        context.load_cert_chain(keyfile=config.KEY,certfile=config.CERTIFICATE)
+        app.run(host="10.156.231.11",port=8000,ssl_context=context,debug=False)

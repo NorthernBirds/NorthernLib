@@ -15,6 +15,9 @@ userName = os.getenv("DB_USER","")
 password = os.getenv("DB_PASSWORD","")
 APP_KEY = os.getenv("APP_KEY","")
 
+KEY = os.path.join(BASE_DIR,"cert.key")
+CERTIFICATE = os.path.join(BASE_DIR,"cert.pem")
+
 if dbName == "" or userName == "" or password == "" or APP_KEY == "":
     print("a")
     sys.exit(1)
