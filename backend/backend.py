@@ -64,31 +64,6 @@ def checkRoleAndToken(token,appToken,allowedRoles):
         "success":True
     }
 
-@app.route('/backend/getSession',methods=['POST'])
-def getSession():
-
-    data = request.get_json()
-    result = auth.verifyAppToken(appToken=data.get("appToken",""),withLock=False)
-
-    if result["success"] != True:
-        return jsonify(result)
-
-    if config.developer_password != data.get("developerPassword",""):
-        return jsonify({
-            "success":False,
-            "message":"Yanlış şifre!"
-        })
-
-
-    if developingMode == True:
-        return jsonify(config.session)
-
-
-    return jsonify({
-        "success":False,
-        "message":"Bu işlem sadece geliştirme modunda kullanılabilir!"
-    })
-
 @app.route('/backend/signUp',methods=['POST'])
 def signUp():
 
