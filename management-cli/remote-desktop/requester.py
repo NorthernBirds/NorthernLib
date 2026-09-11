@@ -12,7 +12,7 @@ class Request:
 
         try:
 
-            request = requests.post(f"{self.baseUrl}/signIn",json={"userName":userName,"password":password,"appToken":self.appToken})
+            request = requests.post(f"{self.baseUrl}/signIn",json={"userName":userName,"password":password,"appToken":self.appToken},verify=False)
 
             if request.status_code == 200:
 
@@ -37,7 +37,7 @@ class Request:
 
         try:
 
-            request = requests.post(f"{self.baseUrl}/listLibs",json={"appToken":self.appToken,"userToken":config.session["token"]})
+            request = requests.post(f"{self.baseUrl}/listLibs",json={"appToken":self.appToken,"userToken":config.session["token"]},verify=False)
 
             if request.status_code == 200:
                 return request.json()
@@ -52,7 +52,7 @@ class Request:
 
         try:
 
-            request = requests.post(f"{self.baseUrl}/terminateLib",json={"lid":lid,"appToken":self.appToken,"userToken":config.session["token"]})
+            request = requests.post(f"{self.baseUrl}/terminateLib",json={"lid":lid,"appToken":self.appToken,"userToken":config.session["token"]},verify=False)
 
             if request.status_code == 200:
                 return request.json()
@@ -67,7 +67,7 @@ class Request:
 
         try:
 
-            request = requests.post(f"{self.baseUrl}/addLicense",json={"count":count,"appToken":self.appToken,"userToken":config.session["token"]})
+            request = requests.post(f"{self.baseUrl}/addLicense",json={"count":count,"appToken":self.appToken,"userToken":config.session["token"]},verify=False)
 
             if request.status_code == 200:
                 return request.json()
@@ -82,7 +82,7 @@ class Request:
 
         try:
 
-            request = requests.post(f"{self.baseUrl}/activateLicense",json={"lcid":lcid,"appToken":self.appToken,"userToken":config.session["token"]})
+            request = requests.post(f"{self.baseUrl}/activateLicense",json={"lcid":lcid,"appToken":self.appToken,"userToken":config.session["token"]},verify=False)
 
             if request.status_code == 200:
                 return request.json()
@@ -97,7 +97,7 @@ class Request:
 
         try:
 
-            request = requests.post(f"{self.baseUrl}/disableLicense",json={"lcid":lcid,"appToken":self.appToken,"userToken":config.session["token"]})
+            request = requests.post(f"{self.baseUrl}/disableLicense",json={"lcid":lcid,"appToken":self.appToken,"userToken":config.session["token"]},verify=False)
 
             if request.status_code == 200:
                 return request.json()
@@ -112,7 +112,7 @@ class Request:
 
         try:
 
-            request = requests.post(f"{self.baseUrl}/listLicenses",json={"appToken":self.appToken,"userToken":config.session["token"]})
+            request = requests.post(f"{self.baseUrl}/listLicenses",json={"appToken":self.appToken,"userToken":config.session["token"]},verify=False)
 
             if request.status_code == 200:
                 return request.json()
@@ -127,7 +127,7 @@ class Request:
 
         try:
 
-            request = requests.post(f"{self.baseUrl}/listProcesses",json={"appToken":self.appToken,"userToken":config.session["token"]})
+            request = requests.post(f"{self.baseUrl}/listProcesses",json={"appToken":self.appToken,"userToken":config.session["token"]},verify=False)
 
             if request.status_code == 200:
                 return request.json()
@@ -142,7 +142,7 @@ class Request:
 
         try:
 
-            request = requests.post(f"{self.baseUrl}/killProcess",json={"pid":pid,"appToken":self.appToken,"userToken":config.session["token"]})
+            request = requests.post(f"{self.baseUrl}/killProcess",json={"pid":pid,"appToken":self.appToken,"userToken":config.session["token"]},verify=False)
 
             if request.status_code == 200:
                 return request.json()
@@ -157,7 +157,7 @@ class Request:
 
         try:
 
-            request = requests.post(f"{self.baseUrl}/signOut",json={"appToken":self.appToken,"userToken":config.session["token"]})
+            request = requests.post(f"{self.baseUrl}/signOut",json={"appToken":self.appToken,"userToken":config.session["token"]},verify=False)
 
             if request.status_code == 200:
                 return request.json()

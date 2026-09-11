@@ -1,0 +1,12 @@
+[BUG]: no found input "kernel.py"
+
+## Command Line
+D:\Dev\FullStack\Library\venv\Scripts\pyarmor gen --pack onefile kernel.py
+
+## Environments
+Python 3.14.2
+Pyarmor 9.2.7 (trial), 000000, non-profits
+Platform windows.x86_64
+Native windows.amd64
+Home C:\Users\Thinkpad\.pyarmor
+
