@@ -193,7 +193,7 @@ class _LoginDashboardState extends State<LoginDashboard> {
                               backgroundColor: color,
                             ),
                             child: const Text(
-                              "Sign In",
+                              "Giriş Yap",
                               style: TextStyle(
                                 fontSize: 14,
                                 color: Colors.black,

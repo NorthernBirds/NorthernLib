@@ -289,7 +289,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           ),
                         ),
                         child: const Text(
-                          "Kayıt Ol",
+                          "Kütüphane Aç",
                           style: TextStyle(
                             fontFamily: "Inter",
                             fontSize: 16.0,

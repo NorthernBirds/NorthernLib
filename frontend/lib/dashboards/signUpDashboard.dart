@@ -151,7 +151,7 @@ class _signUpStateDash extends State<signUpDash> {
                               backgroundColor: color,
                             ),
                             child: const Text(
-                              "Kayıt Ol",
+                              "Kütüphane Aç",
                               style: TextStyle(
                                 fontSize: 14,
                                 color: Colors.black,
