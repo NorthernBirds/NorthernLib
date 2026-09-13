@@ -61,10 +61,10 @@ class Process:
 
             self.cursor.execute("DELETE FROM libraries WHERE id = %s",(lid,))
             self.cursor.execute("SELECT id FROM information_schema.processlist WHERE USER = %s",(userName,))
-            result = self.cursor.fetchall()
+            result1 = self.cursor.fetchall()
 
-            if result:
-                for r in result:
+            if result1:
+                for r in result1:
                     self.cursor.execute(f"KILL {r[0]}")
 
             self.cursor.execute(f"DROP DATABASE IF EXISTS {result[0]}")

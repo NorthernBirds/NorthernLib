@@ -1,4 +1,5 @@
 NorthernLib
+
 Copyright © 2026 Yusuf Enes Kuş
 
 A backend-oriented system for academic library management, focusing on modularity, secure data flow, and centralized control.
@@ -44,6 +45,6 @@ Environment Configuration: Modify the following files according to your infrastr
 
 Directory Structure: Ensure all directories excluded by .gitignore (e.g., logs/) are manually created in your local environment.
 
-You can download the app from Microsoft Store.
+You can download the app from Github Releases (File is not signed).
 
 Developer: Yusuf Enes Kuş
