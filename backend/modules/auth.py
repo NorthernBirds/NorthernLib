@@ -44,17 +44,7 @@ class Auth:
     def signUp(self,dbName:str,license:str):
 
         try:
-
-            letters = [
-            "a", "A", "b", "B", "c", "C", "d", "D", "e", "E", 
-            "f", "F", "g", "G", "h", "H", "i", "I", "j", "J", 
-            "k", "K", "l", "L", "m", "M", "n", "N", "o", "O", 
-            "p", "P", "q", "Q", "r", "R", "s", "S", "t", "T", 
-            "u", "U", "v", "V", "w", "W", "x", "X", "y", "Y", 
-            "z", "Z"
-            ]
-
-
+            
             if not dbName.strip() or not license.strip():
                 return {"success":False,"message":"Lütfen boş bırakmayın!"}
 
@@ -83,16 +73,30 @@ class Auth:
             if result2:
                 return {"success":False,"message":"Bu lisans anahtarı başka bir kütüphane tarafından kullanılıyor!"}
 
-            dbPassword = ""
-            adminPassword = ""
+            dbPassword,adminPassword = "",""
 
-            for i in range(4):
-                dbPassword = dbPassword + str(random.randint(0,9)) + str(random.choice(letters))
-                adminPassword = adminPassword + str(random.randint(0,9)) + str(random.choice(letters))
-                            
-            setup(name=dbName.strip(),password=dbPassword,conn=self.conn,cursor=self.cursor,adminPassword=adminPassword,licenseID=result[0])
-            return {"success":True,"message":"Kayıt olundu.","data":{"dbPassword":dbPassword,"adminPassword":adminPassword}}
-        
+            specialChars = ["!","+","/","?"]
+
+            for i in range(7):
+                r = random.choice(["upperCaseLetter","number","lowerCaseLetter"])
+                if r == "upperCaseLetter":
+                    dbPassword = dbPassword + chr(random.randint(65,90))
+                    adminPassword = adminPassword + chr(random.randint(65,90))
+                elif r == "lowerCaseLetter":
+                    dbPassword = dbPassword + chr(random.randint(97,122))
+                    adminPassword = adminPassword + chr(random.randint(97,122))
+                else:
+                    dbPassword = dbPassword + str(random.randint(0,9))
+                    adminPassword = adminPassword + str(random.randint(0,9))
+
+            dbPassword = dbPassword + random.choice(specialChars)
+            adminPassword = adminPassword + random.choice(specialChars)
+
+            result = setup(name=dbName.strip(),password=dbPassword,conn=self.conn,cursor=self.cursor,adminPassword=adminPassword,licenseID=result[0])
+            if result["success"]:
+                return {"success":True,"message":"Kayıt olundu.","data":{"dbPassword":dbPassword,"adminPassword":adminPassword}}
+
+            return result
         
         except Exception as e:
 
