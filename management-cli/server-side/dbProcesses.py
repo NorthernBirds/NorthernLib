@@ -68,6 +68,7 @@ class Process:
                     self.cursor.execute(f"KILL {r[0]}")
 
             self.cursor.execute(f"DROP DATABASE IF EXISTS {result[0]}")
+            self.cursor.execute(f"DROP TABLESPACE tablespace_{result[0]}")
             self.cursor.execute(f"DROP USER IF EXISTS {userName}@'127.0.0.1'")
 
             self.cursor.execute("UPDATE licenseKeys SET isActive = %s WHERE id = %s",(False,result[1]))

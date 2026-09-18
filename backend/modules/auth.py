@@ -48,7 +48,7 @@ class Auth:
             if not dbName.strip() or not license.strip():
                 return {"success":False,"message":"Lütfen boş bırakmayın!"}
 
-            for i in ["'",'"',"*","/","\\","?","<",">","|",":"]:
+            for i in ["'",'"',"*","/","\\","?","<",">","|",":"," "]:
                 if i in dbName.strip():
                     return {"success":False,"message":"Kütüphane adı geçersiz karakter içeriyor!"}
                 
